@@ -31,7 +31,7 @@ describe('Dashboard', () => {
     // base + humidity + wind + solar(zenith-dependent) + urban 2 + walking 1 — assert structure, not zenith
     expect(screen.getByText('base air')).toBeDefined()
     expect(screen.getByText('humidity friction')).toBeDefined()
-    expect(screen.getByText('sun premium')).toBeDefined()
+    expect(screen.getByText(/sun premium/)).toBeDefined() // regex: label gains '· night' after dark
     expect(screen.getAllByRole('radio')).toHaveLength(9)
     expect(screen.getByRole('meter', { name: /sweat efficiency/i })).toBeDefined()
     expect(screen.queryByText(/partial data/i)).toBeNull()
@@ -43,7 +43,7 @@ describe('Dashboard', () => {
     render(<Dashboard location={valencia} onChangeLocation={() => {}} />)
 
     await waitFor(() => expect(screen.getByText(/partial data/i)).toBeDefined())
-    expect(screen.queryByText('sun premium')).toBeNull()
+    expect(screen.queryByText(/sun premium/)).toBeNull()
   })
 
   it('surfaces fetch failure with a retry action', async () => {

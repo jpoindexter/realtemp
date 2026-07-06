@@ -35,4 +35,6 @@ export interface TrueFeel {
   sweatEfficiencyPct: number | null
   /** Premiums that could not be computed from the available data. */
   missing: DeltaId[]
+  /** Sun below the horizon — solar premium is 0 whatever the exposure toggle says. */
+  isNight: boolean
 }

@@ -44,9 +44,11 @@ describe('computeTrueFeel — Valencia scorcher fixture', () => {
 })
 
 describe('solar premium edge cases', () => {
-  it('is zero at night even with a stale UV index', () => {
+  it('is zero at night even with a stale UV index, and flags isNight', () => {
     const r = computeTrueFeel({ ...scorcher, solarZenithDeg: 120 }, streetDay)
     expect(delta(r, 'solar')).toBe(0)
+    expect(r.isNight).toBe(true)
+    expect(computeTrueFeel(scorcher, streetDay).isNight).toBe(false)
   })
 
   it('is zero in shade and quartered under overcast', () => {

@@ -17,7 +17,7 @@ export function BreakdownLedger({ result }: { result: TrueFeel }) {
       </div>
       {result.deltas.map((d) => (
         <div className="row" key={d.id}>
-          <dt>{d.label}</dt>
+          <dt>{d.id === 'solar' && result.isNight ? 'sun premium · night' : d.label}</dt>
           <dd className={valClass(d.id, d.deltaC)}>{signed(d.deltaC)}</dd>
         </div>
       ))}

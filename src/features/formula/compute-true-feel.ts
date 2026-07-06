@@ -95,5 +95,6 @@ export function computeTrueFeel(inputs: WeatherInputs, toggles: Toggles): TrueFe
     trueFeelC,
     sweatEfficiencyPct: inputs.dewPointC === null ? null : sweatEfficiencyPct(inputs.dewPointC),
     missing,
+    isNight: inputs.solarZenithDeg > 90,
   }
 }

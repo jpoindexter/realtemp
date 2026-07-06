@@ -110,6 +110,11 @@ function DashboardBody({ weather, location, toggles, updateToggles }: BodyProps)
           value={toggles.exposure}
           onChange={(exposure) => updateToggles({ exposure })}
         />
+        {result.isNight && (
+          <p className="note" role="status">
+            Night — there's no sun to toggle. Your exposure choice kicks back in at dawn.
+          </p>
+        )}
         <SegmentedControl
           legend="Surroundings"
           name="environment"

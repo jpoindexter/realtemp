@@ -1,0 +1,154 @@
+<title>RealTemp — Moodboard</title>
+<style>
+  :root{
+    --ink:#1b1b1e; --ink-2:#54544e; --ground:#edede8;
+    --paper:#f7f7f3; --line:#d8d8d0;
+    --solar:#e8720c; --scorch:#c93a22; --shade:#33698c; --uhi:#a1543a;
+    --mono:ui-monospace,'SF Mono',Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  body{background:#edede8;color:var(--ink);font-family:system-ui,-apple-system,sans-serif;line-height:1.45;margin:0;padding:clamp(16px,4vw,48px)}
+  .board{max-width:1060px;margin:0 auto;display:grid;gap:20px}
+  header h1{font-size:clamp(28px,5vw,44px);font-weight:800;letter-spacing:-.02em;margin:0}
+  header p{max-width:62ch;color:var(--ink-2);margin:.5em 0 0}
+  .tag{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-2)}
+  section{background:var(--paper);border:1px solid var(--line);padding:20px}
+  section h2{font-size:13px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.12em;margin:0 0 14px;color:var(--ink-2)}
+  .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+
+  /* palette */
+  .swatches{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+  .sw{height:88px;padding:10px;display:flex;flex-direction:column;justify-content:flex-end;font-family:var(--mono);font-size:11px}
+  .sw b{font-size:12px}
+
+  /* type specimen */
+  .spec-hero{font-size:clamp(64px,12vw,110px);font-weight:800;letter-spacing:-.04em;line-height:.95;font-variant-numeric:tabular-nums}
+  .spec-hero small{font-size:.35em;font-weight:600;color:var(--scorch);vertical-align:super}
+  .spec-mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+  /* phone mock */
+  .phone{background:var(--paper);border:2px solid var(--ink);max-width:340px;margin:0 auto;padding:18px 16px;display:grid;gap:14px}
+  .phone .loc{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-2)}
+  .phone .big{font-size:84px;font-weight:800;letter-spacing:-.045em;line-height:1;font-variant-numeric:tabular-nums}
+  .phone .big .u{font-size:24px;font-weight:600;color:var(--scorch)}
+  .phone .cap{font-size:13px;color:var(--ink-2);margin-top:2px}
+  .rows{border-top:2px solid var(--ink);font-family:var(--mono);font-size:13px;font-variant-numeric:tabular-nums}
+  .rows .r{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px dashed var(--line)}
+  .rows .r span:last-child{font-weight:700}
+  .rows .total{border-bottom:none;border-top:2px solid var(--ink);font-weight:700;font-size:14px}
+  .pos{color:var(--scorch)} .neg{color:var(--shade)} .env{color:var(--uhi)}
+  .segs{display:grid;gap:8px}
+  .seg{display:grid;grid-template-columns:1fr 1fr 1fr;border:1.5px solid var(--ink);font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+  .seg span{padding:8px 4px;text-align:center;border-right:1.5px solid var(--ink)}
+  .seg span:last-child{border-right:none}
+  .seg .on{background:var(--ink);color:var(--paper);font-weight:700}
+  .gauge{display:grid;gap:6px}
+  .gauge .bar{height:14px;border:1.5px solid var(--ink);background:
+    linear-gradient(90deg,var(--shade) 0 38%,transparent 38%)}
+  .gauge .lbl{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+
+  ul{margin:0;padding-left:1.1em}
+  li{margin:.35em 0}
+  a{color:var(--shade)}
+  .dont li::marker{content:"✕ ";color:var(--scorch)}
+  .do li::marker{content:"→ "}
+  table{border-collapse:collapse;width:100%;font-size:13px}
+  td,th{text-align:left;padding:6px 10px 6px 0;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-2)}
+</style>
+
+<div class="board">
+  <header>
+    <span class="tag">RealTemp · design direction · 2026-07-06</span>
+    <h1>Street instrument, not weather postcard.</h1>
+    <p>Every weather app sells sky photography. RealTemp sells a <b>calculation you can trust</b> — so the UI borrows from receipts, field instruments and ledgers: tabular numerals, signed deltas, hard rules, one accent spent on heat. High-contrast light ground because it's read in direct Valencia sun.</p>
+  </header>
+
+  <section>
+    <h2>01 · The one screen (live mock, real numbers)</h2>
+    <div class="cols">
+      <div class="phone">
+        <div class="loc"><span>Valencia</span><span>16:20 · Live</span></div>
+        <div>
+          <div class="big">37.9<span class="u">°C</span></div>
+          <div class="cap">True Feel · air says 30.0°</div>
+        </div>
+        <div class="rows">
+          <div class="r"><span>base air</span><span>30.0°</span></div>
+          <div class="r"><span>sun premium</span><span class="pos">+5.2°</span></div>
+          <div class="r"><span>humidity friction</span><span class="pos">+2.1°</span></div>
+          <div class="r"><span>wind relief</span><span class="neg">−1.4°</span></div>
+          <div class="r"><span>urban heat</span><span class="env">+2.0°</span></div>
+          <div class="r total"><span>true feel</span><span>= 37.9°</span></div>
+        </div>
+        <div class="segs">
+          <div class="seg"><span class="on">Sun</span><span>Shade</span><span>Overcast</span></div>
+          <div class="seg"><span class="on">Urban</span><span>Open</span><span>Nature</span></div>
+          <div class="seg"><span>Stagnant</span><span class="on">Walking</span><span>Active</span></div>
+        </div>
+        <div class="gauge">
+          <div class="lbl"><span>Sweat efficiency</span><span>38%</span></div>
+          <div class="bar" role="img" aria-label="Sweat efficiency 38 percent"></div>
+        </div>
+      </div>
+      <div>
+        <ul class="do">
+          <li><b>The receipt is the hero’s proof.</b> Number rules the screen; the ledger under it explains it. Pattern lifted from <a href="https://mobbin.com/screens/ba624ffb-e334-442b-adde-ae4d83b1e3b1">Acorns’ value + breakdown</a> and <a href="https://mobbin.com/screens/6cd1ca53-4492-4e45-881b-46eee7dd35a1">YNAB’s signed category rows</a>.</li>
+          <li><b>Everything on one screen, no scroll</b> — glance-on-the-street use. Density benchmark: <a href="https://mobbin.com/screens/68128fc2-6cdf-42d7-9d1d-20a3e8402142">CARROT’s observation grid</a>, without its 16-metric sprawl.</li>
+          <li><b>Toggles are the product’s verbs</b> — full-width segmented controls, thumb-reach bottom half, 44px targets. Selected = solid ink, not tint.</li>
+          <li><b>Color is semantic only:</b> warm = adds heat, blue = removes it. Direction encoded twice (sign + color) for color-blind safety.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <div class="cols">
+    <section>
+      <h2>02 · Palette — asphalt & heat</h2>
+      <div class="swatches">
+        <div class="sw" style="background:#1b1b1e;color:#f7f7f3"><b>Asphalt</b>#1B1B1E · ink, selected states</div>
+        <div class="sw" style="background:#f7f7f3;border:1px solid #d8d8d0"><b>Paper</b>#F7F7F3 · surface</div>
+        <div class="sw" style="background:#edede8;border:1px solid #d8d8d0"><b>Pavement</b>#EDEDE8 · ground</div>
+        <div class="sw" style="background:#e8720c;color:#fff"><b>Solar</b>#E8720C · sun premium</div>
+        <div class="sw" style="background:#c93a22;color:#fff"><b>Scorch</b>#C93A22 · heat totals, alerts</div>
+        <div class="sw" style="background:#33698c;color:#fff"><b>Shade</b>#33698C · cooling deltas</div>
+      </div>
+      <p style="font-size:13px;color:var(--ink-2);margin:12px 0 0">All ink-on-paper pairs ≥ 7:1; Solar/Scorch/Shade on paper ≥ 4.5:1 at text sizes used. Dark mode is a v1 question — sun-readability wins v0.</p>
+    </section>
+
+    <section>
+      <h2>03 · Type — two voices</h2>
+      <div class="spec-hero">37.9<small>°C</small></div>
+      <p class="spec-mono" style="margin:.5em 0">+5.2° −1.4° = 37.9° · 0123456789 tabular</p>
+      <table>
+        <tr><th>Role</th><th>Face</th><th>Use</th></tr>
+        <tr><td>Display</td><td>Archivo Black <span style="color:var(--ink-2)">(ship)</span> / system-ui 800 <span style="color:var(--ink-2)">(v0 fallback)</span></td><td>Hero temp only, −4% tracking</td></tr>
+        <tr><td>Data</td><td>IBM Plex Mono / ui-monospace</td><td>Ledger, labels, toggles — always tabular-nums</td></tr>
+        <tr><td>Body</td><td>system-ui 400/600</td><td>Captions, errors, empty states</td></tr>
+      </table>
+    </section>
+  </div>
+
+  <div class="cols">
+    <section>
+      <h2>04 · Anti-patterns (the moat)</h2>
+      <ul class="dont">
+        <li>Sky/cloud photography backgrounds (Apple Weather owns it; kills contrast in sun)</li>
+        <li>Weather-condition icon zoo — conditions are numbers here, not cartoons</li>
+        <li>Opaque “Feels like 38°” with no receipt — the entire reason this app exists</li>
+        <li>Gradient hero cards, glassmorphism — fights legibility at 100k lux</li>
+        <li>Scroll-to-see-more on the core screen</li>
+      </ul>
+    </section>
+    <section>
+      <h2>05 · References (Mobbin)</h2>
+      <ul>
+        <li><a href="https://mobbin.com/screens/f7e0b42a-b5ea-4e48-9fb4-0ab3f04d7064">Apple Weather hero</a> — number scale + hierarchy to beat</li>
+        <li><a href="https://mobbin.com/screens/ba624ffb-e334-442b-adde-ae4d83b1e3b1">Acorns breakdown</a> — hero total → itemized proof</li>
+        <li><a href="https://mobbin.com/screens/6cd1ca53-4492-4e45-881b-46eee7dd35a1">YNAB spending rows</a> — signed ledger rows</li>
+        <li><a href="https://mobbin.com/screens/68128fc2-6cdf-42d7-9d1d-20a3e8402142">CARROT observations</a> — metric density ceiling + labeled-card grid</li>
+        <li><a href="https://mobbin.com/screens/1c6acbe7-6b08-4c7c-ab73-4f6f1bf8a76e">Weather Channel today</a> — hourly strip (v1 timeline ref)</li>
+      </ul>
+    </section>
+  </div>
+</div>

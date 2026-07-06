@@ -1,0 +1,30 @@
+# DECISIONS.md — append-only
+
+## 2026-07-06 — Thermal model: Steadman AT + bounded deltas
+**Choice:** Steadman Apparent Temperature (dew-point vapor-pressure form) as base; toggles apply bounded additive deltas.
+**Alternatives:** UTCI (accurate, but 6th-order polynomial, needs mean radiant temp we don't have); invent physiology from scratch (research project, PDF v1.0's implicit path).
+**Why:** Deterministic, 4 inputs we have, computable in one line, defensible baseline. Deltas keep the PRD's "transparent breakdown" feature intact.
+**Reversible?** Yes — formula isolated in one module; swap base model later without UI change.
+
+## 2026-07-06 — Platform: client-only web app
+**Choice:** Web (React + Vite + TS), no backend, localStorage for toggles.
+**Alternatives:** iOS native (App Store friction, one platform); Tauri (desktop wrong for street use).
+**Why:** Open-Meteo needs no API key → pure client works. Phone browser = street use. Smallest shippable.
+**Reversible?** Yes — formula/data layer is framework-agnostic TS.
+
+## 2026-07-06 — Data provider: Open-Meteo
+**Choice:** Open-Meteo, sole provider for v0.
+**Alternatives:** NOAA (US-only — user is in Valencia); Copernicus (bulk/scientific access, not a simple current-conditions API).
+**Why:** Free, no key, one call returns temp/dew point/wind/UV, has geocoding API, EU coverage.
+**Reversible?** Yes — Zod-validated adapter boundary.
+
+## 2026-07-06 — MVP line: Epic 1 + Epic 2 only
+**Choice:** v0 = hero dashboard + microclimate toggles. Epic 3 (bio-calibration) and all §3 secondary screens parked.
+**Alternatives:** PDF v1.0 scope (contradictory — heatmap was both MVP and post-MVP).
+**Why:** Bio-calibration adds a privacy/GDPR surface and an unvalidated physiological model for marginal v0 value. One feature end-to-end first.
+**Reversible?** Yes — everything parked, nothing deleted.
+
+## 2026-07-06 — Name: "RealTemp" codename, "RealFeel" dropped
+**Choice:** Working codename RealTemp; real name decided pre-launch.
+**Why:** RealFeel® is an AccuWeather trademark.
+**Reversible?** Yes.

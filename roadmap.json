@@ -1,0 +1,393 @@
+{
+  "$schema": "./tools/rockmap/roadmap.schema.json",
+  "title": "RealTemp Roadmap",
+  "subtitle": "Street-true perceived temperature · client-only web · Open-Meteo · PRD v2.0 2026-07-06",
+  "loop": "Street-true temp → visible math → trust → daily habit → hyperlocal premium",
+  "columns": [
+    {
+      "id": "now",
+      "label": "Now — v0",
+      "color": "#e5484d"
+    },
+    {
+      "id": "next",
+      "label": "Next — v1",
+      "color": "#f5a524"
+    },
+    {
+      "id": "later",
+      "label": "Later — v2+",
+      "color": "#8e8ea0"
+    }
+  ],
+  "tiers": [
+    {
+      "id": "rock",
+      "label": "Rocks",
+      "color": "#e5484d"
+    },
+    {
+      "id": "pebble",
+      "label": "Pebbles",
+      "color": "#f5a524"
+    },
+    {
+      "id": "sand",
+      "label": "Sand",
+      "color": "#8e8ea0"
+    }
+  ],
+  "tracks": [
+    {
+      "id": "core",
+      "label": "Formula",
+      "color": "#e5484d"
+    },
+    {
+      "id": "data",
+      "label": "Data",
+      "color": "#3e9b4f"
+    },
+    {
+      "id": "ui",
+      "label": "UI",
+      "color": "#6e56cf"
+    },
+    {
+      "id": "ops",
+      "label": "Ops/Ship",
+      "color": "#0091ff"
+    },
+    {
+      "id": "ai",
+      "label": "AI",
+      "color": "#d6409f"
+    },
+    {
+      "id": "monetize",
+      "label": "Monetize",
+      "color": "#ad7f58"
+    }
+  ],
+  "launches": [
+    {
+      "id": "v0",
+      "label": "v0 — one user"
+    },
+    {
+      "id": "v1",
+      "label": "v1 — daily use"
+    },
+    {
+      "id": "v2",
+      "label": "v2 — public + paid"
+    }
+  ],
+  "cards": [
+    {
+      "id": "P4",
+      "title": "Deploy + phone verification",
+      "column": "now",
+      "tier": "pebble",
+      "track": "ops",
+      "size": "S",
+      "launch": "v0",
+      "summary": "Static deploy (Cloudflare Pages or Vercel); walk outside in Valencia and sanity-check True Feel.",
+      "done": "All PRD v0 checkboxes checked from a phone browser."
+    },
+    {
+      "id": "N1",
+      "title": "Hourly Safe Window timeline",
+      "column": "next",
+      "tier": "rock",
+      "track": "ui",
+      "size": "M",
+      "launch": "v1",
+      "summary": "24h graph of True Feel vs base air temp with comfort windows highlighted; same formula over hourly forecast. Promoted from PARKED.",
+      "done": "Toggles apply across all 24 hours; windows visibly bounded."
+    },
+    {
+      "id": "N2",
+      "title": "Coefficient tuning from lived use",
+      "column": "next",
+      "tier": "pebble",
+      "track": "core",
+      "size": "S",
+      "launch": "v1",
+      "summary": "Adjust constants.ts after 2 weeks of Valencia street comparison; log deltas in DECISIONS.md."
+    },
+    {
+      "id": "N3",
+      "title": "Cold-weather term (wind chill)",
+      "column": "next",
+      "tier": "pebble",
+      "track": "core",
+      "size": "S",
+      "launch": "v1",
+      "summary": "JAG/TI wind chill below 10°C; blend zone 10–15°C so the formula is continuous."
+    },
+    {
+      "id": "N4",
+      "title": "Refresh cadence + caching",
+      "column": "next",
+      "tier": "sand",
+      "track": "data",
+      "size": "S",
+      "launch": "v1",
+      "summary": "Refetch on focus, 10-min TTL, stale badge past TTL. Closes audit-2 gap (cadence unspecified)."
+    },
+    {
+      "id": "N5",
+      "title": "°F toggle",
+      "column": "next",
+      "tier": "sand",
+      "track": "ui",
+      "size": "S",
+      "launch": "v1"
+    },
+    {
+      "id": "N6",
+      "title": "Error tracking + minimal analytics",
+      "column": "next",
+      "tier": "sand",
+      "track": "ops",
+      "size": "S",
+      "launch": "v1",
+      "summary": "Sentry (or equivalent) + privacy-safe usage ping. Closes audit-2 gap (no observability). Deferred per no-platform-before-users rule."
+    },
+    {
+      "id": "N7",
+      "title": "Real name + domain",
+      "column": "next",
+      "tier": "pebble",
+      "track": "ops",
+      "size": "S",
+      "launch": "v1",
+      "gated": true,
+      "summary": "RealFeel® is AccuWeather's mark; RealTemp is a codename. Trademark check before public launch.",
+      "closes": "closes P3-2 (trademark collision)"
+    },
+    {
+      "id": "L1",
+      "title": "Crowdsourced micro-reports (hotter/cooler/spot-on)",
+      "column": "later",
+      "tier": "rock",
+      "track": "data",
+      "size": "L",
+      "launch": "v2",
+      "gated": true,
+      "summary": "First backend: report storage, anti-spam, and a defined coefficient-correction loop. This is how the formula earns accuracy claims.",
+      "done": "Reports adjust local bias term; validation dashboard shows drift."
+    },
+    {
+      "id": "L2",
+      "title": "Bio-calibration (height/weight/metabolic) + Clo profiles",
+      "column": "later",
+      "tier": "rock",
+      "track": "core",
+      "size": "L",
+      "launch": "v2",
+      "gated": true,
+      "summary": "Needs a validated physiological model (ISO 7730 / PMV or empirical) + GDPR posture for health-adjacent data. Premium candidate.",
+      "closes": "closes PARKED bio-calibration + Clo"
+    },
+    {
+      "id": "L3",
+      "title": "Acclimatization Matrix + Weather Shock",
+      "column": "later",
+      "tier": "pebble",
+      "track": "core",
+      "size": "M",
+      "launch": "v2",
+      "summary": "Rolling 14-day local baseline shifts perceived severity; spike delta flags Weather Shock. Local-only history keeps it GDPR-free."
+    },
+    {
+      "id": "L4",
+      "title": "Hyperlocal thermal heatmap (CV shadow-casting)",
+      "column": "later",
+      "tier": "rock",
+      "track": "ai",
+      "size": "L",
+      "launch": "v2",
+      "gated": true,
+      "summary": "3D building/canopy data → street-level shade map. Own data-sourcing project; flagship premium feature.",
+      "closes": "closes PDF v1.0 §3.2 + Tier-2 CV"
+    },
+    {
+      "id": "L5",
+      "title": "LLM weather copy",
+      "column": "later",
+      "tier": "pebble",
+      "track": "ai",
+      "size": "S",
+      "launch": "v2",
+      "summary": "Haiku-class model turns the array into one stylized line. Est. cost ≈ $0.0002/req → ~$0.006/user/mo at 30 opens; cache per location-hour to cut 90%."
+    },
+    {
+      "id": "L6",
+      "title": "Paywall + pricing (freemium)",
+      "column": "later",
+      "tier": "rock",
+      "track": "monetize",
+      "size": "L",
+      "launch": "v2",
+      "gated": true,
+      "summary": "Free: current conditions + toggles. Premium (~€2–3/mo, Stripe): timeline, heatmap, bio-cal, notifications, multi-location. Gated on real users existing.",
+      "done": "Checkout → entitlement → gated features unlock; cancel flow works."
+    },
+    {
+      "id": "L7",
+      "title": "Open-Meteo commercial license",
+      "column": "later",
+      "tier": "pebble",
+      "track": "monetize",
+      "size": "S",
+      "launch": "v2",
+      "gated": true,
+      "summary": "Free tier is non-commercial (~10k calls/day). First paying customer triggers the ~€29/mo API plan. Cost model: ≤2k users ≈ €0.015/user/mo data cost.",
+      "closes": "closes audit-2 cost gap"
+    },
+    {
+      "id": "L8",
+      "title": "Heat-warning notifications",
+      "column": "later",
+      "tier": "pebble",
+      "track": "ui",
+      "size": "M",
+      "launch": "v2",
+      "summary": "Push when tomorrow's True Feel crosses a personal threshold. Needs PWA push or native wrapper; premium candidate."
+    }
+  ],
+  "shipped": [
+    {
+      "id": "R1",
+      "title": "Formula module — computeTrueFeel()",
+      "column": "now",
+      "tier": "rock",
+      "track": "core",
+      "size": "M",
+      "launch": "v0",
+      "blocker": true,
+      "summary": "Steadman AT (dew-point vapor pressure) + zenith-weighted solar premium + env/activity deltas + sweat efficiency. Pure fn, all coefficients in constants.ts.",
+      "done": "Unit tests pass against hand-computed fixtures incl. night (solar=0), high dew point, windy cases.",
+      "closes": "closes P0-1, P0-2 (unimplementable formula, no reference model)",
+      "shipped": "2026-07-06"
+    },
+    {
+      "id": "R2",
+      "title": "Open-Meteo adapter (Zod boundary)",
+      "column": "now",
+      "tier": "rock",
+      "track": "data",
+      "size": "M",
+      "launch": "v0",
+      "blocker": true,
+      "summary": "One call: temperature_2m, dew_point_2m, wind_speed_10m (request m/s, scale ×0.6 street), uv_index. Errors as values.",
+      "done": "Valid payload parses; missing field degrades that premium, never NaN; fetch failure surfaces retry state.",
+      "closes": "closes P0-6 (provider), P1-8/9 (edge cases)",
+      "shipped": "2026-07-06"
+    },
+    {
+      "id": "R3",
+      "title": "Location: geolocation + city search",
+      "column": "now",
+      "tier": "rock",
+      "track": "data",
+      "size": "S",
+      "launch": "v0",
+      "blocker": true,
+      "summary": "Browser geolocation with Open-Meteo geocoding search fallback; last location persisted locally.",
+      "done": "Denied-permission path lands on search; picked city fetches correctly.",
+      "closes": "closes P1-7 (location unspecified)",
+      "shipped": "2026-07-06"
+    },
+    {
+      "id": "R4",
+      "title": "Hero dashboard + transparent math breakdown",
+      "column": "now",
+      "tier": "rock",
+      "track": "ui",
+      "size": "L",
+      "launch": "v0",
+      "blocker": true,
+      "summary": "True Feel dominant; each premium a signed line (base + sun + humidity − wind + urban = X°). The product's whole differentiator.",
+      "done": "Breakdown always sums exactly to displayed True Feel; degraded fields hidden with badge.",
+      "closes": "closes Epic 1",
+      "shipped": "2026-07-06"
+    },
+    {
+      "id": "R5",
+      "title": "Microclimate toggles (Exposure/Environment/Activity)",
+      "column": "now",
+      "tier": "rock",
+      "track": "ui",
+      "size": "M",
+      "launch": "v0",
+      "blocker": true,
+      "summary": "Three segmented controls, instant recalc, persisted to localStorage.",
+      "done": "Every combination recalculates <16ms and updates the breakdown lines.",
+      "closes": "closes Epic 2",
+      "shipped": "2026-07-06"
+    },
+    {
+      "id": "P1",
+      "title": "Sweat Efficiency widget",
+      "column": "now",
+      "tier": "pebble",
+      "track": "ui",
+      "size": "S",
+      "launch": "v0",
+      "summary": "0–100% evaporative-cooling gauge from dew point (100% ≤10°C → 0% ≥26°C).",
+      "done": "Renders with label + value; color not the only encoding (a11y).",
+      "shipped": "2026-07-06"
+    },
+    {
+      "id": "P2",
+      "title": "Scaffold: Vite + React + TS strict + Vitest + ESLint",
+      "column": "now",
+      "tier": "pebble",
+      "track": "ops",
+      "size": "S",
+      "launch": "v0",
+      "blocker": true,
+      "summary": "git init, first commit with planning docs + rockmap.",
+      "done": "npm run typecheck/test/build/lint all runnable.",
+      "shipped": "2026-07-06"
+    },
+    {
+      "id": "P3",
+      "title": "Degraded & error states",
+      "column": "now",
+      "tier": "pebble",
+      "track": "core",
+      "size": "S",
+      "launch": "v0",
+      "summary": "Night zenith → solar 0; stale data badge; offline/fetch-fail with retry; never NaN on screen.",
+      "done": "Each state reproducible via test and visible in UI.",
+      "shipped": "2026-07-06"
+    },
+    {
+      "id": "S1",
+      "title": "Visual pass from Mobbin moodboard",
+      "column": "now",
+      "tier": "sand",
+      "track": "ui",
+      "size": "S",
+      "launch": "v0",
+      "summary": "Type scale, palette, spacing tokens per moodboard; dense one-screen layout, no scroll.",
+      "done": "Matches moodboard direction; WCAG AA contrast.",
+      "shipped": "2026-07-06"
+    },
+    {
+      "id": "S2",
+      "title": "PWA manifest + icon",
+      "column": "now",
+      "tier": "sand",
+      "track": "ops",
+      "size": "S",
+      "launch": "v0",
+      "summary": "Installable to home screen for street use; no offline cache yet.",
+      "shipped": "2026-07-06"
+    }
+  ]
+}

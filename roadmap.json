@@ -86,13 +86,13 @@
   "cards": [
     {
       "id": "P4",
-      "title": "Deploy + phone verification",
+      "title": "Run on Jason's iPhone + street check",
       "column": "now",
       "tier": "pebble",
       "track": "ops",
       "size": "S",
       "launch": "v0",
-      "summary": "Static deploy (Cloudflare Pages or Vercel); walk outside in Valencia and sanity-check True Feel.",
+      "summary": "Install via Xcode (npx cap open ios) or TestFlight; tap through search → dashboard in the shell; walk outside in Valencia and sanity-check True Feel.",
       "done": "All PRD v0 checkboxes checked from a phone browser."
     },
     {
@@ -387,6 +387,16 @@
       "size": "S",
       "launch": "v0",
       "summary": "Installable to home screen for street use; no offline cache yet.",
+      "shipped": "2026-07-06"
+    },
+    {
+      "id": "C1",
+      "title": "iOS shell (Capacitor)",
+      "tier": "rock",
+      "track": "ops",
+      "size": "M",
+      "launch": "v0",
+      "summary": "Capacitor 8 SPM shell around the React app. Simulator build green, app boots and renders on iPhone 16 Pro sim. Location permission string set.",
       "shipped": "2026-07-06"
     }
   ]

@@ -5,3 +5,8 @@ dist/
 *.local
 # rockmap output is generated from roadmap.json — except when publishing to Pages
 roadmap.html
+
+# Capacitor generated (synced from dist/ + config)
+ios/App/App/public/
+ios/App/App/capacitor.config.json
+ios/App/DerivedData/

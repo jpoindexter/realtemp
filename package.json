@@ -14,11 +14,14 @@
     "roadmap": "node tools/rockmap/build-roadmap.mjs roadmap.json roadmap.html"
   },
   "dependencies": {
+    "@capacitor/core": "^8.4.1",
+    "@capacitor/ios": "^8.4.1",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@capacitor/cli": "^8.4.1",
     "@eslint/js": "^10.0.1",
     "@testing-library/react": "^16.3.2",
     "@types/react": "^19.2.17",

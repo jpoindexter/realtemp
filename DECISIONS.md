@@ -28,3 +28,9 @@
 **Choice:** Working codename RealTemp; real name decided pre-launch.
 **Why:** RealFeel® is an AccuWeather trademark.
 **Reversible?** Yes.
+
+## 2026-07-06 — Platform amended: Capacitor-wrapped iOS app
+**Choice:** Wrap the existing React app in a Capacitor iOS shell; web build remains the dev target.
+**Alternatives:** PWA-only (no App Store, no push on iOS); native SwiftUI rewrite (throws away the shipped UI layer, ~1 week).
+**Why:** Jason redirected v0 to "phone app" same-day. Capacitor keeps 100% of the green code, gives a home-screen app + App Store path, and leaves push notifications (v2 card L8) reachable.
+**Reversible?** Yes — the web app stays intact; the iOS shell is additive.

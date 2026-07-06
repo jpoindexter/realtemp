@@ -4,7 +4,25 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project State
 
-**Pre-code, spec resolved.** Source of truth is `PRD.md` (v2.0) + `DECISIONS.md` + `ROADMAP.md` + `PARKED.md` — read those at session start. The original `PRD - RealFeel UI Context Aware Weather App.pdf` (v1.0) is superseded; treat it as background only. Stack decided but not scaffolded: client-only web app, React + Vite + TS strict + Vitest, Open-Meteo, no backend. No git repo yet. When scaffolding starts, `git init` and replace this section with real commands.
+v0 built. Source of truth: `PRD.md` (v2.0) + `DECISIONS.md` + `ROADMAP.md` + `PARKED.md` + `roadmap.json` (rockmap board) — read at session start. The PRD PDF (v1.0) is superseded background.
+
+Stack: React 19 + Vite + TS strict + Vitest + Zod, client-only (no backend), Open-Meteo, wrapped in a Capacitor 8 iOS shell (SPM, no CocoaPods).
+
+## Commands
+
+- `npm run dev` / `npm run build` / `npm run preview`
+- `npm run test` — Vitest (single file: `npx vitest run src/features/formula`)
+- `npm run typecheck` · `npm run lint` — all four must be green before "done"
+- `npm run roadmap` — regenerate `roadmap.html` from `roadmap.json` (rockmap)
+- iOS: `npm run build && npx cap sync ios`, then `npx cap open ios` or
+  `xcodebuild -project ios/App/App.xcodeproj -scheme App -destination 'platform=iOS Simulator,id=<UDID>' build CODE_SIGNING_ALLOWED=NO` (name-based destinations flake; use UDID from `xcrun simctl list devices available`)
+
+## Architecture
+
+- `src/features/formula/` — pure True Feel math; every coefficient in `constants.ts`; UI never computes.
+- `src/features/weather/` + `src/features/location/` — Zod-fenced adapters returning `Result<T,E>` (`src/lib/result.ts`); errors are values, nothing throws across a boundary.
+- `src/features/dashboard/` — one-screen UI; `use-weather` derives loading from a fetch key (react-hooks v7 forbids sync setState-in-effect).
+- Wind must be requested in m/s (`wind_speed_unit=ms`) — Open-Meteo's km/h default silently corrupts the formula; a test pins this.
 
 ## What This Product Is
 

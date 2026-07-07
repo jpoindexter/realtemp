@@ -46,6 +46,21 @@ describe('Dashboard', () => {
     expect(screen.queryByText(/sun premium/)).toBeNull()
   })
 
+  it('marks the reading stale past TTL and refetches on visibility', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] })
+    const fetchMock = vi.fn(async () => ({ ok: true, status: 200, json: async () => payload }))
+    vi.stubGlobal('fetch', fetchMock)
+    render(<Dashboard location={valencia} onChangeLocation={() => {}} />)
+
+    await waitFor(() => expect(screen.getByText(/live/)).toBeDefined())
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+
+    vi.setSystemTime(Date.now() + 11 * 60_000) // past the 10-min TTL
+    document.dispatchEvent(new Event('visibilitychange'))
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2))
+    vi.useRealTimers()
+  })
+
   it('surfaces fetch failure with a retry action', async () => {
     vi.stubGlobal('fetch', vi.fn(async () => ({ ok: false, status: 503, json: async () => ({}) })))
     render(<Dashboard location={valencia} onChangeLocation={() => {}} />)

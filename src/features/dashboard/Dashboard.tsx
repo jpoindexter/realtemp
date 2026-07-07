@@ -46,7 +46,9 @@ export function Dashboard({ location, onChangeLocation }: DashboardProps) {
           {location.label}
         </button>
         <span>
-          {weather.status === 'ready' ? `${weather.snapshot.localTimeIso.slice(11, 16)} · live` : '· · ·'}
+          {weather.status === 'ready'
+            ? `${weather.snapshot.localTimeIso.slice(11, 16)} · ${weather.isStale ? 'stale' : 'live'}`
+            : '· · ·'}
         </span>
       </div>
 

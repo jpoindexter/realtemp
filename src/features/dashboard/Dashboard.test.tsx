@@ -61,11 +61,17 @@ describe('Dashboard', () => {
     vi.useRealTimers()
   })
 
-  it('surfaces fetch failure with a retry action', async () => {
-    vi.stubGlobal('fetch', vi.fn(async () => ({ ok: false, status: 503, json: async () => ({}) })))
-    render(<Dashboard location={valencia} unit="c" onSetUnit={() => {}} onChangeLocation={() => {}} onOpenSettings={() => {}} />)
+  it(
+    'surfaces fetch failure with a retry action',
+    async () => {
+      // Real timers deliberately: the adapter's retry backoff (~1.2s) fights
+      // fake-timer interplay with the dashboard's own stale-check interval.
+      vi.stubGlobal('fetch', vi.fn(async () => ({ ok: false, status: 503, json: async () => ({}) })))
+      render(<Dashboard location={valencia} unit="c" onSetUnit={() => {}} onChangeLocation={() => {}} onOpenSettings={() => {}} />)
 
-    await waitFor(() => expect(screen.getByRole('button', { name: /retry/i })).toBeDefined())
-    expect(screen.getByText(/503/)).toBeDefined()
-  })
+      await waitFor(() => expect(screen.getByRole('button', { name: /retry/i })).toBeDefined(), { timeout: 4000 })
+      expect(screen.getByText(/momentarily unreachable/i)).toBeDefined()
+    },
+    6000,
+  )
 })

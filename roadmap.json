@@ -501,6 +501,17 @@
       "summary": "Figure/ground SVG: Overpass footprints + levels → live sun-cast shadows (azimuth+zenith). Verified against real Valencia center. Beta-labeled.",
       "closes": "closes PDF v1.0 §3.2 + Tier-2 CV",
       "shipped": "2026-07-07"
+    },
+    {
+      "id": "BUG1",
+      "title": "Fix: Open-Meteo transient failure masked as CORS block",
+      "column": "now",
+      "tier": "rock",
+      "track": "data",
+      "size": "S",
+      "launch": "v0",
+      "shipped": "2026-07-07",
+      "summary": "Root cause: upstream 5xx returns no CORS headers, Chrome reports generic \"blocked by CORS policy\" instead of the real transient failure — reproduced live, curl confirmed transient (200 OK moments later). Fix: 3-attempt retry with 300/900ms backoff on the primary weather fetch before surfacing an error screen. New test reproduces the exact bug (fail twice, succeed third) and asserts recovery."
     }
   ]
 }

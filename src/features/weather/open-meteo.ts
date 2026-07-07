@@ -96,6 +96,31 @@ const FORECAST_URL = 'https://api.open-meteo.com/v1/forecast'
 const CURRENT_FIELDS = 'temperature_2m,dew_point_2m,wind_speed_10m,uv_index'
 const HOURLY_FIELDS = CURRENT_FIELDS
 const FORECAST_HOURS = 24
+const FETCH_ATTEMPTS = 3
+const RETRY_DELAYS_MS = [300, 900]
+
+const wait = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms))
+
+/**
+ * Open-Meteo occasionally 5xx's for a moment; an error page without CORS
+ * headers reads in the browser as a generic "blocked by CORS policy" rather
+ * than the real transient failure. A couple of quick retries absorb that
+ * before the user ever sees an error screen.
+ */
+async function fetchWithRetry(url: string): Promise<Response> {
+  let lastError: unknown
+  for (let attempt = 0; attempt < FETCH_ATTEMPTS; attempt++) {
+    try {
+      const response = await fetch(url)
+      if (response.ok) return response
+      lastError = new Error(`HTTP ${response.status}`)
+    } catch (e) {
+      lastError = e
+    }
+    if (attempt < RETRY_DELAYS_MS.length) await wait(RETRY_DELAYS_MS[attempt]!)
+  }
+  throw lastError
+}
 
 export async function fetchCurrentWeather(
   latitude: number,
@@ -109,14 +134,11 @@ export async function fetchCurrentWeather(
   let payload: unknown
   let baseline14C: number | null
   try {
-    const [response, baseline] = await Promise.all([fetch(url), fetchBaseline14(latitude, longitude)])
-    if (!response.ok) {
-      return err({ kind: 'network', message: `Open-Meteo answered ${response.status}. Try again.` })
-    }
+    const [response, baseline] = await Promise.all([fetchWithRetry(url), fetchBaseline14(latitude, longitude)])
     payload = await response.json()
     baseline14C = baseline
   } catch {
-    return err({ kind: 'network', message: 'No connection to Open-Meteo. Check network and retry.' })
+    return err({ kind: 'network', message: 'Weather data is momentarily unreachable. Tap retry — it usually clears in seconds.' })
   }
 
   const parsed = currentResponseSchema.safeParse(payload)

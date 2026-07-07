@@ -100,13 +100,40 @@ describe('fetchCurrentWeather', () => {
     expect(r.value.baseline14C).toBeNull()
   })
 
-  it('returns a network error value on HTTP failure', async () => {
-    mockFetchOnce({}, false, 503)
-    const r = await fetchCurrentWeather(39.47, -0.376)
+  it('returns a network error value once retries are exhausted', async () => {
+    vi.useFakeTimers()
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => ({ ok: false, status: 503, json: async () => ({}) })),
+    )
+    const pending = fetchCurrentWeather(39.47, -0.376)
+    await vi.runAllTimersAsync()
+    const r = await pending
     expect(r.ok).toBe(false)
     if (r.ok) return
     expect(r.error.kind).toBe('network')
-    expect(r.error.message).toContain('503')
+    // Main URL retried 3x; the baseline call (separate, non-retrying) adds a 4th.
+    expect(vi.mocked(fetch).mock.calls.length).toBe(4)
+    vi.useRealTimers()
+  })
+
+  it('recovers transparently when Open-Meteo blips then succeeds — the actual production bug', async () => {
+    vi.useFakeTimers()
+    let calls = 0
+    vi.stubGlobal('fetch', vi.fn(async (url: string) => {
+      if (url.includes('daily=')) return { ok: true, status: 200, json: async () => ({ daily: { time: [], temperature_2m_mean: [] } }) }
+      calls++
+      if (calls < 3) return { ok: false, status: 502, json: async () => ({}) }
+      return { ok: true, status: 200, json: async () => validPayload }
+    }))
+    const pending = fetchCurrentWeather(39.47, -0.376)
+    await vi.runAllTimersAsync()
+    const r = await pending
+    expect(r.ok).toBe(true)
+    if (!r.ok) return
+    expect(r.value.airTempC).toBe(30.4)
+    expect(calls).toBe(3)
+    vi.useRealTimers()
   })
 
   it('returns a parse error value on shape drift', async () => {

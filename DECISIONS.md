@@ -51,3 +51,9 @@
 **Alternatives:** ISO 7730 PMV (needs clo/met precision consumers can't supply); skipping the card (was v2-gated on "validated model" — Jason overrode the gate).
 **Why:** Transparent, bounded, opt-in; consistent with every other coefficient being a tunable knob, not a physics claim. No backend → no GDPR surface.
 **Reversible?** Yes.
+
+## 2026-07-07 — Shade map v0: OSM footprints over LiDAR pipeline
+**Choice:** Overpass API building footprints + building:levels (default 4) → sun-cast shadow polygons, figure/ground SVG, no tiles, no keys, no deps. Fetched on panel open only.
+**Alternatives:** PNOA-LiDAR precomputed tiles (docs/heatmap-prd.md option 1 — stays as the precision upgrade, card L4b); commercial shade API.
+**Why:** Shippable today, zero cost, works anywhere OSM has buildings, matches the asphalt figure/ground aesthetic. Heights are estimates — labeled beta.
+**Reversible?** Yes — swap the data source, keep the geometry module.

@@ -129,16 +129,15 @@
       "closes": "closes P3-2 (trademark collision)"
     },
     {
-      "id": "L4",
-      "title": "Hyperlocal thermal heatmap (CV shadow-casting)",
+      "id": "L4b",
+      "title": "Shade precision: PNOA-LiDAR tiles",
       "column": "later",
-      "tier": "rock",
+      "tier": "pebble",
       "track": "ai",
       "size": "L",
       "launch": "v2",
       "gated": true,
-      "summary": "Scoping DONE → docs/heatmap-prd.md (PNOA-LiDAR free for Valencia; 3 approaches costed; recommended: precomputed shade tiles). GATED: Jason go/no-go + option pick.",
-      "closes": "closes PDF v1.0 §3.2 + Tier-2 CV"
+      "summary": "GATED: Jason go/no-go on docs/heatmap-prd.md option 1 (free IGN LiDAR → precomputed tiles). Replaces estimated heights with measured ones."
     },
     {
       "id": "L6",
@@ -478,6 +477,19 @@
       "summary": "Payload-free web push: VAPID ES256 (crypto round-trip tested), daily cron heat check, SW + threshold panel. Deploy = runbook §2.",
       "shipped": "2026-07-07",
       "gated": false
+    },
+    {
+      "id": "L4a",
+      "title": "Shade map v0 — OSM shadow casting",
+      "column": "later",
+      "tier": "rock",
+      "track": "ai",
+      "size": "L",
+      "launch": "v2",
+      "gated": false,
+      "summary": "Figure/ground SVG: Overpass footprints + levels → live sun-cast shadows (azimuth+zenith). Verified against real Valencia center. Beta-labeled.",
+      "closes": "closes PDF v1.0 §3.2 + Tier-2 CV",
+      "shipped": "2026-07-07"
     }
   ]
 }

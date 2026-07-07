@@ -523,6 +523,17 @@
       "launch": "v0",
       "shipped": "2026-07-07",
       "summary": "Ran all 19 dec-* skills against the shipped app. Fixed: --solar token measured 2.86:1 on paper (WCAG AA needs 4.5:1) — darkened to 5.19:1, verified by computed luminance not eyeballing. Danger warnings now role=alert (assertive) vs caution role=status (polite) — screen-reader users get the same urgency split sighted users get from color. Settings gear + new About/Help icon both brought to real 44px hit areas per the app's own --tap token. About split out of Settings (help vs configuration are different jobs, Nielsen #10). Full report in session log."
+    },
+    {
+      "id": "GRID1",
+      "title": "Grid & spacing audit: off-token drift, dead inline styles, inconsistent panel rhythm",
+      "column": "now",
+      "tier": "pebble",
+      "track": "ui",
+      "size": "S",
+      "launch": "v0",
+      "shipped": "2026-07-07",
+      "summary": "Ran grid-and-spacing + layout-and-composition skills. Found: 2 of 3 collapsible panels (Push, Shade) silently overrode the shared .body-panel CSS with a duplicate inline paddingTop, rendering inconsistent internal rhythm vs BodyPanel — removed. One fully dead inline style (About.tsx) overriding CSS that was never set. 9 off-grid magic-number spacing values (10px/6px/2px/14px, none on the 4pt scale) snapped to existing tokens. 2 stray 13px type sizes consolidated into --text-seg. Focus-ring offsets and hairline borders deliberately left as literals — sanctioned exceptions per the skill, not drift. Verified visually: all three panels now share identical rhythm."
     }
   ]
 }

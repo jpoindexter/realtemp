@@ -40,7 +40,7 @@ export function ShadeMap({ location }: { location: StoredLocation }) {
       }}
     >
       <summary>Shade nearby · beta</summary>
-      <div className="stack" style={{ paddingTop: 12 }}>
+      <div className="stack">
         {isNight && <p className="note">Night — everything is shade. Open again in daylight.</p>}
         {!isNight && state.status === 'busy' && <p className="note">Reading the buildings…</p>}
         {!isNight && state.status === 'error' && (

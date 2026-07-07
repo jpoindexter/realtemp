@@ -106,7 +106,7 @@ h1.title { font-size: var(--text-title); font-weight: 800; letter-spacing: -0.02
   text-transform: uppercase;
   letter-spacing: 0.08em;
   border: var(--border-w) solid var(--ink);
-  padding: 2px var(--space-2);
+  padding: var(--space-1) var(--space-2);
   margin-left: var(--space-2);
   vertical-align: middle;
 }
@@ -116,7 +116,7 @@ h1.title { font-size: var(--text-title); font-weight: 800; letter-spacing: -0.02
 
 /* auto warnings */
 .warnings { display: flex; flex-direction: column; gap: var(--space-2); }
-.warning { margin: 0; padding: 10px var(--space-3); font-size: var(--text-note); border: var(--border-w) solid; }
+.warning { margin: 0; padding: var(--space-3); font-size: var(--text-note); border: var(--border-w) solid; }
 .warning .warning-level {
   font-family: var(--mono);
   font-size: var(--text-label);
@@ -146,7 +146,7 @@ h1.title { font-size: var(--text-title); font-weight: 800; letter-spacing: -0.02
 .val.env { color: var(--uhi); }
 
 /* segmented controls */
-.segs { display: flex; flex-direction: column; gap: 10px; }
+.segs { display: flex; flex-direction: column; gap: var(--space-3); }
 fieldset.seg { border: none; margin: 0; padding: 0; }
 fieldset.seg legend {
   font-family: var(--mono);
@@ -178,7 +178,7 @@ fieldset.seg legend {
 .seg-options label:has(input:focus-visible) { outline: var(--focus-ring); outline-offset: 2px; z-index: 1; }
 
 /* sweat gauge */
-.gauge { display: flex; flex-direction: column; gap: 6px; }
+.gauge { display: flex; flex-direction: column; gap: var(--space-2); }
 .gauge .lbl, .timeline .lbl, .reports .lbl {
   display: flex;
   justify-content: space-between;
@@ -189,11 +189,11 @@ fieldset.seg legend {
   text-transform: uppercase;
   color: var(--ink-2);
 }
-.gauge .bar { height: 14px; border: var(--border-w) solid var(--ink); background: var(--paper); }
+.gauge .bar { height: 16px; border: var(--border-w) solid var(--ink); background: var(--paper); }
 .gauge .fill { height: 100%; background: var(--shade); }
 
 /* safe-window timeline */
-.timeline { display: flex; flex-direction: column; gap: 6px; }
+.timeline { display: flex; flex-direction: column; gap: var(--space-2); }
 .timeline svg { width: 100%; height: auto; border: var(--border-w) solid var(--ink); background: var(--paper); }
 .timeline .band { fill: var(--shade); opacity: 0.14; }
 .timeline .axis { font: var(--text-axis) var(--mono); fill: var(--ink-2); }
@@ -217,16 +217,16 @@ fieldset.seg legend {
 }
 .body-panel summary:focus-visible { outline: var(--focus-ring); outline-offset: -3px; }
 .body-panel > .stack { padding: 0 var(--space-3) var(--space-3); }
-.body-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.body-fields { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
 .field { display: flex; flex-direction: column; gap: var(--space-1); }
-.field label { font-size: 13px; color: var(--ink-2); }
+.field label { font-size: var(--text-seg); color: var(--ink-2); }
 
 /* reports */
 .reports { display: flex; flex-direction: column; gap: var(--space-2); }
 .report-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-2); }
 
 /* shade map */
-.shade-map { margin: 0; display: flex; flex-direction: column; gap: 6px; }
+.shade-map { margin: 0; display: flex; flex-direction: column; gap: var(--space-2); }
 .shade-map svg { width: 100%; height: auto; border: var(--border-w) solid var(--ink); background: var(--paper); }
 .shade-map .shadows { opacity: 0.35; }
 .shade-map .shadows path { fill: var(--shade); stroke: none; }
@@ -264,7 +264,7 @@ fieldset.seg legend {
   gap: var(--space-3);
   width: 100%;
   min-height: var(--tap);
-  padding: 10px var(--space-3);
+  padding: var(--space-3);
   font: var(--text-note) var(--sans);
   background: var(--paper);
   border: none;
@@ -272,7 +272,7 @@ fieldset.seg legend {
   text-align: left;
 }
 .place-list button:focus-visible { outline: var(--focus-ring); outline-offset: -3px; }
-.place-list .region { color: var(--ink-2); font-size: 13px; }
+.place-list .region { color: var(--ink-2); font-size: var(--text-seg); }
 
 /* settings */
 .settings-block { display: flex; flex-direction: column; gap: var(--space-2); }
@@ -285,7 +285,7 @@ fieldset.seg legend {
   letter-spacing: var(--track-label);
   color: var(--ink-2);
   border-top: var(--rule-w) solid var(--ink);
-  padding-top: 10px;
+  padding-top: var(--space-3);
 }
 .settings-row { display: flex; justify-content: space-between; align-items: center; gap: var(--space-3); }
 .how-list { margin: 0; padding-left: 1.1em; font-size: var(--text-note); }

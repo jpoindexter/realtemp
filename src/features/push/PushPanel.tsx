@@ -82,7 +82,7 @@ export function PushPanel({ apiBase, location }: PushPanelProps) {
   return (
     <details className="body-panel">
       <summary>Heat warnings · daily check at dawn</summary>
-      <div className="stack" style={{ paddingTop: 12 }}>
+      <div className="stack">
         <div className="field">
           <label htmlFor="push-threshold">Warn when the day&rsquo;s high reaches (°C air)</label>
           <input

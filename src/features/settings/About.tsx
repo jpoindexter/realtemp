@@ -11,7 +11,7 @@ export function About({ onBack }: AboutProps) {
         <span>how this works</span>
       </div>
 
-      <section className="settings-block" style={{ borderTop: 'none', paddingTop: 0 }}>
+      <section className="settings-block">
         <p className="note">
           Weather stations measure air in a shaded box. Your body isn&rsquo;t in a box. RealTemp starts from the
           station number and adds what the street adds:

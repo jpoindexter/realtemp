@@ -1,7 +1,17 @@
 /* RealTemp design tokens — single source of truth (direction: docs/moodboard.html).
-   Rule: components consume tokens; raw values live only in this file. */
+   Rule: components consume tokens; raw values live only in this file.
+
+   Units: type/space in rem (respects OS/browser text-zoom — WCAG 1.4.4).
+   Borders, rule widths, the touch-target minimum, and the app-width cap stay
+   px — physical/structural constants, not text that needs to reflow at 200%.
+
+   Color: light is default; dark overrides via prefers-color-scheme below.
+   Contrast for every pair is computed (WCAG relative-luminance formula),
+   not eyeballed — see the darkened --solar comment for why that matters. */
 :root {
-  /* color — asphalt & heat */
+  color-scheme: light dark;
+
+  /* color — asphalt & heat (light) */
   --ink: #1b1b1e;        /* text, selected states, footprints */
   --ink-2: #54544e;      /* secondary text */
   --ground: #edede8;     /* page */
@@ -11,35 +21,55 @@
   --scorch: #c93a22;     /* heat totals, danger */
   --shade: #33698c;      /* cooling deltas, focus, comfort */
   --uhi: #a1543a;        /* surroundings delta */
-  --on-strong: #ffffff;  /* text on scorch/solar fills */
+  --on-strong: #ffffff;  /* text on scorch fill (warning.danger) */
 
   /* type */
   --sans: system-ui, -apple-system, sans-serif;
   --mono: ui-monospace, 'SF Mono', Menlo, monospace;
-  --text-axis: 9px;      /* svg axis labels only */
-  --text-label: 11px;    /* mono uppercase labels */
-  --text-seg: 12px;      /* segmented options, small captions */
-  --text-note: 14px;     /* notes, errors, list body */
-  --text-copy: 15px;     /* copy line, ledger total */
-  --text-input: 16px;    /* inputs — 16px stops iOS zoom */
-  --text-title: 24px;
-  --text-hero: clamp(72px, 24vw, 96px);
+  --text-axis: 0.5625rem;   /* 9px — svg axis labels only */
+  --text-label: 0.6875rem;  /* 11px — mono uppercase labels */
+  --text-seg: 0.75rem;      /* 12px — segmented options, small captions */
+  --text-note: 0.875rem;    /* 14px — notes, errors, list body */
+  --text-copy: 0.9375rem;   /* 15px — copy line, ledger total */
+  --text-input: 1rem;       /* 16px — inputs; also the iOS zoom-on-focus floor */
+  --text-title: 1.5rem;     /* 24px */
+  --text-hero: clamp(4.5rem, 24vw, 6rem); /* 72–96px */
   --track-label: 0.1em;  /* uppercase label tracking */
   --track-tight: 0.06em; /* dense uppercase rows */
 
-  /* space — 4px base */
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-5: 20px;
+  /* space — 4px base, expressed in rem */
+  --space-1: 0.25rem;  /* 4px */
+  --space-2: 0.5rem;   /* 8px */
+  --space-3: 0.75rem;  /* 12px */
+  --space-4: 1rem;     /* 16px */
+  --space-5: 1.25rem;  /* 20px */
 
-  /* structure */
+  /* structure — physical constants, deliberately px */
   --border-w: 1.5px;     /* control borders */
   --rule-w: 2px;         /* ledger rules, section rules */
-  --tap: 44px;           /* minimum touch target */
+  --tap: 44px;           /* minimum touch target (WCAG 2.5.8 / iOS HIG) */
   --app-width: 430px;
 
   /* focus — one ring everywhere */
   --focus-ring: 3px solid var(--shade);
+}
+
+/* Dark mode: not an invert. Dimmed text (not #fff), no pure black, and every
+   pair below re-verified against the WCAG formula — danger flips polarity
+   (light scorch fill needs DARK text, not white) because a color that reads
+   as "the dark, saturated one" in light mode is the lightest thing on screen
+   once the background goes dark. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ink: #e8e3da;
+    --ink-2: #a89f8f;
+    --ground: #141311;
+    --paper: #231f19;
+    --line: #433e33;
+    --solar: #d99a4e;
+    --scorch: #e2634a;
+    --shade: #7db3d1;
+    --uhi: #c98a66;
+    --on-strong: #16151b; /* dark text — the dark-mode scorch is light, so light-on-light would fail */
+  }
 }

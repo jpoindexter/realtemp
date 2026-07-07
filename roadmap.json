@@ -545,6 +545,17 @@
       "launch": "v0",
       "shipped": "2026-07-07",
       "summary": "Ran the 9 remaining always-on design skills (design-tokens, color-and-elevation, components-and-states, interaction-and-motion, app-motion-and-animation, accessibility-and-inclusive-design, ethical-design-and-dark-patterns, iconography-and-imagery, ux-writing-and-content) — full coverage of all skills tagged always-on for design work. Fixed: zero .btn:disabled/:hover CSS existed despite 6 real disabled= usages (Search/Enable/vote buttons looked identical whether clickable or not — verified computed style). Replaced Unicode gear/info glyphs with proper 24px-grid inline SVG (currentColor, matches skill guidance against icon-font-style rendering risk). Clean audits, no findings: ethical-design-and-dark-patterns (no dark patterns present — checked consent/urgency/cancel/confirmshame), ux-writing-and-content (errors already what/why/how-fix, consistent terminology). Named, not fixed: no dark mode (deliberate — moodboard optimized for sunlight readability, real gap for night use, sized as its own feature); tokens in px not rem (ignores OS text-size zoom, real but broad mechanical risk — flagged for Jason, not auto-applied)."
+    },
+    {
+      "id": "DEC3",
+      "title": "Dark mode + rem-based type/space tokens",
+      "column": "now",
+      "tier": "pebble",
+      "track": "ui",
+      "size": "M",
+      "launch": "v0",
+      "shipped": "2026-07-07",
+      "summary": "Both flagged gaps from the design-skill audit, now fixed. rem: all type/space tokens converted (16px root baseline) — respects OS/browser text-zoom (WCAG 1.4.4); borders/rule-widths/--tap/--app-width stay px deliberately (physical constants, not text). Dark mode: automatic via prefers-color-scheme, not an invert — dimmed warm-white text, near-black-not-pure-black bg, danger polarity flips (dark text on the now-light scorch fill). All 13 color pairs computed against WCAG luminance formula, not eyeballed — every pair passes AA (worst case 4.77:1, most 6-14:1). Verified visually via injected preview + full 75-test regression, zero layout shift from the unit change."
     }
   ]
 }

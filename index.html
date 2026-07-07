@@ -8,6 +8,15 @@
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="icon" href="/icon.svg" type="image/svg+xml" />
     <title>RealTemp</title>
+    <script>
+      // Applies a saved manual light/dark override before first paint — no
+      // flash of the wrong theme. Absent = follow prefers-color-scheme (the
+      // CSS default); this only runs when the user has explicitly chosen.
+      try {
+        var t = localStorage.getItem('realtemp:theme')
+        if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t)
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>

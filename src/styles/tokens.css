@@ -58,7 +58,13 @@
    pair below re-verified against the WCAG formula — danger flips polarity
    (light scorch fill needs DARK text, not white) because a color that reads
    as "the dark, saturated one" in light mode is the lightest thing on screen
-   once the background goes dark. */
+   once the background goes dark.
+
+   Two ways in, same values either way:
+   1. OS preference (@media below) — the default, no user action needed.
+   2. An explicit [data-theme] override (header toggle) — a bare :root[data-theme]
+      attribute selector is MORE specific than a plain :root, so it wins over
+      the media-query block regardless of what the OS reports or source order. */
 @media (prefers-color-scheme: dark) {
   :root {
     --ink: #e8e3da;
@@ -70,6 +76,32 @@
     --scorch: #e2634a;
     --shade: #7db3d1;
     --uhi: #c98a66;
-    --on-strong: #16151b; /* dark text — the dark-mode scorch is light, so light-on-light would fail */
+    --on-strong: #16151b;
   }
+}
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --ink: #e8e3da;
+  --ink-2: #a89f8f;
+  --ground: #141311;
+  --paper: #231f19;
+  --line: #433e33;
+  --solar: #d99a4e;
+  --scorch: #e2634a;
+  --shade: #7db3d1;
+  --uhi: #c98a66;
+  --on-strong: #16151b;
+}
+:root[data-theme='light'] {
+  color-scheme: light;
+  --ink: #1b1b1e;
+  --ink-2: #54544e;
+  --ground: #edede8;
+  --paper: #f7f7f3;
+  --line: #d8d8d0;
+  --solar: #a3520a;
+  --scorch: #c93a22;
+  --shade: #33698c;
+  --uhi: #a1543a;
+  --on-strong: #ffffff;
 }

@@ -4,7 +4,9 @@ import { solarZenithDeg } from '@/features/formula/solar-zenith'
 import { BreakdownLedger } from './BreakdownLedger'
 import { SegmentedControl } from './SegmentedControl'
 import { SweatGauge } from './SweatGauge'
+import { displayTemp } from './format-temp'
 import { useToggles } from './use-toggles'
+import { useUnit } from './use-unit'
 import { useWeather } from './use-weather'
 
 import type { StoredLocation } from '@/features/location/geocoding'
@@ -74,6 +76,7 @@ type BodyProps = {
 }
 
 function DashboardBody({ weather, location, toggles, updateToggles }: BodyProps) {
+  const [unit, toggleUnit] = useUnit()
   const zenith = solarZenithDeg(weather.fetchedAt, location.latitude, location.longitude)
   const result = computeTrueFeel(
     {
@@ -91,16 +94,23 @@ function DashboardBody({ weather, location, toggles, updateToggles }: BodyProps)
     <>
       <section className="hero" aria-live="polite">
         <div className="big">
-          {result.trueFeelC.toFixed(1)}
-          <span className="unit">&deg;C</span>
+          {displayTemp(result.trueFeelC, unit)}
+          <button
+            type="button"
+            className="unit"
+            onClick={toggleUnit}
+            aria-label={`Shown in ${unit === 'c' ? 'Celsius' : 'Fahrenheit'} — switch to ${unit === 'c' ? 'Fahrenheit' : 'Celsius'}`}
+          >
+            &deg;{unit === 'c' ? 'C' : 'F'}
+          </button>
         </div>
         <p className="cap">
-          True Feel &middot; air says {result.baseC.toFixed(1)}&deg;
+          True Feel &middot; air says {displayTemp(result.baseC, unit)}&deg;
           {result.missing.length > 0 && <span className="badge">partial data</span>}
         </p>
       </section>
 
-      <BreakdownLedger result={result} />
+      <BreakdownLedger result={result} unit={unit} />
 
       <div className="segs">
         <SegmentedControl

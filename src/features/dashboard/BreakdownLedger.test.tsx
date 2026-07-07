@@ -24,12 +24,19 @@ const base: TrueFeel = {
 
 describe('BreakdownLedger', () => {
   it('labels the zeroed solar row as night so the exposure toggle never looks broken', () => {
-    render(<BreakdownLedger result={{ ...base, isNight: true }} />)
+    render(<BreakdownLedger result={{ ...base, isNight: true }} unit="c" />)
     expect(screen.getByText('sun premium · night')).toBeDefined()
   })
 
   it('keeps the plain label in daylight', () => {
-    render(<BreakdownLedger result={base} />)
+    render(<BreakdownLedger result={base} unit="c" />)
     expect(screen.getByText('sun premium')).toBeDefined()
+  })
+
+  it('renders Fahrenheit absolutes and scaled deltas that still sum', () => {
+    render(<BreakdownLedger result={base} unit="f" />)
+    expect(screen.getByText('75.2°')).toBeDefined() // 24°C
+    expect(screen.getByText('= 80.6°')).toBeDefined() // 27°C
+    expect(screen.getByText('+2.9°')).toBeDefined() // 1.6°C × 1.8
   })
 })

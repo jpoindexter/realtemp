@@ -137,15 +137,6 @@
       "summary": "Refetch on focus, 10-min TTL, stale badge past TTL. Closes audit-2 gap (cadence unspecified)."
     },
     {
-      "id": "N5",
-      "title": "°F toggle",
-      "column": "next",
-      "tier": "sand",
-      "track": "ui",
-      "size": "S",
-      "launch": "v1"
-    },
-    {
       "id": "N6",
       "title": "Error tracking + minimal analytics",
       "column": "next",
@@ -398,6 +389,17 @@
       "launch": "v0",
       "summary": "Capacitor 8 SPM shell around the React app. Simulator build green, app boots and renders on iPhone 16 Pro sim. Location permission string set.",
       "shipped": "2026-07-06"
+    },
+    {
+      "id": "N5",
+      "title": "°F toggle",
+      "column": "next",
+      "tier": "sand",
+      "track": "ui",
+      "size": "S",
+      "launch": "v1",
+      "shipped": "2026-07-07",
+      "summary": "Unit toggle on the hero — tap °C/°F. Deltas scale ×1.8 (no offset), absolutes convert fully. Persisted."
     }
   ]
 }

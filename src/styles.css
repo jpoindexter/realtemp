@@ -68,7 +68,18 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
-.hero .unit { font-size: 0.3em; font-weight: 600; color: var(--scorch); vertical-align: super; }
+.hero .unit {
+  font: 600 0.3em var(--sans);
+  color: var(--scorch);
+  vertical-align: super;
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  text-decoration: underline dashed;
+  text-underline-offset: 4px;
+}
+.hero .unit:focus-visible { outline: 3px solid var(--shade); outline-offset: 2px; }
 
 .hero .cap { font-size: 14px; color: var(--ink-2); margin-top: 4px; }
 

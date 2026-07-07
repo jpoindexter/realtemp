@@ -15,7 +15,7 @@ export function isPushSupported(): boolean {
   return 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window
 }
 
-type PushState = 'off' | 'busy' | 'on' | 'denied' | 'error'
+type PushState = 'off' | 'busy' | 'on' | 'denied' | 'error' | 'server-pending'
 
 interface PushPanelProps {
   apiBase: string
@@ -52,7 +52,7 @@ export function PushPanel({ apiBase, location }: PushPanelProps) {
           thresholdC,
         }),
       })
-      setState(r.ok ? 'on' : 'error')
+      setState(r.ok ? 'on' : r.status === 404 ? 'server-pending' : 'error')
     } catch {
       setState('error')
     }
@@ -101,6 +101,9 @@ export function PushPanel({ apiBase, location }: PushPanelProps) {
           <p className="note" role="status">Notifications are blocked for this site — enable them in browser settings first.</p>
         )}
         {state === 'error' && <p className="error">Could not subscribe. On iPhone, add RealTemp to your Home Screen first.</p>}
+        {state === 'server-pending' && (
+          <p className="note" role="status">Warnings aren&rsquo;t switched on server-side yet — one deploy away (runbook &sect;2).</p>
+        )}
         {state !== 'on' ? (
           <button type="button" className="btn" onClick={() => void enable()} disabled={state === 'busy' || state === 'denied'}>
             Enable heat warnings

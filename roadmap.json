@@ -106,15 +106,15 @@
       "summary": "Adjust constants.ts after 2 weeks of Valencia street comparison; log deltas in DECISIONS.md."
     },
     {
-      "id": "N6b",
-      "title": "Vendor error tracking",
+      "id": "N6c",
+      "title": "Paste Sentry DSN",
       "column": "next",
       "tier": "sand",
       "track": "ops",
       "size": "S",
       "launch": "v1",
       "gated": true,
-      "summary": "Sentry (or equivalent) — needs Jason to create the account/DSN. Boundary hook point is ready in ErrorBoundary.componentDidCatch."
+      "summary": "Jason: sentry.io project → VITE_SENTRY_DSN in .env → rebuild. See docs/setup-remaining.md."
     },
     {
       "id": "N7",
@@ -440,6 +440,18 @@
       "size": "S",
       "launch": "v2",
       "summary": "Haiku via Worker proxy, KV location-hour cache, graceful 503 without key; client line hides when absent.",
+      "shipped": "2026-07-07"
+    },
+    {
+      "id": "N6b-code",
+      "title": "Sentry seam — DSN-gated, zero-cost when unset",
+      "column": "next",
+      "tier": "sand",
+      "track": "ops",
+      "size": "S",
+      "launch": "v1",
+      "gated": true,
+      "summary": "Sentry (or equivalent) — needs Jason to create the account/DSN. Boundary hook point is ready in ErrorBoundary.componentDidCatch.",
       "shipped": "2026-07-07"
     }
   ]

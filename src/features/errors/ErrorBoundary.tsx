@@ -1,5 +1,7 @@
 import { Component } from 'react'
 
+import { trackError } from '@/lib/error-tracking'
+
 import type { ErrorInfo, ReactNode } from 'react'
 
 interface ErrorBoundaryProps {
@@ -19,8 +21,8 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   }
 
   componentDidCatch(error: Error, info: ErrorInfo): void {
-    // Vendor error tracking is card N6b (needs a DSN) — until then, keep the trace locally.
     console.error('RealTemp crashed:', error, info.componentStack)
+    trackError(error) // no-op until VITE_SENTRY_DSN is set (card N6b)
   }
 
   render(): ReactNode {

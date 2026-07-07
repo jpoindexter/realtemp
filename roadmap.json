@@ -164,17 +164,6 @@
       "closes": "closes audit-2 cost gap"
     },
     {
-      "id": "L8b",
-      "title": "Deploy push worker + test on device",
-      "column": "later",
-      "tier": "pebble",
-      "track": "ops",
-      "size": "S",
-      "launch": "v2",
-      "gated": true,
-      "summary": "GATED: wrangler login (secret put blocked for me — correctly) + iPhone Home-Screen install to receive a real push. Runbook §2."
-    },
-    {
       "id": "L5b",
       "title": "Enable LLM copy (secret)",
       "column": "later",
@@ -194,7 +183,7 @@
       "size": "M",
       "launch": "v1",
       "gated": true,
-      "summary": "GATED: worker deploy + a CAP-feed mapping spike (province geocoding). Derived in-app warnings (heat/cold/UV/wind) shipped 2026-07-07 cover the interim."
+      "summary": "GATED: worker deploy now DONE (push routes live). Remaining: CAP-feed mapping spike + province geocoding for AEMET/MeteoAlarm."
     }
   ],
   "shipped": [
@@ -556,6 +545,18 @@
       "launch": "v0",
       "shipped": "2026-07-07",
       "summary": "Both flagged gaps from the design-skill audit, now fixed. rem: all type/space tokens converted (16px root baseline) — respects OS/browser text-zoom (WCAG 1.4.4); borders/rule-widths/--tap/--app-width stay px deliberately (physical constants, not text). Dark mode: automatic via prefers-color-scheme, not an invert — dimmed warm-white text, near-black-not-pure-black bg, danger polarity flips (dark text on the now-light scorch fill). All 13 color pairs computed against WCAG luminance formula, not eyeballed — every pair passes AA (worst case 4.77:1, most 6-14:1). Verified visually via injected preview + full 75-test regression, zero layout shift from the unit change."
+    },
+    {
+      "id": "L8b",
+      "title": "Push routes deployed — subscribe/unsubscribe live",
+      "column": "later",
+      "tier": "pebble",
+      "track": "ops",
+      "size": "S",
+      "launch": "v2",
+      "gated": false,
+      "summary": "Redeployed worker with push routes (no secret). Root-caused a real bug during verification: push_subscriptions table existed locally but was never created on remote D1 — INSERT threw, surfaced as opaque Cloudflare error 1101. Created the table remotely, then verified a full subscribe->unsubscribe cycle end-to-end against production. Sending (cron) stays dormant until Jason adds VAPID_PRIVATE_JWK — that secret never transits my tool calls.",
+      "shipped": "2026-07-07"
     }
   ]
 }

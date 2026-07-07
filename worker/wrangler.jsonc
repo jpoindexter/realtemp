@@ -1,0 +1,23 @@
+{
+  "name": "realtemp-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-07-01",
+  "observability": { "enabled": true },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "realtemp-reports",
+      // Jason: create with `wrangler d1 create realtemp-reports`, paste the id here,
+      // then run `wrangler d1 execute realtemp-reports --file schema.sql --remote`
+      "database_id": "LOCAL-DEV-PLACEHOLDER"
+    }
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "CACHE",
+      // Jason: `wrangler kv namespace create CACHE`, paste the id
+      "id": "LOCAL-DEV-PLACEHOLDER"
+    }
+  ]
+  // Secret (optional, enables /api/copy LLM path): `wrangler secret put ANTHROPIC_API_KEY`
+}

@@ -10,3 +10,6 @@ roadmap.html
 ios/App/App/public/
 ios/App/App/capacitor.config.json
 ios/App/DerivedData/
+
+worker/node_modules/
+worker/.wrangler/

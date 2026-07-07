@@ -87,7 +87,14 @@ export function getGeolocation(): Promise<Result<StoredLocation, WeatherError>> 
             longitude: pos.coords.longitude,
           }),
         ),
-      () => resolve(err({ kind: 'network', message: 'Location denied — search for a city instead.' })),
+      () =>
+        resolve(
+          err({
+            kind: 'network',
+            message:
+              'Location is blocked for this site. Search for your city below — or re-allow it via the aA button → Website Settings → Location.',
+          }),
+        ),
       { timeout: 8000, maximumAge: 600_000 },
     )
   })

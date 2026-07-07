@@ -36,3 +36,16 @@ export const CONVECTIVE_ACTIVITY_FACTOR = 0.5
 // Sweat efficiency: 100% at/below TD_FULL, 0% at/above TD_ZERO (linear between)
 export const SWEAT_TD_FULL_C = 10
 export const SWEAT_TD_ZERO_C = 26
+
+// Cold: JAG/TI wind chill (Environment Canada / NWS 2001), 10 m wind in km/h.
+// WCT = A + B·Ta + C·v^E + D·Ta·v^E — defined for Ta ≤ 10°C and v ≥ 4.8 km/h.
+export const WIND_CHILL_A = 13.12
+export const WIND_CHILL_B = 0.6215
+export const WIND_CHILL_C = -11.37
+export const WIND_CHILL_D = 0.3965
+export const WIND_CHILL_EXP = 0.16
+export const WIND_CHILL_MIN_KMH = 4.8
+// Blend between Steadman wind (warm) and wind chill (cold) so the formula is continuous
+export const COLD_BLEND_LOW_C = 10
+export const COLD_BLEND_HIGH_C = 15
+export const MS_TO_KMH = 3.6

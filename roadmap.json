@@ -117,16 +117,6 @@
       "summary": "Adjust constants.ts after 2 weeks of Valencia street comparison; log deltas in DECISIONS.md."
     },
     {
-      "id": "N3",
-      "title": "Cold-weather term (wind chill)",
-      "column": "next",
-      "tier": "pebble",
-      "track": "core",
-      "size": "S",
-      "launch": "v1",
-      "summary": "JAG/TI wind chill below 10°C; blend zone 10–15°C so the formula is continuous."
-    },
-    {
       "id": "N6",
       "title": "Error tracking + minimal analytics",
       "column": "next",
@@ -400,6 +390,17 @@
       "size": "S",
       "launch": "v1",
       "summary": "Refetch on focus, 10-min TTL, stale badge past TTL. Closes audit-2 gap (cadence unspecified).",
+      "shipped": "2026-07-07"
+    },
+    {
+      "id": "N3",
+      "title": "Cold-weather term (wind chill)",
+      "column": "next",
+      "tier": "pebble",
+      "track": "core",
+      "size": "S",
+      "launch": "v1",
+      "summary": "JAG/TI wind chill below 10°C; blend zone 10–15°C so the formula is continuous.",
       "shipped": "2026-07-07"
     }
   ]

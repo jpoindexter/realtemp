@@ -1,8 +1,11 @@
 import {
   ACTIVITY_DELTA_C,
+  COLD_BLEND_HIGH_C,
+  COLD_BLEND_LOW_C,
   CONVECTIVE_ACTIVITY_FACTOR,
   CONVECTIVE_WIND_THRESHOLD_MS,
   EXPOSURE_FACTOR,
+  MS_TO_KMH,
   NATURE_DELTA_C,
   SOLAR_PREMIUM_MAX_C,
   STEADMAN_BASELINE,
@@ -16,6 +19,12 @@ import {
   URBAN_PEAK_END_HOUR,
   URBAN_PEAK_START_HOUR,
   UV_TO_PREMIUM,
+  WIND_CHILL_A,
+  WIND_CHILL_B,
+  WIND_CHILL_C,
+  WIND_CHILL_D,
+  WIND_CHILL_EXP,
+  WIND_CHILL_MIN_KMH,
   VAPOR_A,
   VAPOR_B,
   VAPOR_C,
@@ -36,8 +45,29 @@ function humidityDelta(dewPointC: number): number {
   return STEADMAN_VAPOR_COEF * vaporPressureHpa(dewPointC) - STEADMAN_BASELINE
 }
 
-function windDelta(streetWindMs: number): number {
+/** Steadman's wind term — the warm-weather path, street-scaled wind. */
+function warmWindDelta(streetWindMs: number): number {
   return -STEADMAN_WIND_COEF * streetWindMs
+}
+
+/** JAG/TI wind chill expressed as a delta from air temp; 10 m wind, km/h. */
+function coldWindDelta(airTempC: number, windSpeedMs10: number): number {
+  const vKmh = windSpeedMs10 * MS_TO_KMH
+  if (vKmh < WIND_CHILL_MIN_KMH) return warmWindDelta(windSpeedMs10 * STREET_WIND_FACTOR)
+  const vE = Math.pow(vKmh, WIND_CHILL_EXP)
+  const wct = WIND_CHILL_A + WIND_CHILL_B * airTempC + WIND_CHILL_C * vE + WIND_CHILL_D * airTempC * vE
+  return Math.min(0, wct - airTempC)
+}
+
+/** Continuous across seasons: pure Steadman ≥ 15°C, pure wind chill ≤ 10°C, blended between. */
+function windDelta(airTempC: number, windSpeedMs10: number, streetWindMs: number): number {
+  const coldWeight = clamp(
+    (COLD_BLEND_HIGH_C - airTempC) / (COLD_BLEND_HIGH_C - COLD_BLEND_LOW_C),
+    0,
+    1,
+  )
+  if (coldWeight === 0) return warmWindDelta(streetWindMs)
+  return (1 - coldWeight) * warmWindDelta(streetWindMs) + coldWeight * coldWindDelta(airTempC, windSpeedMs10)
 }
 
 function solarDelta(uvIndex: number, zenithDeg: number, exposure: Toggles['exposure']): number {
@@ -77,8 +107,13 @@ export function computeTrueFeel(inputs: WeatherInputs, toggles: Toggles): TrueFe
   if (inputs.dewPointC === null) missing.push('humidity')
   else deltas.push({ id: 'humidity', label: 'humidity friction', deltaC: round1(humidityDelta(inputs.dewPointC)) })
 
-  if (streetWindMs === null) missing.push('wind')
-  else deltas.push({ id: 'wind', label: 'wind', deltaC: round1(windDelta(streetWindMs)) })
+  if (streetWindMs === null || inputs.windSpeedMs === null) missing.push('wind')
+  else
+    deltas.push({
+      id: 'wind',
+      label: 'wind',
+      deltaC: round1(windDelta(inputs.airTempC, inputs.windSpeedMs, streetWindMs)),
+    })
 
   if (inputs.uvIndex === null) missing.push('solar')
   else deltas.push({ id: 'solar', label: 'sun premium', deltaC: round1(solarDelta(inputs.uvIndex, inputs.solarZenithDeg, toggles.exposure)) })

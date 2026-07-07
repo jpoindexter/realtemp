@@ -81,6 +81,39 @@ describe('environment and activity', () => {
   })
 })
 
+describe('cold-weather wind (JAG/TI blend)', () => {
+  const winterNight: WeatherInputs = {
+    airTempC: 0,
+    dewPointC: -5,
+    windSpeedMs: 5, // 18 km/h at 10 m
+    uvIndex: 0,
+    solarZenithDeg: 120,
+    localHour: 22,
+  }
+
+  it('uses pure wind chill at 0°C — hand-computed WCT delta', () => {
+    // WCT = 13.12 − 11.37·18^0.16 = −4.936 → delta −4.9
+    const r = computeTrueFeel(winterNight, streetDay)
+    expect(delta(r, 'wind')).toBeCloseTo(-4.9, 5)
+  })
+
+  it('blends 50/50 at 12.5°C', () => {
+    // warm −0.7·3 = −2.1 · cold WCT(12.5, 18 km/h) − 12.5 = −1.796 → −1.948 → −1.9
+    const r = computeTrueFeel({ ...winterNight, airTempC: 12.5 }, streetDay)
+    expect(delta(r, 'wind')).toBeCloseTo(-1.9, 5)
+  })
+
+  it('falls back to the Steadman term under the 4.8 km/h validity floor', () => {
+    const r = computeTrueFeel({ ...winterNight, windSpeedMs: 1 }, streetDay) // 3.6 km/h
+    expect(delta(r, 'wind')).toBeCloseTo(-0.4, 5) // −0.7·0.6
+  })
+
+  it('keeps the warm path untouched at 30°C (scorcher regression)', () => {
+    const r = computeTrueFeel(scorcher, streetDay)
+    expect(delta(r, 'wind')).toBeCloseTo(-0.8, 5)
+  })
+})
+
 describe('degraded inputs', () => {
   it('drops missing premiums into `missing` and never NaNs', () => {
     const r = computeTrueFeel(

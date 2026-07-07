@@ -92,7 +92,7 @@
       "track": "ops",
       "size": "S",
       "launch": "v0",
-      "summary": "Install via Xcode (npx cap open ios) or TestFlight; tap through search → dashboard in the shell; walk outside in Valencia and sanity-check True Feel.",
+      "summary": "GATED: your legs. npx cap open ios → run on iPhone → search Valencia → walk. Checks the last PRD v0 box.",
       "done": "All PRD v0 checkboxes checked from a phone browser."
     },
     {
@@ -103,7 +103,7 @@
       "track": "core",
       "size": "S",
       "launch": "v1",
-      "summary": "Adjust constants.ts after 2 weeks of Valencia street comparison; log deltas in DECISIONS.md."
+      "summary": "GATED: wall-clock. Use the app ~2 weeks, then tune src/features/formula/constants.ts; log deltas in DECISIONS.md."
     },
     {
       "id": "N6c",
@@ -125,7 +125,7 @@
       "size": "S",
       "launch": "v1",
       "gated": true,
-      "summary": "Research DONE (docs/naming.md): StreetFeel recommended, streetfeel.app available $9.99/yr, all candidates scanned for collisions. REMAINS: Jason picks, buys domain, formal EUIPO/USPTO clearance.",
+      "summary": "GATED: taste + $10 + EUIPO check. Research done → docs/naming.md. Recommended: StreetFeel / streetfeel.app.",
       "closes": "closes P3-2 (trademark collision)"
     },
     {
@@ -137,7 +137,7 @@
       "size": "L",
       "launch": "v2",
       "gated": true,
-      "summary": "3D building/canopy data → street-level shade map. Own data-sourcing project; flagship premium feature.",
+      "summary": "GATED: 3D building/canopy data sourcing — scope as its own PRD before any code. Do not start from a card.",
       "closes": "closes PDF v1.0 §3.2 + Tier-2 CV"
     },
     {
@@ -149,7 +149,7 @@
       "size": "L",
       "launch": "v2",
       "gated": true,
-      "summary": "Free: current conditions + toggles. Premium (~€2–3/mo, Stripe): timeline, heatmap, bio-cal, notifications, multi-location. Gated on real users existing.",
+      "summary": "GATED: Stripe account (Jason: \"ill set it up later\"). Free tier + entitlement seam design in docs/flows.md §6.",
       "done": "Checkout → entitlement → gated features unlock; cancel flow works."
     },
     {
@@ -161,7 +161,7 @@
       "size": "S",
       "launch": "v2",
       "gated": true,
-      "summary": "Free tier is non-commercial (~10k calls/day). First paying customer triggers the ~€29/mo API plan. Cost model: ≤2k users ≈ €0.015/user/mo data cost.",
+      "summary": "GATED: purchase. Open-Meteo commercial (~€29/mo) triggers on first revenue — before, not after, charging.",
       "closes": "closes audit-2 cost gap"
     },
     {
@@ -172,7 +172,7 @@
       "track": "ui",
       "size": "M",
       "launch": "v2",
-      "summary": "Push when tomorrow's True Feel crosses a personal threshold. Needs PWA push or native wrapper; premium candidate."
+      "summary": "GATED: APNs/Apple Developer + deployed Worker + installed-PWA permission. Deliberately NOT half-built: unverifiable code violates no-stubs. See PARKED.md."
     },
     {
       "id": "L1b",

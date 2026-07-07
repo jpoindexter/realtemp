@@ -137,7 +137,7 @@
       "size": "L",
       "launch": "v2",
       "gated": true,
-      "summary": "GATED: 3D building/canopy data sourcing — scope as its own PRD before any code. Do not start from a card.",
+      "summary": "Scoping DONE → docs/heatmap-prd.md (PNOA-LiDAR free for Valencia; 3 approaches costed; recommended: precomputed shade tiles). GATED: Jason go/no-go + option pick.",
       "closes": "closes PDF v1.0 §3.2 + Tier-2 CV"
     },
     {

@@ -25,7 +25,7 @@ afterEach(() => {
 describe('Dashboard', () => {
   it('renders hero, a summing ledger, all toggles and the gauge from live data', async () => {
     vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, status: 200, json: async () => payload })))
-    render(<Dashboard location={valencia} unit="c" onSetUnit={() => {}} onChangeLocation={() => {}} onOpenSettings={() => {}} />)
+    render(<Dashboard location={valencia} unit="c" onSetUnit={() => {}} onChangeLocation={() => {}} onOpenSettings={() => {}} onOpenAbout={() => {}} />)
 
     await waitFor(() => expect(screen.getAllByText(/true feel/i).length).toBeGreaterThan(0))
     // base + humidity + wind + solar(zenith-dependent) + urban 2 + walking 1 — assert structure, not zenith
@@ -37,10 +37,18 @@ describe('Dashboard', () => {
     expect(screen.queryByText(/partial data/i)).toBeNull()
   })
 
+  it('exposes settings and about as separate, labeled controls (not folded together)', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, status: 200, json: async () => payload })))
+    render(<Dashboard location={valencia} unit="c" onSetUnit={() => {}} onChangeLocation={() => {}} onOpenSettings={() => {}} onOpenAbout={() => {}} />)
+
+    await waitFor(() => expect(screen.getByRole('button', { name: /settings/i })).toBeDefined())
+    expect(screen.getByRole('button', { name: /how this works/i })).toBeDefined()
+  })
+
   it('shows the partial-data badge when the feed drops fields', async () => {
     const degraded = { ...payload, current: { ...payload.current, uv_index: null, dew_point_2m: null } }
     vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, status: 200, json: async () => degraded })))
-    render(<Dashboard location={valencia} unit="c" onSetUnit={() => {}} onChangeLocation={() => {}} onOpenSettings={() => {}} />)
+    render(<Dashboard location={valencia} unit="c" onSetUnit={() => {}} onChangeLocation={() => {}} onOpenSettings={() => {}} onOpenAbout={() => {}} />)
 
     await waitFor(() => expect(screen.getByText(/partial data/i)).toBeDefined())
     expect(screen.queryByText(/sun premium/)).toBeNull()
@@ -50,7 +58,7 @@ describe('Dashboard', () => {
     vi.useFakeTimers({ toFake: ['Date'] })
     const fetchMock = vi.fn(async () => ({ ok: true, status: 200, json: async () => payload }))
     vi.stubGlobal('fetch', fetchMock)
-    render(<Dashboard location={valencia} unit="c" onSetUnit={() => {}} onChangeLocation={() => {}} onOpenSettings={() => {}} />)
+    render(<Dashboard location={valencia} unit="c" onSetUnit={() => {}} onChangeLocation={() => {}} onOpenSettings={() => {}} onOpenAbout={() => {}} />)
 
     await waitFor(() => expect(screen.getByText(/live/)).toBeDefined())
     expect(fetchMock).toHaveBeenCalledTimes(2) // current + baseline
@@ -67,7 +75,7 @@ describe('Dashboard', () => {
       // Real timers deliberately: the adapter's retry backoff (~1.2s) fights
       // fake-timer interplay with the dashboard's own stale-check interval.
       vi.stubGlobal('fetch', vi.fn(async () => ({ ok: false, status: 503, json: async () => ({}) })))
-      render(<Dashboard location={valencia} unit="c" onSetUnit={() => {}} onChangeLocation={() => {}} onOpenSettings={() => {}} />)
+      render(<Dashboard location={valencia} unit="c" onSetUnit={() => {}} onChangeLocation={() => {}} onOpenSettings={() => {}} onOpenAbout={() => {}} />)
 
       await waitFor(() => expect(screen.getByRole('button', { name: /retry/i })).toBeDefined(), { timeout: 4000 })
       expect(screen.getByText(/momentarily unreachable/i)).toBeDefined()

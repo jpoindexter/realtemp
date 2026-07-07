@@ -512,6 +512,17 @@
       "launch": "v0",
       "shipped": "2026-07-07",
       "summary": "Root cause: upstream 5xx returns no CORS headers, Chrome reports generic \"blocked by CORS policy\" instead of the real transient failure — reproduced live, curl confirmed transient (200 OK moments later). Fix: 3-attempt retry with 300/900ms backoff on the primary weather fetch before surfacing an error screen. New test reproduces the exact bug (fail twice, succeed third) and asserts recovery."
+    },
+    {
+      "id": "DEC1",
+      "title": "Design-engineering audit: contrast fixes, touch targets, alert urgency, About/Settings split",
+      "column": "now",
+      "tier": "rock",
+      "track": "ui",
+      "size": "M",
+      "launch": "v0",
+      "shipped": "2026-07-07",
+      "summary": "Ran all 19 dec-* skills against the shipped app. Fixed: --solar token measured 2.86:1 on paper (WCAG AA needs 4.5:1) — darkened to 5.19:1, verified by computed luminance not eyeballing. Danger warnings now role=alert (assertive) vs caution role=status (polite) — screen-reader users get the same urgency split sighted users get from color. Settings gear + new About/Help icon both brought to real 44px hit areas per the app's own --tap token. About split out of Settings (help vs configuration are different jobs, Nielsen #10). Full report in session log."
     }
   ]
 }

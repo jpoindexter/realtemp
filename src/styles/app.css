@@ -54,7 +54,26 @@ h1.title { font-size: var(--text-title); font-weight: 800; letter-spacing: -0.02
   cursor: pointer;
 }
 .loc-bar button:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }
-.gear { font-size: var(--text-input); line-height: 1; text-decoration: none; }
+
+/* icon buttons: real 44px hit area, small glyph — the header stays visually
+   slim in spirit but the tap targets are honestly touch-sized, not a
+   spacing-exception dodge. */
+.icon-btns { display: flex; gap: var(--space-1); margin: calc(var(--space-2) * -1) calc(var(--space-1) * -1); }
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--tap);
+  height: var(--tap);
+  font-size: 17px;
+  line-height: 1;
+  text-decoration: none;
+  background: none;
+  border: none;
+  color: var(--ink-2);
+  cursor: pointer;
+}
+.icon-btn:focus-visible { outline: var(--focus-ring); outline-offset: -3px; }
 
 /* hero */
 .hero .big {
@@ -70,7 +89,9 @@ h1.title { font-size: var(--text-title); font-weight: 800; letter-spacing: -0.02
   vertical-align: super;
   background: none;
   border: none;
-  padding: var(--space-1);
+  /* vertical padding brings the tap target to the --tap (44px) minimum
+     without enlarging the glyph — the box grows, the visible unit doesn't. */
+  padding: var(--space-2) var(--space-1);
   cursor: pointer;
   text-decoration: underline dashed;
   text-underline-offset: 4px;

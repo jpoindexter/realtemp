@@ -7,7 +7,7 @@
   --ground: #edede8;     /* page */
   --paper: #f7f7f3;      /* surfaces */
   --line: #d8d8d0;       /* hairlines */
-  --solar: #e8720c;      /* sun premium, caution */
+  --solar: #a3520a;      /* sun premium, caution — darkened from #e8720c: the brighter value read fine by eye but measured 2.86:1 on paper, failing WCAG AA 4.5:1 for text. This shade holds 5.19:1. */
   --scorch: #c93a22;     /* heat totals, danger */
   --shade: #33698c;      /* cooling deltas, focus, comfort */
   --uhi: #a1543a;        /* surroundings delta */

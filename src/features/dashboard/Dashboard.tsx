@@ -11,9 +11,10 @@ interface DashboardProps {
   onSetUnit: (unit: TempUnit) => void
   onChangeLocation: () => void
   onOpenSettings: () => void
+  onOpenAbout: () => void
 }
 
-export function Dashboard({ location, unit, onSetUnit, onChangeLocation, onOpenSettings }: DashboardProps) {
+export function Dashboard({ location, unit, onSetUnit, onChangeLocation, onOpenSettings, onOpenAbout }: DashboardProps) {
   const [weather, refetch] = useWeather(location)
   const [toggles, updateToggles] = useToggles()
 
@@ -28,9 +29,14 @@ export function Dashboard({ location, unit, onSetUnit, onChangeLocation, onOpenS
             ? `${weather.snapshot.localTimeIso.slice(11, 16)} · ${weather.isStale ? 'stale' : 'live'}`
             : '· · ·'}
         </span>
-        <button type="button" className="gear" onClick={onOpenSettings} aria-label="Settings">
-          &#9881;
-        </button>
+        <div className="icon-btns">
+          <button type="button" className="icon-btn" onClick={onOpenAbout} aria-label="How this works">
+            &#9432;
+          </button>
+          <button type="button" className="icon-btn" onClick={onOpenSettings} aria-label="Settings">
+            &#9881;
+          </button>
+        </div>
       </div>
 
       {weather.status === 'loading' && <p className="note">Reading the street…</p>}

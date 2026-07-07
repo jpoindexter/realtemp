@@ -4,6 +4,7 @@ import { Dashboard } from '@/features/dashboard/Dashboard'
 import { useUnit } from '@/features/dashboard/use-unit'
 import { LocationSearch } from '@/features/location/LocationSearch'
 import { storedLocationSchema } from '@/features/location/geocoding'
+import { About } from '@/features/settings/About'
 import { Settings } from '@/features/settings/Settings'
 
 import type { StoredLocation } from '@/features/location/geocoding'
@@ -21,9 +22,11 @@ function readStoredLocation(): StoredLocation | null {
   }
 }
 
+type Screen = 'dashboard' | 'settings' | 'about'
+
 export function App() {
   const [location, setLocation] = useState<StoredLocation | null>(readStoredLocation)
-  const [screen, setScreen] = useState<'dashboard' | 'settings'>('dashboard')
+  const [screen, setScreen] = useState<Screen>('dashboard')
   const [unit, setUnit] = useUnit()
 
   const pickLocation = (next: StoredLocation) => {
@@ -50,6 +53,10 @@ export function App() {
     )
   }
 
+  if (screen === 'about') {
+    return <About onBack={() => setScreen('dashboard')} />
+  }
+
   return (
     <Dashboard
       location={location}
@@ -57,6 +64,7 @@ export function App() {
       onSetUnit={setUnit}
       onChangeLocation={() => setLocation(null)}
       onOpenSettings={() => setScreen('settings')}
+      onOpenAbout={() => setScreen('about')}
     />
   )
 }

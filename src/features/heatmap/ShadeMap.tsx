@@ -43,7 +43,14 @@ export function ShadeMap({ location }: { location: StoredLocation }) {
       <div className="stack" style={{ paddingTop: 12 }}>
         {isNight && <p className="note">Night — everything is shade. Open again in daylight.</p>}
         {!isNight && state.status === 'busy' && <p className="note">Reading the buildings…</p>}
-        {!isNight && state.status === 'error' && <p className="error">{state.message}</p>}
+        {!isNight && state.status === 'error' && (
+          <div className="stack">
+            <p className="error">{state.message}</p>
+            <button type="button" className="btn quiet" onClick={() => void load()}>
+              Retry
+            </button>
+          </div>
+        )}
         {!isNight && state.status === 'ready' && (
           <ShadeSvg buildings={state.buildings} location={location} zenith={zenith} now={now} />
         )}

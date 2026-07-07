@@ -184,6 +184,17 @@
       "launch": "v2",
       "gated": true,
       "summary": "Jason: wrangler secret put ANTHROPIC_API_KEY. Cost ≈ €0.006/user/mo cached."
+    },
+    {
+      "id": "N8",
+      "title": "Official weather alerts (AEMET via MeteoAlarm)",
+      "column": "next",
+      "tier": "pebble",
+      "track": "data",
+      "size": "M",
+      "launch": "v1",
+      "gated": true,
+      "summary": "GATED: worker deploy + a CAP-feed mapping spike (province geocoding). Derived in-app warnings (heat/cold/UV/wind) shipped 2026-07-07 cover the interim."
     }
   ],
   "shipped": [

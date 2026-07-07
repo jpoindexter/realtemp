@@ -1,8 +1,10 @@
 import { useState } from 'react'
 
 import { Dashboard } from '@/features/dashboard/Dashboard'
+import { useUnit } from '@/features/dashboard/use-unit'
 import { LocationSearch } from '@/features/location/LocationSearch'
 import { storedLocationSchema } from '@/features/location/geocoding'
+import { Settings } from '@/features/settings/Settings'
 
 import type { StoredLocation } from '@/features/location/geocoding'
 
@@ -21,6 +23,8 @@ function readStoredLocation(): StoredLocation | null {
 
 export function App() {
   const [location, setLocation] = useState<StoredLocation | null>(readStoredLocation)
+  const [screen, setScreen] = useState<'dashboard' | 'settings'>('dashboard')
+  const [unit, setUnit] = useUnit()
 
   const pickLocation = (next: StoredLocation) => {
     try {
@@ -29,8 +33,30 @@ export function App() {
       // storage blocked — location still works for the session
     }
     setLocation(next)
+    setScreen('dashboard')
   }
 
   if (!location) return <LocationSearch onPick={pickLocation} />
-  return <Dashboard location={location} onChangeLocation={() => setLocation(null)} />
+
+  if (screen === 'settings') {
+    return (
+      <Settings
+        unit={unit}
+        onSetUnit={setUnit}
+        location={location}
+        onChangeLocation={() => setLocation(null)}
+        onBack={() => setScreen('dashboard')}
+      />
+    )
+  }
+
+  return (
+    <Dashboard
+      location={location}
+      unit={unit}
+      onSetUnit={setUnit}
+      onChangeLocation={() => setLocation(null)}
+      onOpenSettings={() => setScreen('settings')}
+    />
+  )
 }

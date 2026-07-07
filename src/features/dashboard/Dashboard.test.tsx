@@ -25,7 +25,7 @@ afterEach(() => {
 describe('Dashboard', () => {
   it('renders hero, a summing ledger, all toggles and the gauge from live data', async () => {
     vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, status: 200, json: async () => payload })))
-    render(<Dashboard location={valencia} onChangeLocation={() => {}} />)
+    render(<Dashboard location={valencia} unit="c" onSetUnit={() => {}} onChangeLocation={() => {}} onOpenSettings={() => {}} />)
 
     await waitFor(() => expect(screen.getAllByText(/true feel/i).length).toBeGreaterThan(0))
     // base + humidity + wind + solar(zenith-dependent) + urban 2 + walking 1 — assert structure, not zenith
@@ -40,7 +40,7 @@ describe('Dashboard', () => {
   it('shows the partial-data badge when the feed drops fields', async () => {
     const degraded = { ...payload, current: { ...payload.current, uv_index: null, dew_point_2m: null } }
     vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, status: 200, json: async () => degraded })))
-    render(<Dashboard location={valencia} onChangeLocation={() => {}} />)
+    render(<Dashboard location={valencia} unit="c" onSetUnit={() => {}} onChangeLocation={() => {}} onOpenSettings={() => {}} />)
 
     await waitFor(() => expect(screen.getByText(/partial data/i)).toBeDefined())
     expect(screen.queryByText(/sun premium/)).toBeNull()
@@ -50,7 +50,7 @@ describe('Dashboard', () => {
     vi.useFakeTimers({ toFake: ['Date'] })
     const fetchMock = vi.fn(async () => ({ ok: true, status: 200, json: async () => payload }))
     vi.stubGlobal('fetch', fetchMock)
-    render(<Dashboard location={valencia} onChangeLocation={() => {}} />)
+    render(<Dashboard location={valencia} unit="c" onSetUnit={() => {}} onChangeLocation={() => {}} onOpenSettings={() => {}} />)
 
     await waitFor(() => expect(screen.getByText(/live/)).toBeDefined())
     expect(fetchMock).toHaveBeenCalledTimes(2) // current + baseline
@@ -63,7 +63,7 @@ describe('Dashboard', () => {
 
   it('surfaces fetch failure with a retry action', async () => {
     vi.stubGlobal('fetch', vi.fn(async () => ({ ok: false, status: 503, json: async () => ({}) })))
-    render(<Dashboard location={valencia} onChangeLocation={() => {}} />)
+    render(<Dashboard location={valencia} unit="c" onSetUnit={() => {}} onChangeLocation={() => {}} onOpenSettings={() => {}} />)
 
     await waitFor(() => expect(screen.getByRole('button', { name: /retry/i })).toBeDefined())
     expect(screen.getByText(/503/)).toBeDefined()

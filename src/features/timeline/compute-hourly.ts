@@ -58,18 +58,29 @@ export function computeHourlyTrueFeel(
   })
 }
 
-/** Contiguous comfortable runs, for the summary line and the shaded bands. */
-export function comfortWindows(points: TimelinePoint[]): ComfortWindow[] {
-  const windows: ComfortWindow[] = []
-  let start: TimelinePoint | null = null
-  for (const [i, p] of points.entries()) {
-    if (p.isComfort && !start) start = p
-    const isLast = i === points.length - 1
-    if (start && (!p.isComfort || isLast)) {
-      const end = p.isComfort && isLast ? p : points[i - 1]
-      if (end) windows.push({ from: start.hourLabel, to: end.hourLabel })
+export interface ComfortRun {
+  fromIdx: number
+  toIdx: number
+}
+
+/** Contiguous comfortable index runs — one source of truth for bands and labels. */
+export function comfortRuns(points: TimelinePoint[]): ComfortRun[] {
+  const runs: ComfortRun[] = []
+  let start: number | null = null
+  points.forEach((p, i) => {
+    if (p.isComfort && start === null) start = i
+    if (start !== null && (!p.isComfort || i === points.length - 1)) {
+      runs.push({ fromIdx: start, toIdx: p.isComfort ? i : i - 1 })
       start = null
     }
-  }
-  return windows
+  })
+  return runs
+}
+
+/** The same runs as hour-label ranges, for the summary line. */
+export function comfortWindows(points: TimelinePoint[]): ComfortWindow[] {
+  return comfortRuns(points).map((r) => ({
+    from: points[r.fromIdx]!.hourLabel,
+    to: points[r.toIdx]!.hourLabel,
+  }))
 }

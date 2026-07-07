@@ -1,6 +1,6 @@
 import { displayTemp } from '@/features/dashboard/format-temp'
 
-import { comfortWindows } from './compute-hourly'
+import { comfortRuns, comfortWindows } from './compute-hourly'
 
 import type { TimelinePoint } from './compute-hourly'
 import type { TempUnit } from '@/features/dashboard/format-temp'
@@ -34,16 +34,7 @@ export function SafeWindowTimeline({ points, unit }: SafeWindowTimelineProps) {
   const summary =
     windows.length === 0 ? 'no safe window in the next 24 h' : windows.map((w) => `${w.from}–${w.to}`).join(', ')
 
-  // contiguous comfort runs → shaded bands
-  const bands: { from: number; to: number }[] = []
-  let start: number | null = null
-  points.forEach((p, i) => {
-    if (p.isComfort && start === null) start = i
-    if ((!p.isComfort || i === points.length - 1) && start !== null) {
-      bands.push({ from: start, to: p.isComfort ? i : i - 1 })
-      start = null
-    }
-  })
+  const bands = comfortRuns(points)
 
   return (
     <section className="timeline">
@@ -58,11 +49,11 @@ export function SafeWindowTimeline({ points, unit }: SafeWindowTimelineProps) {
       >
         {bands.map((b) => (
           <rect
-            key={b.from}
+            key={b.fromIdx}
             className="band"
-            x={x(b.from)}
+            x={x(b.fromIdx)}
             y={PAD.top}
-            width={Math.max(1, x(b.to) - x(b.from))}
+            width={Math.max(1, x(b.toIdx) - x(b.fromIdx))}
             height={H - PAD.top - PAD.bottom}
           />
         ))}

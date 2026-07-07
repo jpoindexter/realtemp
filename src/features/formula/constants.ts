@@ -37,6 +37,14 @@ export const CONVECTIVE_ACTIVITY_FACTOR = 0.5
 export const SWEAT_TD_FULL_C = 10
 export const SWEAT_TD_ZERO_C = 26
 
+// Auto warning bands (in-app, derived — push is separate and opt-in by platform rule)
+export const WARN_HEAT_CAUTION_C = 33
+export const WARN_HEAT_DANGER_C = 40
+export const WARN_COLD_CAUTION_C = 0
+export const WARN_COLD_DANGER_C = -10
+export const WARN_UV_INDEX = 8
+export const WARN_WIND_MS = 10
+
 // Acclimatization: perceived share of the deviation from the 14-day baseline
 export const ACCLIM_FACTOR = { new: 0.3, settling: 0.15, local: 0 } as const
 export const ACCLIM_MAX_DELTA_C = 3

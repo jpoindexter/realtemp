@@ -12,20 +12,17 @@ function readStoredUnit(): TempUnit {
   }
 }
 
-export function useUnit(): [TempUnit, () => void] {
-  const [unit, setUnit] = useState<TempUnit>(readStoredUnit)
+export function useUnit(): [TempUnit, (next: TempUnit) => void] {
+  const [unit, setUnitState] = useState<TempUnit>(readStoredUnit)
 
-  const toggle = () => {
-    setUnit((prev) => {
-      const next = prev === 'c' ? 'f' : 'c'
-      try {
-        localStorage.setItem(UNIT_KEY, next)
-      } catch {
-        // storage blocked — unit still works for the session
-      }
-      return next
-    })
+  const setUnit = (next: TempUnit) => {
+    try {
+      localStorage.setItem(UNIT_KEY, next)
+    } catch {
+      // storage blocked — unit still works for the session
+    }
+    setUnitState(next)
   }
 
-  return [unit, toggle]
+  return [unit, setUnit]
 }

@@ -5,7 +5,8 @@ import { App } from './App'
 import { ErrorBoundary } from './features/errors/ErrorBoundary'
 import { initErrorTracking } from './lib/error-tracking'
 
-import './styles.css'
+import './styles/tokens.css'
+import './styles/app.css'
 
 initErrorTracking()
 

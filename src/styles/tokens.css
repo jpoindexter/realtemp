@@ -1,0 +1,45 @@
+/* RealTemp design tokens — single source of truth (direction: docs/moodboard.html).
+   Rule: components consume tokens; raw values live only in this file. */
+:root {
+  /* color — asphalt & heat */
+  --ink: #1b1b1e;        /* text, selected states, footprints */
+  --ink-2: #54544e;      /* secondary text */
+  --ground: #edede8;     /* page */
+  --paper: #f7f7f3;      /* surfaces */
+  --line: #d8d8d0;       /* hairlines */
+  --solar: #e8720c;      /* sun premium, caution */
+  --scorch: #c93a22;     /* heat totals, danger */
+  --shade: #33698c;      /* cooling deltas, focus, comfort */
+  --uhi: #a1543a;        /* surroundings delta */
+  --on-strong: #ffffff;  /* text on scorch/solar fills */
+
+  /* type */
+  --sans: system-ui, -apple-system, sans-serif;
+  --mono: ui-monospace, 'SF Mono', Menlo, monospace;
+  --text-axis: 9px;      /* svg axis labels only */
+  --text-label: 11px;    /* mono uppercase labels */
+  --text-seg: 12px;      /* segmented options, small captions */
+  --text-note: 14px;     /* notes, errors, list body */
+  --text-copy: 15px;     /* copy line, ledger total */
+  --text-input: 16px;    /* inputs — 16px stops iOS zoom */
+  --text-title: 24px;
+  --text-hero: clamp(72px, 24vw, 96px);
+  --track-label: 0.1em;  /* uppercase label tracking */
+  --track-tight: 0.06em; /* dense uppercase rows */
+
+  /* space — 4px base */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+
+  /* structure */
+  --border-w: 1.5px;     /* control borders */
+  --rule-w: 2px;         /* ledger rules, section rules */
+  --tap: 44px;           /* minimum touch target */
+  --app-width: 430px;
+
+  /* focus — one ring everywhere */
+  --focus-ring: 3px solid var(--shade);
+}

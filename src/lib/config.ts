@@ -20,3 +20,7 @@ export const config = {
   /** Sentry DSN — enables crash reporting when present */
   sentryDsn: readNonEmpty(import.meta.env.VITE_SENTRY_DSN),
 }
+
+/** VAPID public key (public by design; the private half is a Worker secret). */
+export const VAPID_PUBLIC_KEY =
+  'BF8MfrxJ_cCc0KT0T0L_F0-YwZZ_1L4Q4YRB8ZCGNvcKmb4b9r3JUqjwopgBEYbfX2pjU0YnqJtk8en7nSvad0I'

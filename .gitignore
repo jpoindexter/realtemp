@@ -14,3 +14,5 @@ ios/App/DerivedData/
 worker/node_modules/
 worker/.wrangler/
 .vercel
+worker/dist-bundle/
+worker/.vapid-keys.json

@@ -2,6 +2,7 @@ import { computeTrueFeel } from '@/features/formula/compute-true-feel'
 import { solarZenithDeg } from '@/features/formula/solar-zenith'
 
 import { CopyLine } from '@/features/copy/CopyLine'
+import { PushPanel } from '@/features/push/PushPanel'
 import { ReportButtons } from '@/features/reports/ReportButtons'
 import { computeHourlyTrueFeel } from '@/features/timeline/compute-hourly'
 import { SafeWindowTimeline } from '@/features/timeline/SafeWindowTimeline'
@@ -189,6 +190,8 @@ function DashboardBody({ weather, location, toggles, updateToggles }: BodyProps)
       <BodyPanel bio={bio} onChange={updateBio} />
 
       {config.apiBase && <ReportButtons apiBase={config.apiBase} location={location} />}
+
+      {config.apiBase && <PushPanel apiBase={config.apiBase} location={location} />}
     </>
   )
 }

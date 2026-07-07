@@ -3,6 +3,8 @@
   "main": "src/index.ts",
   "compatibility_date": "2026-07-01",
   "observability": { "enabled": true },
+  "triggers": { "crons": ["0 4 * * *"] },
+  "vars": { "VAPID_PUBLIC_KEY": "BF8MfrxJ_cCc0KT0T0L_F0-YwZZ_1L4Q4YRB8ZCGNvcKmb4b9r3JUqjwopgBEYbfX2pjU0YnqJtk8en7nSvad0I" },
   "d1_databases": [
     {
       "binding": "DB",

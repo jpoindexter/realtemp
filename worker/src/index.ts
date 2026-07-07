@@ -8,11 +8,14 @@ import {
   isVote,
   toCell,
 } from './lib'
+import { runHeatCheck, subscribePush, unsubscribePush } from './push-routes'
 
 export interface Env {
   DB: D1Database
   CACHE: KVNamespace
   ANTHROPIC_API_KEY?: string
+  VAPID_PRIVATE_JWK?: string
+  VAPID_PUBLIC_KEY?: string
 }
 
 const CORS = {
@@ -32,8 +35,15 @@ export default {
     if (url.pathname === '/api/reports' && request.method === 'POST') return postReport(request, env)
     if (url.pathname === '/api/reports/summary' && request.method === 'GET') return reportSummary(url, env)
     if (url.pathname === '/api/copy' && request.method === 'POST') return copy(request, env)
+    if (url.pathname === '/api/push/subscribe' && request.method === 'POST') return subscribePush(request, env)
+    if (url.pathname === '/api/push/subscribe' && request.method === 'DELETE') return unsubscribePush(request, env)
 
     return json({ error: 'Not found' }, 404)
+  },
+
+  async scheduled(_event: ScheduledEvent, env: Env): Promise<void> {
+    const result = await runHeatCheck(env)
+    console.log('heat-check', JSON.stringify(result))
   },
 }
 

@@ -17,6 +17,8 @@ npx wrangler d1 create realtemp-reports     # paste database_id into wrangler.js
 npx wrangler kv namespace create CACHE      # paste id into wrangler.jsonc
 npx wrangler d1 execute realtemp-reports --file schema.sql --remote
 npx wrangler secret put ANTHROPIC_API_KEY   # optional — enables the LLM copy line
+node -e "console.log(JSON.stringify(JSON.parse(require('fs').readFileSync('.vapid-keys.json')).privateJwk))" | npx wrangler secret put VAPID_PRIVATE_JWK   # enables heat-warning push (card L8)
+npx wrangler d1 execute realtemp-reports --file schema.sql --remote   # picks up push_subscriptions table
 npm run deploy                              # note the workers.dev URL
 ```
 

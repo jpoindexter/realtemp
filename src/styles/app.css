@@ -65,9 +65,6 @@ h1.title { font-size: var(--text-title); font-weight: 800; letter-spacing: -0.02
   justify-content: center;
   width: var(--tap);
   height: var(--tap);
-  font-size: 17px;
-  line-height: 1;
-  text-decoration: none;
   background: none;
   border: none;
   color: var(--ink-2);
@@ -246,6 +243,7 @@ fieldset.seg legend {
 .btn.quiet { background: var(--paper); color: var(--ink); }
 .btn.danger { background: var(--scorch); border-color: var(--scorch); color: var(--on-strong); }
 .btn:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
 
 .search-input {
   font: var(--text-input) var(--sans);

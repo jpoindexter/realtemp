@@ -1,4 +1,5 @@
 import { DashboardBody } from './DashboardBody'
+import { GearIcon, InfoIcon } from './icons'
 import { useToggles } from './use-toggles'
 import { useWeather } from './use-weather'
 
@@ -31,10 +32,10 @@ export function Dashboard({ location, unit, onSetUnit, onChangeLocation, onOpenS
         </span>
         <div className="icon-btns">
           <button type="button" className="icon-btn" onClick={onOpenAbout} aria-label="How this works">
-            &#9432;
+            <InfoIcon />
           </button>
           <button type="button" className="icon-btn" onClick={onOpenSettings} aria-label="Settings">
-            &#9881;
+            <GearIcon />
           </button>
         </div>
       </div>

@@ -534,6 +534,17 @@
       "launch": "v0",
       "shipped": "2026-07-07",
       "summary": "Ran grid-and-spacing + layout-and-composition skills. Found: 2 of 3 collapsible panels (Push, Shade) silently overrode the shared .body-panel CSS with a duplicate inline paddingTop, rendering inconsistent internal rhythm vs BodyPanel — removed. One fully dead inline style (About.tsx) overriding CSS that was never set. 9 off-grid magic-number spacing values (10px/6px/2px/14px, none on the 4pt scale) snapped to existing tokens. 2 stray 13px type sizes consolidated into --text-seg. Focus-ring offsets and hairline borders deliberately left as literals — sanctioned exceptions per the skill, not drift. Verified visually: all three panels now share identical rhythm."
+    },
+    {
+      "id": "DEC2",
+      "title": "Final design-skill sweep: disabled states, real icons, dark-mode gap named",
+      "column": "now",
+      "tier": "pebble",
+      "track": "ui",
+      "size": "S",
+      "launch": "v0",
+      "shipped": "2026-07-07",
+      "summary": "Ran the 9 remaining always-on design skills (design-tokens, color-and-elevation, components-and-states, interaction-and-motion, app-motion-and-animation, accessibility-and-inclusive-design, ethical-design-and-dark-patterns, iconography-and-imagery, ux-writing-and-content) — full coverage of all skills tagged always-on for design work. Fixed: zero .btn:disabled/:hover CSS existed despite 6 real disabled= usages (Search/Enable/vote buttons looked identical whether clickable or not — verified computed style). Replaced Unicode gear/info glyphs with proper 24px-grid inline SVG (currentColor, matches skill guidance against icon-font-style rendering risk). Clean audits, no findings: ethical-design-and-dark-patterns (no dark patterns present — checked consent/urgency/cancel/confirmshame), ux-writing-and-content (errors already what/why/how-fix, consistent terminology). Named, not fixed: no dark mode (deliberate — moodboard optimized for sunlight readability, real gap for night use, sized as its own feature); tokens in px not rem (ignores OS text-size zoom, real but broad mechanical risk — flagged for Jason, not auto-applied)."
     }
   ]
 }

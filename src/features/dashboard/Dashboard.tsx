@@ -1,8 +1,11 @@
 import { computeTrueFeel } from '@/features/formula/compute-true-feel'
 import { solarZenithDeg } from '@/features/formula/solar-zenith'
 
+import { CopyLine } from '@/features/copy/CopyLine'
+import { ReportButtons } from '@/features/reports/ReportButtons'
 import { computeHourlyTrueFeel } from '@/features/timeline/compute-hourly'
 import { SafeWindowTimeline } from '@/features/timeline/SafeWindowTimeline'
+import { config } from '@/lib/config'
 
 import { BodyPanel } from './BodyPanel'
 import { BreakdownLedger } from './BreakdownLedger'
@@ -125,6 +128,7 @@ function DashboardBody({ weather, location, toggles, updateToggles }: BodyProps)
           {result.isWeatherShock && <span className="badge shock">weather shock</span>}
           {result.missing.length > 0 && <span className="badge">partial data</span>}
         </p>
+        {config.apiBase && <CopyLine apiBase={config.apiBase} location={location} result={result} />}
       </section>
 
       <BreakdownLedger result={result} unit={unit} />
@@ -183,6 +187,8 @@ function DashboardBody({ weather, location, toggles, updateToggles }: BodyProps)
       />
 
       <BodyPanel bio={bio} onChange={updateBio} />
+
+      {config.apiBase && <ReportButtons apiBase={config.apiBase} location={location} />}
     </>
   )
 }

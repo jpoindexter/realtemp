@@ -129,18 +129,6 @@
       "closes": "closes P3-2 (trademark collision)"
     },
     {
-      "id": "L1",
-      "title": "Crowdsourced micro-reports (hotter/cooler/spot-on)",
-      "column": "later",
-      "tier": "rock",
-      "track": "data",
-      "size": "L",
-      "launch": "v2",
-      "gated": true,
-      "summary": "First backend: report storage, anti-spam, and a defined coefficient-correction loop. This is how the formula earns accuracy claims.",
-      "done": "Reports adjust local bias term; validation dashboard shows drift."
-    },
-    {
       "id": "L4",
       "title": "Hyperlocal thermal heatmap (CV shadow-casting)",
       "column": "later",
@@ -151,16 +139,6 @@
       "gated": true,
       "summary": "3D building/canopy data → street-level shade map. Own data-sourcing project; flagship premium feature.",
       "closes": "closes PDF v1.0 §3.2 + Tier-2 CV"
-    },
-    {
-      "id": "L5",
-      "title": "LLM weather copy",
-      "column": "later",
-      "tier": "pebble",
-      "track": "ai",
-      "size": "S",
-      "launch": "v2",
-      "summary": "Haiku-class model turns the array into one stylized line. Est. cost ≈ $0.0002/req → ~$0.006/user/mo at 30 opens; cache per location-hour to cut 90%."
     },
     {
       "id": "L6",
@@ -195,6 +173,28 @@
       "size": "M",
       "launch": "v2",
       "summary": "Push when tomorrow's True Feel crosses a personal threshold. Needs PWA push or native wrapper; premium candidate."
+    },
+    {
+      "id": "L1b",
+      "title": "Deploy realtemp-api + bind D1/KV",
+      "column": "later",
+      "tier": "pebble",
+      "track": "ops",
+      "size": "S",
+      "launch": "v2",
+      "gated": true,
+      "summary": "Jason: wrangler d1 create + kv create + paste ids into wrangler.jsonc + wrangler deploy + set VITE_API_BASE. ~10 min."
+    },
+    {
+      "id": "L5b",
+      "title": "Enable LLM copy (secret)",
+      "column": "later",
+      "tier": "sand",
+      "track": "ai",
+      "size": "S",
+      "launch": "v2",
+      "gated": true,
+      "summary": "Jason: wrangler secret put ANTHROPIC_API_KEY. Cost ≈ €0.006/user/mo cached."
     }
   ],
   "shipped": [
@@ -416,6 +416,30 @@
       "gated": true,
       "summary": "Height/weight/metabolism/clothing — bounded thermal-sign heuristic, on-device only, zero-effect defaults. Model in DECISIONS.md.",
       "closes": "closes PARKED bio-calibration + Clo",
+      "shipped": "2026-07-07"
+    },
+    {
+      "id": "L1a",
+      "title": "Crowdsourced micro-reports — code complete",
+      "column": "later",
+      "tier": "rock",
+      "track": "data",
+      "size": "L",
+      "launch": "v2",
+      "gated": true,
+      "summary": "Worker API (D1, 1km cells, 10-min IP rate limit, 3h summary) + one-tap client UI, config-gated by VITE_API_BASE. Local-verified via wrangler dev.",
+      "done": "Reports adjust local bias term; validation dashboard shows drift.",
+      "shipped": "2026-07-07"
+    },
+    {
+      "id": "L5a",
+      "title": "LLM weather copy — code complete",
+      "column": "later",
+      "tier": "pebble",
+      "track": "ai",
+      "size": "S",
+      "launch": "v2",
+      "summary": "Haiku via Worker proxy, KV location-hour cache, graceful 503 without key; client line hides when absent.",
       "shipped": "2026-07-07"
     }
   ]

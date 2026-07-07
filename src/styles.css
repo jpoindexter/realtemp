@@ -214,6 +214,21 @@ fieldset.seg legend {
 .timeline .feel-key { font-weight: 700; color: var(--ink); }
 .timeline .base-key { color: var(--ink-2); }
 
+/* copy line + reports */
+.copy-line { margin: 8px 0 0; font-size: 15px; font-style: italic; color: var(--ink-2); max-width: 40ch; }
+.reports { display: flex; flex-direction: column; gap: 8px; }
+.reports .lbl {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+.report-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+
 /* search + states */
 .stack { display: flex; flex-direction: column; gap: 12px; }
 

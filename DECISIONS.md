@@ -34,3 +34,8 @@
 **Alternatives:** PWA-only (no App Store, no push on iOS); native SwiftUI rewrite (throws away the shipped UI layer, ~1 week).
 **Why:** Jason redirected v0 to "phone app" same-day. Capacitor keeps 100% of the green code, gives a home-screen app + App Store path, and leaves push notifications (v2 card L8) reachable.
 **Reversible?** Yes — the web app stays intact; the iOS shell is additive.
+
+## 2026-07-07 — v1 build pulled forward before street check
+**Choice:** Build executable v1 cards (N1/N3/N4/N5, N6 partial) now, before P4 street verification, per direct instruction ("/hill-climb execute all cards"). Gated cards (P4, N2, N7, all v2) remain blocked with named gates.
+**Why:** Jason's call overrides ROADMAP sequencing. Coefficient tuning (N2) still requires lived data — unchanged.
+**Reversible?** Yes.

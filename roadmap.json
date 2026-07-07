@@ -96,17 +96,6 @@
       "done": "All PRD v0 checkboxes checked from a phone browser."
     },
     {
-      "id": "N1",
-      "title": "Hourly Safe Window timeline",
-      "column": "next",
-      "tier": "rock",
-      "track": "ui",
-      "size": "M",
-      "launch": "v1",
-      "summary": "24h graph of True Feel vs base air temp with comfort windows highlighted; same formula over hourly forecast. Promoted from PARKED.",
-      "done": "Toggles apply across all 24 hours; windows visibly bounded."
-    },
-    {
       "id": "N2",
       "title": "Coefficient tuning from lived use",
       "column": "next",
@@ -401,6 +390,18 @@
       "size": "S",
       "launch": "v1",
       "summary": "JAG/TI wind chill below 10°C; blend zone 10–15°C so the formula is continuous.",
+      "shipped": "2026-07-07"
+    },
+    {
+      "id": "N1",
+      "title": "Hourly Safe Window timeline",
+      "column": "next",
+      "tier": "rock",
+      "track": "ui",
+      "size": "M",
+      "launch": "v1",
+      "summary": "24h graph of True Feel vs base air temp with comfort windows highlighted; same formula over hourly forecast. Promoted from PARKED.",
+      "done": "Toggles apply across all 24 hours; windows visibly bounded.",
       "shipped": "2026-07-07"
     }
   ]

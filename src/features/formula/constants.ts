@@ -37,6 +37,10 @@ export const CONVECTIVE_ACTIVITY_FACTOR = 0.5
 export const SWEAT_TD_FULL_C = 10
 export const SWEAT_TD_ZERO_C = 26
 
+// Safe Window comfort band on True Feel (°C) — v0 heuristic, tune with lived use
+export const COMFORT_MIN_TRUEFEEL_C = 5
+export const COMFORT_MAX_TRUEFEEL_C = 32
+
 // Cold: JAG/TI wind chill (Environment Canada / NWS 2001), 10 m wind in km/h.
 // WCT = A + B·Ta + C·v^E + D·Ta·v^E — defined for Ta ≤ 10°C and v ≥ 4.8 km/h.
 export const WIND_CHILL_A = 13.12

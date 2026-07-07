@@ -1,6 +1,9 @@
 import { computeTrueFeel } from '@/features/formula/compute-true-feel'
 import { solarZenithDeg } from '@/features/formula/solar-zenith'
 
+import { computeHourlyTrueFeel } from '@/features/timeline/compute-hourly'
+import { SafeWindowTimeline } from '@/features/timeline/SafeWindowTimeline'
+
 import { BreakdownLedger } from './BreakdownLedger'
 import { SegmentedControl } from './SegmentedControl'
 import { SweatGauge } from './SweatGauge'
@@ -144,6 +147,17 @@ function DashboardBody({ weather, location, toggles, updateToggles }: BodyProps)
       </div>
 
       <SweatGauge pct={result.sweatEfficiencyPct} />
+
+      <SafeWindowTimeline
+        points={computeHourlyTrueFeel(
+          weather.hourly,
+          weather.utcOffsetSeconds,
+          location.latitude,
+          location.longitude,
+          toggles,
+        )}
+        unit={unit}
+      />
     </>
   )
 }

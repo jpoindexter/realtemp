@@ -4,10 +4,12 @@ import { solarZenithDeg } from '@/features/formula/solar-zenith'
 import { computeHourlyTrueFeel } from '@/features/timeline/compute-hourly'
 import { SafeWindowTimeline } from '@/features/timeline/SafeWindowTimeline'
 
+import { BodyPanel } from './BodyPanel'
 import { BreakdownLedger } from './BreakdownLedger'
 import { SegmentedControl } from './SegmentedControl'
 import { SweatGauge } from './SweatGauge'
 import { displayTemp } from './format-temp'
+import { useBio } from './use-bio'
 import { useToggles } from './use-toggles'
 import { useUnit } from './use-unit'
 import { useWeather } from './use-weather'
@@ -88,6 +90,7 @@ type BodyProps = {
 
 function DashboardBody({ weather, location, toggles, updateToggles }: BodyProps) {
   const [unit, toggleUnit] = useUnit()
+  const [bio, updateBio] = useBio()
   const zenith = solarZenithDeg(weather.fetchedAt, location.latitude, location.longitude)
   const result = computeTrueFeel(
     {
@@ -100,6 +103,7 @@ function DashboardBody({ weather, location, toggles, updateToggles }: BodyProps)
       baseline14C: weather.baseline14C,
     },
     toggles,
+    bio,
   )
 
   return (
@@ -171,11 +175,14 @@ function DashboardBody({ weather, location, toggles, updateToggles }: BodyProps)
             latitude: location.latitude,
             longitude: location.longitude,
             baseline14C: weather.baseline14C,
+            bio,
           },
           toggles,
         )}
         unit={unit}
       />
+
+      <BodyPanel bio={bio} onChange={updateBio} />
     </>
   )
 }

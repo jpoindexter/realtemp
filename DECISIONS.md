@@ -45,3 +45,9 @@
 **Alternatives:** physiological acclimatization models (no accessible standard for consumer inputs); auto-detecting state from usage history (creepy + unreliable).
 **Why:** Transparent, bounded, self-reported, zero personal data. Coefficients in constants.ts, tunable like the rest.
 **Reversible?** Yes.
+
+## 2026-07-07 — Bio-calibration model: bounded thermal-sign heuristic
+**Choice:** body = clamp((BMI−22)×0.1, ±1.5) × thermalSign(base) + metabolic (−0.5/0/+0.5); clothing = cold table (−2/0/+2) ⟷ heat table (−0.5/0/+1.5) blended by thermalSign; thermalSign = clamp((base−17.5)/7.5, −1, 1). All on-device (localStorage), defaults are zero-effect, rows only render when non-zero.
+**Alternatives:** ISO 7730 PMV (needs clo/met precision consumers can't supply); skipping the card (was v2-gated on "validated model" — Jason overrode the gate).
+**Why:** Transparent, bounded, opt-in; consistent with every other coefficient being a tunable knob, not a physics claim. No backend → no GDPR surface.
+**Reversible?** Yes.

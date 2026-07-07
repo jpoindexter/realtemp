@@ -32,7 +32,7 @@ describe('Dashboard', () => {
     expect(screen.getByText('base air')).toBeDefined()
     expect(screen.getByText('humidity friction')).toBeDefined()
     expect(screen.getByText(/sun premium/)).toBeDefined() // regex: label gains '· night' after dark
-    expect(screen.getAllByRole('radio')).toHaveLength(12)
+    expect(screen.getAllByRole('radio')).toHaveLength(18) // 4 toggle groups + 2 body-panel groups
     expect(screen.getByRole('meter', { name: /sweat efficiency/i })).toBeDefined()
     expect(screen.queryByText(/partial data/i)).toBeNull()
   })

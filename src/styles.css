@@ -175,6 +175,23 @@ fieldset.seg legend {
 .gauge .bar { height: 14px; border: 1.5px solid var(--ink); background: var(--paper); }
 .gauge .fill { height: 100%; background: var(--shade); }
 
+/* body panel */
+.body-panel { border: 1.5px solid var(--line); background: var(--paper); }
+.body-panel summary {
+  padding: 12px;
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-2);
+  cursor: pointer;
+}
+.body-panel summary:focus-visible { outline: 3px solid var(--shade); outline-offset: -3px; }
+.body-panel > .stack { padding: 0 12px 12px; }
+.body-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field label { font-size: 13px; color: var(--ink-2); }
+
 /* safe-window timeline */
 .timeline { display: flex; flex-direction: column; gap: 6px; }
 .timeline .lbl {

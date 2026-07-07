@@ -166,6 +166,43 @@ describe('acclimatization + weather shock', () => {
   })
 })
 
+describe('bio-calibration', () => {
+  const bio = { heightCm: 180, weightKg: 90, metabolic: 'high', clothing: 'warm' } as const
+  // BMI 27.78 → (5.78 × 0.1) = 0.578, thermal sign +1 at 30°C
+
+  it('adds body and clothing rows in heat — hand-checked', () => {
+    const r = computeTrueFeel(scorcher, streetDay, bio)
+    expect(delta(r, 'body')).toBeCloseTo(1.1, 5) // 0.578 + 0.5 metabolic
+    expect(delta(r, 'clothing')).toBeCloseTo(1.5, 5) // warm layers in heat
+  })
+
+  it('flips the mass sign in cold — insulation, not burden', () => {
+    const cold = { ...scorcher, airTempC: 0 }
+    const r = computeTrueFeel(cold, streetDay, bio)
+    expect(delta(r, 'body')).toBeCloseTo(-0.1, 5) // −0.578 + 0.5
+    expect(delta(r, 'clothing')).toBeCloseTo(2, 5) // warm layers help at 0°C
+  })
+
+  it('produces no rows without a profile or with the zero-effect default', () => {
+    const none = computeTrueFeel(scorcher, streetDay)
+    const defaults = computeTrueFeel(scorcher, streetDay, {
+      heightCm: null,
+      weightKg: null,
+      metabolic: 'normal',
+      clothing: 'normal',
+    })
+    expect(delta(none, 'body')).toBeUndefined()
+    expect(delta(defaults, 'body')).toBeUndefined()
+    expect(delta(defaults, 'clothing')).toBeUndefined()
+  })
+
+  it('keeps the ledger-sum invariant with bio rows present', () => {
+    const r = computeTrueFeel(scorcher, streetDay, bio)
+    const sum = r.deltas.reduce((s, d) => s + d.deltaC, r.baseC)
+    expect(r.trueFeelC).toBeCloseTo(sum, 5)
+  })
+})
+
 describe('sweatEfficiencyPct', () => {
   it('is linear between the dew-point comfort bounds and clamped outside', () => {
     expect(sweatEfficiencyPct(5)).toBe(100)

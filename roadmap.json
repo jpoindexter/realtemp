@@ -106,14 +106,15 @@
       "summary": "Adjust constants.ts after 2 weeks of Valencia street comparison; log deltas in DECISIONS.md."
     },
     {
-      "id": "N6",
-      "title": "Error tracking + minimal analytics",
+      "id": "N6b",
+      "title": "Vendor error tracking",
       "column": "next",
       "tier": "sand",
       "track": "ops",
       "size": "S",
       "launch": "v1",
-      "summary": "Sentry (or equivalent) + privacy-safe usage ping. Closes audit-2 gap (no observability). Deferred per no-platform-before-users rule."
+      "gated": true,
+      "summary": "Sentry (or equivalent) — needs Jason to create the account/DSN. Boundary hook point is ready in ErrorBoundary.componentDidCatch."
     },
     {
       "id": "N7",
@@ -402,6 +403,17 @@
       "launch": "v1",
       "summary": "24h graph of True Feel vs base air temp with comfort windows highlighted; same formula over hourly forecast. Promoted from PARKED.",
       "done": "Toggles apply across all 24 hours; windows visibly bounded.",
+      "shipped": "2026-07-07"
+    },
+    {
+      "id": "N6a",
+      "title": "Crash boundary (error tracking, local half)",
+      "column": "next",
+      "tier": "sand",
+      "track": "ops",
+      "size": "S",
+      "launch": "v1",
+      "summary": "React ErrorBoundary — render crash shows a recoverable screen, never white. Trace to console until a vendor DSN exists.",
       "shipped": "2026-07-07"
     }
   ]

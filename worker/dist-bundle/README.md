@@ -1,0 +1,1 @@
+This folder contains the built output assets for the worker "realtemp-api" generated at 2026-07-07T08:43:43.553Z.

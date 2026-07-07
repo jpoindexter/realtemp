@@ -13,3 +13,4 @@ ios/App/DerivedData/
 
 worker/node_modules/
 worker/.wrangler/
+.vercel

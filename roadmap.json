@@ -92,7 +92,7 @@
       "track": "ops",
       "size": "S",
       "launch": "v0",
-      "summary": "GATED: your legs. npx cap open ios → run on iPhone → search Valencia → walk. Checks the last PRD v0 box.",
+      "summary": "GATED: your legs. Open https://realtemp-rho.vercel.app on your phone (or npx cap open ios) and walk outside. Checks the last PRD v0 box.",
       "done": "All PRD v0 checkboxes checked from a phone browser."
     },
     {
@@ -173,17 +173,6 @@
       "size": "M",
       "launch": "v2",
       "summary": "GATED: APNs/Apple Developer + deployed Worker + installed-PWA permission. Deliberately NOT half-built: unverifiable code violates no-stubs. See PARKED.md."
-    },
-    {
-      "id": "L1b",
-      "title": "Deploy realtemp-api + bind D1/KV",
-      "column": "later",
-      "tier": "pebble",
-      "track": "ops",
-      "size": "S",
-      "launch": "v2",
-      "gated": true,
-      "summary": "Jason: wrangler d1 create + kv create + paste ids into wrangler.jsonc + wrangler deploy + set VITE_API_BASE. ~10 min."
     },
     {
       "id": "L5b",
@@ -453,6 +442,29 @@
       "gated": true,
       "summary": "Sentry (or equivalent) — needs Jason to create the account/DSN. Boundary hook point is ready in ErrorBoundary.componentDidCatch.",
       "shipped": "2026-07-07"
+    },
+    {
+      "id": "L1b",
+      "title": "realtemp-api deployed to Cloudflare",
+      "column": "later",
+      "tier": "pebble",
+      "track": "ops",
+      "size": "S",
+      "launch": "v2",
+      "gated": false,
+      "summary": "Live at realtemp-api.jason-poindexter.workers.dev — D1 schema applied, KV bound, endpoints verified in production. User-authorized deploy.",
+      "shipped": "2026-07-07"
+    },
+    {
+      "id": "P4w",
+      "title": "Web app deployed — phone URL live",
+      "column": "now",
+      "tier": "pebble",
+      "track": "ops",
+      "size": "S",
+      "launch": "v0",
+      "shipped": "2026-07-07",
+      "summary": "https://realtemp-rho.vercel.app — API base baked in, report loop verified end-to-end in production. User-authorized deploy."
     }
   ]
 }

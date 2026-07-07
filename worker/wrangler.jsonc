@@ -9,14 +9,14 @@
       "database_name": "realtemp-reports",
       // Jason: create with `wrangler d1 create realtemp-reports`, paste the id here,
       // then run `wrangler d1 execute realtemp-reports --file schema.sql --remote`
-      "database_id": "LOCAL-DEV-PLACEHOLDER"
+      "database_id": "7a29c49b-ba4c-4cbc-9b55-7d771b497e5d"
     }
   ],
   "kv_namespaces": [
     {
       "binding": "CACHE",
       // Jason: `wrangler kv namespace create CACHE`, paste the id
-      "id": "LOCAL-DEV-PLACEHOLDER"
+      "id": "8ba4b68870df4dde9c2aa92353ed7d24"
     }
   ]
   // Secret (optional, enables /api/copy LLM path): `wrangler secret put ANTHROPIC_API_KEY`

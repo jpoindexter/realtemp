@@ -165,14 +165,15 @@
       "closes": "closes audit-2 cost gap"
     },
     {
-      "id": "L8",
-      "title": "Heat-warning notifications",
+      "id": "L8b",
+      "title": "Deploy push worker + test on device",
       "column": "later",
       "tier": "pebble",
-      "track": "ui",
-      "size": "M",
+      "track": "ops",
+      "size": "S",
       "launch": "v2",
-      "summary": "GATED: APNs/Apple Developer + deployed Worker + installed-PWA permission. Deliberately NOT half-built: unverifiable code violates no-stubs. See PARKED.md."
+      "gated": true,
+      "summary": "GATED: wrangler login (secret put blocked for me — correctly) + iPhone Home-Screen install to receive a real push. Runbook §2."
     },
     {
       "id": "L5b",
@@ -465,6 +466,18 @@
       "launch": "v0",
       "shipped": "2026-07-07",
       "summary": "https://realtemp-rho.vercel.app — API base baked in, report loop verified end-to-end in production. User-authorized deploy."
+    },
+    {
+      "id": "L8a",
+      "title": "Heat-warning push — code complete",
+      "column": "later",
+      "tier": "pebble",
+      "track": "ui",
+      "size": "M",
+      "launch": "v2",
+      "summary": "Payload-free web push: VAPID ES256 (crypto round-trip tested), daily cron heat check, SW + threshold panel. Deploy = runbook §2.",
+      "shipped": "2026-07-07",
+      "gated": false
     }
   ]
 }

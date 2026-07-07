@@ -8,21 +8,18 @@
 npx cap open ios   # Run on your iPhone, search Valencia, walk outside
 ```
 
-## 2. Backend on (L1b + L5b) — ~10 min, Cloudflare account
+## 2. Backend update (L5b + L8b) — ~5 min, Cloudflare account
+D1, KV and the worker are ALREADY LIVE (deployed 2026-07-07). Remaining:
 
 ```bash
 cd worker
 npx wrangler login
-npx wrangler d1 create realtemp-reports     # paste database_id into wrangler.jsonc
-npx wrangler kv namespace create CACHE      # paste id into wrangler.jsonc
-npx wrangler d1 execute realtemp-reports --file schema.sql --remote
+npx wrangler d1 execute realtemp-reports --file schema.sql --remote   # adds push_subscriptions
+node -e "console.log(JSON.stringify(JSON.parse(require('fs').readFileSync('.vapid-keys.json')).privateJwk))" | npx wrangler secret put VAPID_PRIVATE_JWK
 npx wrangler secret put ANTHROPIC_API_KEY   # optional — enables the LLM copy line
-node -e "console.log(JSON.stringify(JSON.parse(require('fs').readFileSync('.vapid-keys.json')).privateJwk))" | npx wrangler secret put VAPID_PRIVATE_JWK   # enables heat-warning push (card L8)
-npx wrangler d1 execute realtemp-reports --file schema.sql --remote   # picks up push_subscriptions table
-npm run deploy                              # note the workers.dev URL
+npm run deploy
+cd .. && npx vercel deploy --prod --yes --scope jasons-projects-998d5f27   # ships the push panel AFTER the worker has the routes
 ```
-
-Then in project root: `.env` → `VITE_API_BASE=https://realtemp-api.<account>.workers.dev`, rebuild. Report buttons + copy line appear automatically.
 
 ## 3. Crash reporting (N6b) — 5 min, sentry.io
 

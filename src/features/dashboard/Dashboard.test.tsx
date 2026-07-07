@@ -32,7 +32,7 @@ describe('Dashboard', () => {
     expect(screen.getByText('base air')).toBeDefined()
     expect(screen.getByText('humidity friction')).toBeDefined()
     expect(screen.getByText(/sun premium/)).toBeDefined() // regex: label gains '· night' after dark
-    expect(screen.getAllByRole('radio')).toHaveLength(9)
+    expect(screen.getAllByRole('radio')).toHaveLength(12)
     expect(screen.getByRole('meter', { name: /sweat efficiency/i })).toBeDefined()
     expect(screen.queryByText(/partial data/i)).toBeNull()
   })
@@ -53,11 +53,11 @@ describe('Dashboard', () => {
     render(<Dashboard location={valencia} onChangeLocation={() => {}} />)
 
     await waitFor(() => expect(screen.getByText(/live/)).toBeDefined())
-    expect(fetchMock).toHaveBeenCalledTimes(1)
+    expect(fetchMock).toHaveBeenCalledTimes(2) // current + baseline
 
     vi.setSystemTime(Date.now() + 11 * 60_000) // past the 10-min TTL
     document.dispatchEvent(new Event('visibilitychange'))
-    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2))
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(4))
     vi.useRealTimers()
   })
 

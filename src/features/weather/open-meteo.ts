@@ -1,5 +1,6 @@
 import { z } from 'zod'
 
+import { BASELINE_DAYS } from '@/features/formula/constants'
 import { err, ok } from '@/lib/result'
 
 import type { Result } from '@/lib/result'
@@ -61,6 +62,33 @@ export interface WeatherSnapshot {
   utcOffsetSeconds: number
   /** Next 24 local hours; empty when the feed omits hourly data. */
   hourly: HourlyPoint[]
+  /** Mean of the past 14 daily-mean temps; null when unavailable (degrades acclimatization). */
+  baseline14C: number | null
+}
+
+const dailyResponseSchema = z.object({
+  daily: z.object({
+    time: z.array(z.string()),
+    temperature_2m_mean: z.array(z.number().nullable()),
+  }),
+})
+
+/** Past-14-day mean; today's entry (last) is excluded. Failure is a null, never an error. */
+async function fetchBaseline14(latitude: number, longitude: number): Promise<number | null> {
+  const url =
+    `${FORECAST_URL}?latitude=${latitude}&longitude=${longitude}` +
+    `&daily=temperature_2m_mean&past_days=${BASELINE_DAYS}&forecast_days=1&timezone=auto`
+  try {
+    const response = await fetch(url)
+    if (!response.ok) return null
+    const parsed = dailyResponseSchema.safeParse(await response.json())
+    if (!parsed.success) return null
+    const past = parsed.data.daily.temperature_2m_mean.slice(0, -1).filter((v): v is number => v !== null)
+    if (past.length === 0) return null
+    return past.reduce((s, v) => s + v, 0) / past.length
+  } catch {
+    return null
+  }
 }
 
 const FORECAST_URL = 'https://api.open-meteo.com/v1/forecast'
@@ -79,12 +107,14 @@ export async function fetchCurrentWeather(
     `&wind_speed_unit=ms&timezone=auto`
 
   let payload: unknown
+  let baseline14C: number | null
   try {
-    const response = await fetch(url)
+    const [response, baseline] = await Promise.all([fetch(url), fetchBaseline14(latitude, longitude)])
     if (!response.ok) {
       return err({ kind: 'network', message: `Open-Meteo answered ${response.status}. Try again.` })
     }
     payload = await response.json()
+    baseline14C = baseline
   } catch {
     return err({ kind: 'network', message: 'No connection to Open-Meteo. Check network and retry.' })
   }
@@ -106,6 +136,7 @@ export async function fetchCurrentWeather(
     fetchedAt: new Date(),
     utcOffsetSeconds: utc_offset_seconds,
     hourly: toHourlyPoints(hourly),
+    baseline14C,
   })
 }
 

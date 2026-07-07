@@ -20,6 +20,7 @@ const base: TrueFeel = {
   sweatEfficiencyPct: 69,
   missing: [],
   isNight: false,
+  isWeatherShock: false,
 }
 
 describe('BreakdownLedger', () => {

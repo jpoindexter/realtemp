@@ -153,16 +153,6 @@
       "closes": "closes PARKED bio-calibration + Clo"
     },
     {
-      "id": "L3",
-      "title": "Acclimatization Matrix + Weather Shock",
-      "column": "later",
-      "tier": "pebble",
-      "track": "core",
-      "size": "M",
-      "launch": "v2",
-      "summary": "Rolling 14-day local baseline shifts perceived severity; spike delta flags Weather Shock. Local-only history keeps it GDPR-free."
-    },
-    {
       "id": "L4",
       "title": "Hyperlocal thermal heatmap (CV shadow-casting)",
       "column": "later",
@@ -414,6 +404,17 @@
       "size": "S",
       "launch": "v1",
       "summary": "React ErrorBoundary — render crash shows a recoverable screen, never white. Trace to console until a vendor DSN exists.",
+      "shipped": "2026-07-07"
+    },
+    {
+      "id": "L3",
+      "title": "Acclimatization Matrix + Weather Shock",
+      "column": "later",
+      "tier": "pebble",
+      "track": "core",
+      "size": "M",
+      "launch": "v2",
+      "summary": "Rolling 14-day local baseline shifts perceived severity; spike delta flags Weather Shock. Local-only history keeps it GDPR-free.",
       "shipped": "2026-07-07"
     }
   ]

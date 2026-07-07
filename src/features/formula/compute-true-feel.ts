@@ -1,4 +1,6 @@
 import {
+  ACCLIM_FACTOR,
+  ACCLIM_MAX_DELTA_C,
   ACTIVITY_DELTA_C,
   COLD_BLEND_HIGH_C,
   COLD_BLEND_LOW_C,
@@ -19,6 +21,7 @@ import {
   URBAN_PEAK_END_HOUR,
   URBAN_PEAK_START_HOUR,
   UV_TO_PREMIUM,
+  WEATHER_SHOCK_DELTA_C,
   WIND_CHILL_A,
   WIND_CHILL_B,
   WIND_CHILL_C,
@@ -121,6 +124,17 @@ export function computeTrueFeel(inputs: WeatherInputs, toggles: Toggles): TrueFe
   deltas.push({ id: 'environment', label: 'surroundings', deltaC: round1(environmentDelta(toggles.environment, inputs.localHour)) })
   deltas.push({ id: 'activity', label: 'activity', deltaC: round1(activityDelta(toggles.activity, streetWindMs)) })
 
+  // Acclimatization: a newcomer feels a share of the deviation from the local 14-day norm.
+  const baseline = inputs.baseline14C ?? null
+  const acclimFactor = ACCLIM_FACTOR[toggles.acclimatization]
+  if (acclimFactor > 0) {
+    if (baseline === null) missing.push('acclimatization')
+    else {
+      const raw = clamp((inputs.airTempC - baseline) * acclimFactor, -ACCLIM_MAX_DELTA_C, ACCLIM_MAX_DELTA_C)
+      deltas.push({ id: 'acclimatization', label: 'acclimatization', deltaC: round1(raw) })
+    }
+  }
+
   const baseC = round1(inputs.airTempC)
   const trueFeelC = round1(deltas.reduce((sum, d) => sum + d.deltaC, baseC))
 
@@ -131,5 +145,6 @@ export function computeTrueFeel(inputs: WeatherInputs, toggles: Toggles): TrueFe
     sweatEfficiencyPct: inputs.dewPointC === null ? null : sweatEfficiencyPct(inputs.dewPointC),
     missing,
     isNight: inputs.solarZenithDeg > 90,
+    isWeatherShock: baseline !== null && Math.abs(inputs.airTempC - baseline) >= WEATHER_SHOCK_DELTA_C,
   }
 }

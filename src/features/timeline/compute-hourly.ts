@@ -18,24 +18,30 @@ export interface ComfortWindow {
   to: string
 }
 
+export interface TimelineContext {
+  utcOffsetSeconds: number
+  latitude: number
+  longitude: number
+  baseline14C: number | null
+}
+
 /** The dashboard formula applied to each forecast hour — same toggles, per-hour sun position. */
 export function computeHourlyTrueFeel(
   points: HourlyPoint[],
-  utcOffsetSeconds: number,
-  latitude: number,
-  longitude: number,
+  ctx: TimelineContext,
   toggles: Toggles,
 ): TimelinePoint[] {
   return points.map((p) => {
-    const utcMs = Date.parse(`${p.timeIso}:00Z`) - utcOffsetSeconds * 1000
+    const utcMs = Date.parse(`${p.timeIso}:00Z`) - ctx.utcOffsetSeconds * 1000
     const result = computeTrueFeel(
       {
         airTempC: p.airTempC,
         dewPointC: p.dewPointC,
         windSpeedMs: p.windSpeedMs,
         uvIndex: p.uvIndex,
-        solarZenithDeg: solarZenithDeg(new Date(utcMs), latitude, longitude),
+        solarZenithDeg: solarZenithDeg(new Date(utcMs), ctx.latitude, ctx.longitude),
         localHour: Number(p.timeIso.slice(11, 13)),
+        baseline14C: ctx.baseline14C,
       },
       toggles,
     )

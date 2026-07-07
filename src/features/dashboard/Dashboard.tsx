@@ -33,6 +33,12 @@ const ACTIVITY_OPTIONS = [
   { value: 'active', label: 'Active' },
 ] as const
 
+const ACCLIM_OPTIONS = [
+  { value: 'new', label: 'New here' },
+  { value: 'settling', label: 'Settling' },
+  { value: 'local', label: 'Local' },
+] as const
+
 interface DashboardProps {
   location: StoredLocation
   onChangeLocation: () => void
@@ -91,6 +97,7 @@ function DashboardBody({ weather, location, toggles, updateToggles }: BodyProps)
       uvIndex: weather.uvIndex,
       solarZenithDeg: zenith,
       localHour: weather.localHour,
+      baseline14C: weather.baseline14C,
     },
     toggles,
   )
@@ -111,6 +118,7 @@ function DashboardBody({ weather, location, toggles, updateToggles }: BodyProps)
         </div>
         <p className="cap">
           True Feel &middot; air says {displayTemp(result.baseC, unit)}&deg;
+          {result.isWeatherShock && <span className="badge shock">weather shock</span>}
           {result.missing.length > 0 && <span className="badge">partial data</span>}
         </p>
       </section>
@@ -144,6 +152,13 @@ function DashboardBody({ weather, location, toggles, updateToggles }: BodyProps)
           value={toggles.activity}
           onChange={(activity) => updateToggles({ activity })}
         />
+        <SegmentedControl
+          legend="Acclimatized to this weather"
+          name="acclimatization"
+          options={ACCLIM_OPTIONS}
+          value={toggles.acclimatization}
+          onChange={(acclimatization) => updateToggles({ acclimatization })}
+        />
       </div>
 
       <SweatGauge pct={result.sweatEfficiencyPct} />
@@ -151,9 +166,12 @@ function DashboardBody({ weather, location, toggles, updateToggles }: BodyProps)
       <SafeWindowTimeline
         points={computeHourlyTrueFeel(
           weather.hourly,
-          weather.utcOffsetSeconds,
-          location.latitude,
-          location.longitude,
+          {
+            utcOffsetSeconds: weather.utcOffsetSeconds,
+            latitude: location.latitude,
+            longitude: location.longitude,
+            baseline14C: weather.baseline14C,
+          },
           toggles,
         )}
         unit={unit}

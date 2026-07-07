@@ -37,6 +37,12 @@ export const CONVECTIVE_ACTIVITY_FACTOR = 0.5
 export const SWEAT_TD_FULL_C = 10
 export const SWEAT_TD_ZERO_C = 26
 
+// Acclimatization: perceived share of the deviation from the 14-day baseline
+export const ACCLIM_FACTOR = { new: 0.3, settling: 0.15, local: 0 } as const
+export const ACCLIM_MAX_DELTA_C = 3
+export const WEATHER_SHOCK_DELTA_C = 8
+export const BASELINE_DAYS = 14
+
 // Safe Window comfort band on True Feel (°C) — v0 heuristic, tune with lived use
 export const COMFORT_MIN_TRUEFEEL_C = 5
 export const COMFORT_MAX_TRUEFEEL_C = 32

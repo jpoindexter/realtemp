@@ -80,6 +80,26 @@ describe('fetchCurrentWeather', () => {
     expect(url).toContain('forecast_hours=24')
   })
 
+  it('computes the 14-day baseline excluding today', async () => {
+    const daily = {
+      time: Array.from({ length: 15 }, (_, i) => `2026-06-${23 + i}`),
+      temperature_2m_mean: [...Array.from({ length: 14 }, () => 20), 99], // today's 99 must not count
+    }
+    mockFetchOnce({ ...validPayload, daily })
+    const r = await fetchCurrentWeather(39.47, -0.376)
+    expect(r.ok).toBe(true)
+    if (!r.ok) return
+    expect(r.value.baseline14C).toBe(20)
+  })
+
+  it('degrades baseline to null when the daily block is absent', async () => {
+    mockFetchOnce(validPayload)
+    const r = await fetchCurrentWeather(39.47, -0.376)
+    expect(r.ok).toBe(true)
+    if (!r.ok) return
+    expect(r.value.baseline14C).toBeNull()
+  })
+
   it('returns a network error value on HTTP failure', async () => {
     mockFetchOnce({}, false, 503)
     const r = await fetchCurrentWeather(39.47, -0.376)

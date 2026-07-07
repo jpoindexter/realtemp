@@ -39,3 +39,9 @@
 **Choice:** Build executable v1 cards (N1/N3/N4/N5, N6 partial) now, before P4 street verification, per direct instruction ("/hill-climb execute all cards"). Gated cards (P4, N2, N7, all v2) remain blocked with named gates.
 **Why:** Jason's call overrides ROADMAP sequencing. Coefficient tuning (N2) still requires lived data — unchanged.
 **Reversible?** Yes.
+
+## 2026-07-07 — Acclimatization model: share-of-deviation heuristic
+**Choice:** delta = (todayAir − mean of past 14 daily means) × factor (new 0.3 / settling 0.15 / local 0), clamped ±3°C. Weather Shock badge at |deviation| ≥ 8°C. Baseline from a second Open-Meteo call, degrades to null.
+**Alternatives:** physiological acclimatization models (no accessible standard for consumer inputs); auto-detecting state from usage history (creepy + unreliable).
+**Why:** Transparent, bounded, self-reported, zero personal data. Coefficients in constants.ts, tunable like the rest.
+**Reversible?** Yes.

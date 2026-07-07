@@ -9,9 +9,16 @@ const togglesSchema = z.object({
   exposure: z.enum(['sun', 'shade', 'overcast']),
   environment: z.enum(['urban', 'open', 'nature']),
   activity: z.enum(['stagnant', 'walking', 'active']),
+  // default keeps toggles stored before this field existed valid — and no effect until opted in
+  acclimatization: z.enum(['new', 'settling', 'local']).default('local'),
 })
 
-const DEFAULT_TOGGLES: Toggles = { exposure: 'sun', environment: 'urban', activity: 'walking' }
+const DEFAULT_TOGGLES: Toggles = {
+  exposure: 'sun',
+  environment: 'urban',
+  activity: 'walking',
+  acclimatization: 'local',
+}
 
 function readStoredToggles(): Toggles {
   try {

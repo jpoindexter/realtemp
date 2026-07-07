@@ -94,6 +94,7 @@ body {
   margin-left: 8px;
   vertical-align: middle;
 }
+.badge.shock { border-color: var(--scorch); color: var(--scorch); }
 
 /* ledger */
 .ledger {

@@ -5,7 +5,14 @@ import { comfortWindows, computeHourlyTrueFeel } from './compute-hourly'
 import type { Toggles } from '@/features/formula/types'
 import type { HourlyPoint } from '@/features/weather/open-meteo'
 
-const calmNight: Toggles = { exposure: 'shade', environment: 'open', activity: 'stagnant' }
+const CTX = { utcOffsetSeconds: 7200, latitude: 39.47, longitude: -0.376, baseline14C: null }
+
+const calmNight: Toggles = {
+  exposure: 'shade',
+  environment: 'open',
+  activity: 'stagnant',
+  acclimatization: 'local',
+}
 
 const hour = (timeIso: string, airTempC: number, dewPointC: number): HourlyPoint => ({
   timeIso,
@@ -24,7 +31,7 @@ const points: HourlyPoint[] = [
 ]
 
 describe('computeHourlyTrueFeel', () => {
-  const result = computeHourlyTrueFeel(points, 7200, 39.47, -0.376, calmNight)
+  const result = computeHourlyTrueFeel(points, CTX, calmNight)
 
   it('applies the dashboard formula per hour — hand-checked values', () => {
     expect(result[0]?.trueFeelC).toBeCloseTo(19.2, 5) // 20 + 0.0 humidity − 0.8 wind
@@ -42,7 +49,7 @@ describe('computeHourlyTrueFeel', () => {
 
 describe('comfortWindows', () => {
   it('collapses contiguous comfortable hours into ranges', () => {
-    const result = computeHourlyTrueFeel(points, 7200, 39.47, -0.376, calmNight)
+    const result = computeHourlyTrueFeel(points, CTX, calmNight)
     expect(comfortWindows(result)).toEqual([
       { from: '01:00', to: '02:00' },
       { from: '04:00', to: '04:00' },
@@ -52,9 +59,7 @@ describe('comfortWindows', () => {
   it('returns no windows when every hour is hostile', () => {
     const hot = computeHourlyTrueFeel(
       [hour('2026-07-07T03:00', 35, 24), hour('2026-07-07T04:00', 36, 24)],
-      7200,
-      39.47,
-      -0.376,
+      CTX,
       calmNight,
     )
     expect(comfortWindows(hot)).toEqual([])

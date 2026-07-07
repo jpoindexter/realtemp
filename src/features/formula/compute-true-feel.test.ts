@@ -13,7 +13,12 @@ const scorcher: WeatherInputs = {
   solarZenithDeg: 20,
   localHour: 16,
 }
-const streetDay: Toggles = { exposure: 'sun', environment: 'urban', activity: 'walking' }
+const streetDay: Toggles = {
+  exposure: 'sun',
+  environment: 'urban',
+  activity: 'walking',
+  acclimatization: 'local',
+}
 
 const delta = (r: ReturnType<typeof computeTrueFeel>, id: string) =>
   r.deltas.find((d) => d.id === id)?.deltaC
@@ -129,6 +134,35 @@ describe('degraded inputs', () => {
   it('skips wind-halving of activity when wind is unknown', () => {
     const r = computeTrueFeel({ ...scorcher, windSpeedMs: null }, { ...streetDay, activity: 'active' })
     expect(delta(r, 'activity')).toBe(3)
+  })
+})
+
+describe('acclimatization + weather shock', () => {
+  const heatwave = { ...scorcher, airTempC: 36, baseline14C: 26 } // +10° over the local norm
+
+  it('a newcomer feels a clamped share of the deviation from the baseline', () => {
+    const r = computeTrueFeel(heatwave, { ...streetDay, acclimatization: 'new' })
+    expect(delta(r, 'acclimatization')).toBe(3) // 10 × 0.3 = 3, at the clamp
+    const s = computeTrueFeel(heatwave, { ...streetDay, acclimatization: 'settling' })
+    expect(delta(s, 'acclimatization')).toBeCloseTo(1.5, 5)
+  })
+
+  it('locals get no row at all — zero-noise default', () => {
+    const r = computeTrueFeel(heatwave, streetDay)
+    expect(delta(r, 'acclimatization')).toBeUndefined()
+    expect(r.missing).not.toContain('acclimatization')
+  })
+
+  it('flags weather shock at ≥8° off baseline, both directions', () => {
+    expect(computeTrueFeel(heatwave, streetDay).isWeatherShock).toBe(true)
+    expect(computeTrueFeel({ ...heatwave, airTempC: 30 }, streetDay).isWeatherShock).toBe(false)
+    expect(computeTrueFeel({ ...heatwave, airTempC: 17 }, streetDay).isWeatherShock).toBe(true)
+  })
+
+  it('degrades to missing when opted in but the baseline is unavailable', () => {
+    const r = computeTrueFeel({ ...scorcher, baseline14C: null }, { ...streetDay, acclimatization: 'new' })
+    expect(delta(r, 'acclimatization')).toBeUndefined()
+    expect(r.missing).toContain('acclimatization')
   })
 })
 

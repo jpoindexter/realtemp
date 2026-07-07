@@ -557,6 +557,17 @@
       "gated": false,
       "summary": "Redeployed worker with push routes (no secret). Root-caused a real bug during verification: push_subscriptions table existed locally but was never created on remote D1 — INSERT threw, surfaced as opaque Cloudflare error 1101. Created the table remotely, then verified a full subscribe->unsubscribe cycle end-to-end against production. Sending (cron) stays dormant until Jason adds VAPID_PRIVATE_JWK — that secret never transits my tool calls.",
       "shipped": "2026-07-07"
+    },
+    {
+      "id": "BUG2",
+      "title": "Fix: background weather refresh was blanking the populated dashboard",
+      "column": "now",
+      "tier": "rock",
+      "track": "ui",
+      "size": "M",
+      "launch": "v0",
+      "shipped": "2026-07-07",
+      "summary": "/userflow audit (flow-onboarding, flow-permissions, flow-empty-states, flow-errors) found a real bug: refetch() changed the hooks internal key, which the render logic read as no data yet, blanking the entire dashboard back to Reading the street... on every background TTL refresh -- discarding good data and defeating the isStale badge entirely. Rewrote useWeather to key displayed data on location only, with isRefreshing derived separately (never hides content); a failed background refresh now keeps old good data instead of showing an error. Falsification-tested: new regression test fails against the reverted old hook, passes against the fix. Full flow-report.html delivered with the complete 4-skill audit."
     }
   ]
 }

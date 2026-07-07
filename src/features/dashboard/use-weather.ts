@@ -13,16 +13,25 @@ const STALE_CHECK_INTERVAL_MS = 60_000
 export type WeatherState =
   | { status: 'loading' }
   | { status: 'error'; message: string }
-  | { status: 'ready'; snapshot: WeatherSnapshot; isStale: boolean }
+  | { status: 'ready'; snapshot: WeatherSnapshot; isStale: boolean; isRefreshing: boolean }
 
 interface Fetched {
-  key: string
+  requestKey: string
+  locationKey: string
   result: Result<WeatherSnapshot, WeatherError>
 }
 
 /**
- * Loading is derived (fetched.key ≠ current key), not set imperatively —
- * a location change or retry invalidates the old result by construction.
+ * A background refetch (stale-TTL, focus, manual retry) never blanks an
+ * already-populated dashboard. `fetched` holds the last result for the
+ * CURRENT location only; a failed refresh never overwrites prior good data
+ * for that same location — it's silently dropped (only `requestKey` advances,
+ * so `isFetching` still clears), so the user keeps seeing the (now more)
+ * stale reading instead of a working screen flashing to an error. `loading`
+ * only renders when there's truly nothing to show yet for this location.
+ *
+ * `isFetching` is derived (fetched.requestKey ≠ current requestKey), not set
+ * imperatively inside the effect — same discipline as the base loading state.
  */
 export function useWeather(location: StoredLocation): [WeatherState, () => void] {
   const [attempt, setAttempt] = useState(0)
@@ -30,20 +39,28 @@ export function useWeather(location: StoredLocation): [WeatherState, () => void]
   const [now, setNow] = useState(() => Date.now())
   const fetchedAtRef = useRef<number | null>(null)
 
-  const key = `${location.latitude},${location.longitude}#${attempt}`
+  const locationKey = `${location.latitude},${location.longitude}`
+  const requestKey = `${locationKey}#${attempt}`
   const refetch = useCallback(() => setAttempt((n) => n + 1), [])
 
   useEffect(() => {
     let cancelled = false
     void fetchCurrentWeather(location.latitude, location.longitude).then((result) => {
       if (cancelled) return
-      fetchedAtRef.current = result.ok ? result.value.fetchedAt.getTime() : null
-      setFetched({ key, result })
+      if (result.ok) {
+        fetchedAtRef.current = result.value.fetchedAt.getTime()
+        setFetched({ requestKey, locationKey, result })
+        return
+      }
+      setFetched((prev) =>
+        prev?.locationKey === locationKey && prev.result.ok ? { ...prev, requestKey } : { requestKey, locationKey, result },
+      )
     })
     return () => {
       cancelled = true
     }
-  }, [key, location.latitude, location.longitude])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [requestKey, locationKey])
 
   // Staleness is time-driven: a slow ticker re-evaluates it, and returning to the
   // app (focus/visibility) refetches immediately when past TTL.
@@ -64,8 +81,14 @@ export function useWeather(location: StoredLocation): [WeatherState, () => void]
     }
   }, [refetch])
 
-  if (fetched?.key !== key) return [{ status: 'loading' }, refetch]
-  if (!fetched.result.ok) return [{ status: 'error', message: fetched.result.error.message }, refetch]
+  const isFetching = fetched?.requestKey !== requestKey
+
+  if (!fetched || fetched.locationKey !== locationKey) {
+    return [{ status: 'loading' }, refetch]
+  }
+  if (!fetched.result.ok) {
+    return [{ status: 'error', message: fetched.result.error.message }, refetch]
+  }
   const isStale = now - fetched.result.value.fetchedAt.getTime() > WEATHER_TTL_MS
-  return [{ status: 'ready', snapshot: fetched.result.value, isStale }, refetch]
+  return [{ status: 'ready', snapshot: fetched.result.value, isStale, isRefreshing: isFetching }, refetch]
 }

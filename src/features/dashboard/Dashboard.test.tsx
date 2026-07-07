@@ -54,18 +54,41 @@ describe('Dashboard', () => {
     expect(screen.queryByText(/sun premium/)).toBeNull()
   })
 
-  it('marks the reading stale past TTL and refetches on visibility', async () => {
+  it('marks the reading stale past TTL and refetches on visibility, WITHOUT blanking the dashboard mid-refresh', async () => {
     vi.useFakeTimers({ toFake: ['Date'] })
-    const fetchMock = vi.fn(async () => ({ ok: true, status: 200, json: async () => payload }))
+    const hung: { resolve: ((v: unknown) => void) | null } = { resolve: null }
+    let mainCallCount = 0
+    const fetchMock = vi.fn(async (url: string) => {
+      if (url.includes('daily=')) return { ok: true, status: 200, json: async () => ({ daily: { time: [], temperature_2m_mean: [] } }) }
+      mainCallCount++
+      if (mainCallCount === 1) return { ok: true, status: 200, json: async () => payload } // initial load
+      // the refetch's main current-weather call hangs until released below
+      return new Promise((resolve) => {
+        hung.resolve = resolve
+      })
+    })
     vi.stubGlobal('fetch', fetchMock)
     render(<Dashboard location={valencia} unit="c" onSetUnit={() => {}} onChangeLocation={() => {}} onOpenSettings={() => {}} onOpenAbout={() => {}} />)
 
     await waitFor(() => expect(screen.getByText(/live/)).toBeDefined())
-    expect(fetchMock).toHaveBeenCalledTimes(2) // current + baseline
+    expect(fetchMock).toHaveBeenCalledTimes(2)
 
     vi.setSystemTime(Date.now() + 11 * 60_000) // past the 10-min TTL
     document.dispatchEvent(new Event('visibilitychange'))
+    // Both the refetch's main and baseline calls are recorded synchronously
+    // (call count jumps 2→4) even though the main one hangs on its promise.
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(4))
+
+    // The refetch is now in flight (hung on the unresolved promise) — the
+    // previously-loaded dashboard must still be fully rendered, not blanked
+    // to a loading screen. This is the exact bug: a background refresh used
+    // to discard perfectly good data the instant it started refetching.
+    expect(screen.getByText('true feel')).toBeDefined()
+    expect(screen.getByText(/updating/i)).toBeDefined()
+
+    hung.resolve?.({ ok: true, status: 200, json: async () => payload })
+    await waitFor(() => expect(screen.getByText(/live/)).toBeDefined())
+    expect(screen.queryByText(/updating/i)).toBeNull()
     vi.useRealTimers()
   })
 

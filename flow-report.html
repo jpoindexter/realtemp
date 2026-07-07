@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RealTemp — User Flow Report</title>
+<style>
+  :root{--ink:#111;--muted:#666;--line:#ddd;--accent:#0b5fff;--ok:#0a7d33;--warn:#b45309;--bad:#b91c1c;--bg:#fafafa;--card:#fff}
+  *{box-sizing:border-box;margin:0}
+  body{font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:var(--bg);padding:48px 24px;max-width:880px;margin:0 auto}
+  h1{font-size:28px;letter-spacing:-.02em}
+  h2{font-size:20px;margin:48px 0 8px;padding-top:24px;border-top:1px solid var(--line)}
+  h3{font-size:15px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:28px 0 12px}
+  .meta{color:var(--muted);font-size:14px;margin:6px 0 4px}
+  .skills{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0 0}
+  .chip{font-size:13px;padding:3px 10px;border:1px solid var(--line);border-radius:999px;background:var(--card)}
+  .flow{list-style:none;padding:0;margin:16px 0}
+  .flow>li{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px;position:relative}
+  .flow>li+li{margin-top:34px}
+  .flow>li+li::before{content:"";position:absolute;top:-27px;left:32px;width:2px;height:20px;background:var(--accent)}
+  .flow>li+li::after{content:"";position:absolute;top:-12px;left:28px;border:5px solid transparent;border-top-color:var(--accent)}
+  .step-n{display:inline-block;font-size:12px;font-weight:700;color:var(--accent);border:1.5px solid var(--accent);border-radius:999px;padding:1px 9px;margin-right:8px;vertical-align:1px}
+  .step-t{font-weight:650}
+  .step-d{color:var(--muted);font-size:14px;margin-top:6px}
+  .cta{font-size:13px;margin-top:8px}
+  .cta b{color:var(--ok)}
+  .branch{font-size:13px;margin-top:8px;padding:8px 12px;background:#f4f6ff;border-left:3px solid var(--accent);border-radius:0 6px 6px 0}
+  .bugbox{font-size:13px;margin-top:8px;padding:10px 12px;background:#fff4f4;border-left:3px solid var(--bad);border-radius:0 6px 6px 0}
+  .bugbox b{color:var(--bad)}
+  table{border-collapse:collapse;width:100%;font-size:14px;background:var(--card)}
+  th,td{text-align:left;padding:9px 12px;border:1px solid var(--line);vertical-align:top}
+  th{background:var(--bg);font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+  .pass{color:var(--ok);font-weight:650}.warn{color:var(--warn);font-weight:650}.fail{color:var(--bad);font-weight:650}
+  .overflow{overflow-x:auto}
+  footer{margin-top:56px;padding-top:16px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+  @media print{body{background:#fff;padding:0}.flow>li{break-inside:avoid}}
+</style>
+</head>
+<body>
+
+<h1>RealTemp — User Flow Report</h1>
+<p class="meta">2026-07-07 · /userflow review of the app's built surfaces — no new feature requested, so scope was inferred from the actual codebase: first-run, both permission asks, and every async data lifecycle.</p>
+<div class="skills">
+  <span class="chip">flow-onboarding</span>
+  <span class="chip">flow-permissions</span>
+  <span class="chip">flow-empty-states</span>
+  <span class="chip">flow-errors</span>
+</div>
+
+<h2>Summary</h2>
+<p>RealTemp is correctly shaped as a <b>utility</b> (per flow-onboarding's own product-shape table) — no accounts, no quiz, no tour, straight to the working screen after one unavoidable ask (location). That part needed no changes. The audit found one real, user-visible bug in the weather data lifecycle: a background refresh was silently blanking the entire populated dashboard back to a loading screen, defeating the stale-data indicator built earlier this session. It's fixed and regression-tested (falsification-verified: the new test fails against the old code, passes against the new). Everything else below is a mix of confirmed strengths and named-but-unactioned gaps for you to prioritize.</p>
+
+<!-- FLOW 1 -->
+<h2>Flow: First-run / location setup</h2>
+<p class="meta">Pattern source: flow-onboarding, flow-permissions · Entry point: cold app launch, no stored location</p>
+
+<h3>Steps</h3>
+<ol class="flow">
+  <li>
+    <span class="step-n">1</span><span class="step-t">LocationSearch (the whole "onboarding")</span>
+    <p class="step-d">One screen: title, one-line benefit statement ("The temperature your body actually meets on the street — math included. Where are you?"), primary button "Use my location", secondary path: a labeled search input + Search button.</p>
+    <p class="cta">Primary action: <b>Use my location</b> → fires the OS geolocation prompt directly</p>
+    <div class="branch">If geolocation denied or unsupported → falls through to the same-screen city search, with a message that names the exact recovery path (see Anti-pattern audit)</div>
+  </li>
+  <li>
+    <span class="step-n">2</span><span class="step-t">City search results (if used)</span>
+    <p class="step-d">Typed query → list of matching places (name + region). Empty state present: "No places match '…'. Try another spelling."</p>
+    <p class="cta">Primary action: <b>tap a result</b> → picks that location and lands on the dashboard</p>
+  </li>
+  <li>
+    <span class="step-n">3</span><span class="step-t">Dashboard (activation)</span>
+    <p class="step-d">Location is stored (localStorage), user sees their True Feel for the first time — this is the activation moment.</p>
+  </li>
+</ol>
+
+<h3>Screen inventory</h3>
+<div class="overflow"><table>
+  <tr><th>Screen</th><th>Purpose</th><th>Primary action</th><th>States (empty/loading/error)</th></tr>
+  <tr><td>LocationSearch</td><td>Get one input (location) before any value can render</td><td>Use my location / Search</td><td>idle · busy ("Looking…") · error (denial, no-match) — all present</td></tr>
+</table></div>
+
+<h3>Anti-pattern audit</h3>
+<div class="overflow"><table>
+  <tr><th>Check</th><th>Verdict</th><th>Note</th></tr>
+  <tr><td>Long signup form before value (flow-onboarding)</td><td class="pass">PASS</td><td>Zero fields beyond the one unavoidable location ask. No accounts.</td></tr>
+  <tr><td>3–5 swipeable tour slides</td><td class="pass">PASS</td><td>None exist — correctly skipped per the "Utility" product-shape row.</td></tr>
+  <tr><td>Landing on an empty workspace</td><td class="pass">PASS</td><td>N/A — the product has no workspace concept.</td></tr>
+  <tr><td>OS permission dialog fired with no priming (flow-permissions)</td><td class="warn">WARN</td><td>"Use my location" fires the OS geolocation dialog on first tap with no separate priming screen. The button's own label is arguably self-priming (states the exact action), and adding an interstitial for one self-evident tap risks violating Krug's "don't make me think." Judgment call, not a clear violation — flagging per the skill's literal rule, not fixing.</td></tr>
+  <tr><td>Denial recovery: inline explainer + concrete settings path (flow-permissions)</td><td class="pass">PASS</td><td>Already fixed earlier this session from a real user report: "Location is blocked for this site. Search for your city below — or re-allow it via the aA button → Website Settings → Location." Names the exact toggle path.</td></tr>
+  <tr><td>Fallback channel offered on denial</td><td class="pass">PASS</td><td>City search is always available on the same screen — the denial message points straight at it.</td></tr>
+</table></div>
+
+<!-- FLOW 2 -->
+<h2>Flow: Push notification opt-in</h2>
+<p class="meta">Pattern source: flow-permissions · Entry point: user opens the "Heat warnings" panel on the dashboard</p>
+
+<h3>Steps</h3>
+<ol class="flow">
+  <li>
+    <span class="step-n">1</span><span class="step-t">Heat warnings panel (collapsed by default)</span>
+    <p class="step-d">Summary line states category + frequency upfront: "Heat warnings · daily check at dawn". Opening it reveals a labeled threshold input ("Warn when the day's high reaches (°C air)") before any ask — this doubles as the priming screen.</p>
+    <p class="cta">Primary action: <b>Enable heat warnings</b> → requests Notification permission, then registers the service worker and subscribes</p>
+    <div class="branch">If permission denied → inline message: "Notifications are blocked for this site — enable them in browser settings first."</div>
+    <div class="branch">If on iOS and not installed to Home Screen → "Could not subscribe. On iPhone, add RealTemp to your Home Screen first."</div>
+  </li>
+  <li>
+    <span class="step-n">2</span><span class="step-t">Enabled state</span>
+    <p class="step-d">"On — checked daily against your location." + a Turn off button, symmetric in weight and tap cost to the enable action.</p>
+    <p class="cta">Primary action: <b>Turn off</b> → unsubscribes, same one tap as enabling</p>
+  </li>
+</ol>
+
+<h3>Screen inventory</h3>
+<div class="overflow"><table>
+  <tr><th>Screen</th><th>Purpose</th><th>Primary action</th><th>States (empty/loading/error)</th></tr>
+  <tr><td>PushPanel</td><td>Opt into a daily threshold-based heat warning</td><td>Enable heat warnings</td><td>off · busy · on · denied · error · server-pending — all present</td></tr>
+</table></div>
+
+<h3>Anti-pattern audit</h3>
+<div class="overflow"><table>
+  <tr><th>Check</th><th>Verdict</th><th>Note</th></tr>
+  <tr><td>Ask at launch/signup instead of at intent (flow-permissions)</td><td class="pass">PASS</td><td>Only asked when the user opens this specific panel and taps Enable — genuinely just-in-time.</td></tr>
+  <tr><td>Priming states concrete frequency + category, not just "enable notifications"</td><td class="pass">PASS</td><td>"daily check at dawn" + the exact threshold the user set — matches the skill's ideal pattern closely.</td></tr>
+  <tr><td>Soft refusal labeled "Not now", re-askable</td><td class="warn">WARN</td><td>There's no separate soft-ask step to refuse — the OS dialog fires directly on "Enable heat warnings" (same tradeoff as geolocation above). Low severity: this permission has zero cost of a "wasted" OS-level denial since it's single-purpose and not launch-gated.</td></tr>
+  <tr><td>Denial recovery names the exact settings path</td><td class="warn">WARN</td><td>Geolocation's denial copy names the precise browser path (aA → Website Settings → Location); push's denial copy just says "enable them in browser settings" with no specific path. Inconsistent precision between the app's two permission flows — small, real, fixable copy gap.</td></tr>
+  <tr><td>One master toggle vs per-category preference center</td><td class="pass">PASS</td><td>N/A at this scale — exactly one notification type exists. The skill's preference-center guidance would be over-engineering for a single-category v0.</td></tr>
+  <tr><td>"We miss you" content-free re-engagement</td><td class="pass">PASS</td><td>No re-engagement messaging exists at all yet — nothing to violate.</td></tr>
+</table></div>
+
+<!-- FLOW 3 -->
+<h2>Flow: Weather data lifecycle (dashboard)</h2>
+<p class="meta">Pattern source: flow-empty-states, flow-errors · Entry point: any time the dashboard needs current conditions — first load, retry, or a silent background refresh</p>
+
+<h3>Steps</h3>
+<ol class="flow">
+  <li>
+    <span class="step-n">1</span><span class="step-t">First load</span>
+    <p class="step-d">Plain text "Reading the street…" while the initial fetch is in flight.</p>
+    <div class="bugbox"><b>Gap (not fixed):</b> this is text-only, not a skeleton matching the dashboard's actual shape (hero number, ledger rows, toggles, gauge, timeline). flow-empty-states is explicit that dashboards should skeleton, not spinner-or-text, for 1–10s waits. Real-world load times observed this session are mostly sub-1s, so the practical impact is small — but the retry-backoff path (below) can genuinely run 1.2s+, and right now that's a full-content pop-in with real layout shift. Named, not built — a skeleton is net-new UI work, not a bug fix, so it's left for you to prioritize.</div>
+  </li>
+  <li>
+    <span class="step-n">2</span><span class="step-t">Ready</span>
+    <p class="step-d">Full dashboard: hero True Feel, math-breakdown ledger, 4 toggle groups, sweat gauge, 24h safe-window timeline, body panel, report buttons, push panel, shade map. Header shows live/stale/updating status.</p>
+  </li>
+  <li>
+    <span class="step-n">3</span><span class="step-t">Background refresh (TTL expiry or tab refocus)</span>
+    <p class="step-d">Silently refetches when the reading passes 10 minutes old and the tab regains focus.</p>
+    <div class="bugbox"><b>Bug found and FIXED this session:</b> the refetch used to blank the entire populated dashboard back to the plain-text loading screen the instant it started — discarding good, valid data the user was actively looking at, and defeating the "stale" badge's entire purpose (the one interaction meant to show it instead hid everything). This is flow-empty-states' anti-pattern table by name: "Refresh that blanks existing content." Root cause: loading was derived from a request key that changed on every refetch attempt, with no separate signal for "data exists but a refresh is in flight." Rewrote <code>useWeather</code> so the displayed data is keyed on <em>location</em> only, and fetch-in-flight is a separately derived flag (<code>isRefreshing</code>) that never hides existing content — plus a failed background refresh now silently keeps the old good data instead of replacing it with an error. Header now reads "updating…" during a live refresh instead of vanishing. <b>Falsification-verified:</b> the new regression test fails against the pre-fix hook (confirmed by literally reverting the file and re-running) and passes against the fix — not just written-and-hoped-green.</div>
+  </li>
+  <li>
+    <span class="step-n">4</span><span class="step-t">Error (fetch failed)</span>
+    <p class="step-d">Distinct red-bordered box, never the same visual as loading or ready. Copy: "Weather data is momentarily unreachable. Tap retry — it usually clears in seconds." + Retry button.</p>
+    <div class="branch">Underlying fetch already retries automatically (3 attempts, 300ms/900ms backoff) before this screen ever shows — a real production bug (Open-Meteo transient failure misreported by the browser as a CORS block) was root-caused and fixed earlier this session.</div>
+  </li>
+</ol>
+
+<h3>Screen inventory</h3>
+<div class="overflow"><table>
+  <tr><th>Screen</th><th>Purpose</th><th>Primary action</th><th>States (empty/loading/error)</th></tr>
+  <tr><td>Dashboard</td><td>Show current True Feel + full breakdown</td><td>(passive; toggles recompute live)</td><td>loading (text-only) · ready · ready+refreshing · error+retry — all present, refresh-blanking bug now fixed</td></tr>
+</table></div>
+
+<h3>Anti-pattern audit</h3>
+<div class="overflow"><table>
+  <tr><th>Check</th><th>Verdict</th><th>Note</th></tr>
+  <tr><td>Same visual for true-empty and failed-fetch</td><td class="pass">PASS</td><td>Error state is a distinct bordered red box; never conflated with loading or empty.</td></tr>
+  <tr><td>Refresh that blanks existing content</td><td class="fail">FAIL → FIXED</td><td>See step 3 above. Shipped this session with a falsification-tested regression test.</td></tr>
+  <tr><td>Error copy: what happened + why + fix, no raw codes</td><td class="pass">PASS</td><td>"momentarily unreachable… tap retry… usually clears in seconds" — matches the skill's copy pattern closely.</td></tr>
+  <tr><td>Automatic retry visible, capped, then manual</td><td class="pass">PASS</td><td>3-attempt backoff happens invisibly before ever surfacing the error screen; once shown, retry is a manual, explicit action — matches the skill's capped-then-manual pattern.</td></tr>
+  <tr><td>Skeleton for dashboard-shaped content</td><td class="warn">WARN</td><td>Text-only loading indicator, not layout-matched. Named above; not built.</td></tr>
+  <tr><td>Optimistic UI misused on high-stakes actions</td><td class="pass">PASS</td><td>N/A — no writes happen from this surface.</td></tr>
+</table></div>
+
+<!-- FLOW 4 -->
+<h2>Flow: Shade map data lifecycle</h2>
+<p class="meta">Pattern source: flow-empty-states, flow-errors · Entry point: user opens the "Shade nearby" panel</p>
+
+<h3>Steps</h3>
+<ol class="flow">
+  <li>
+    <span class="step-n">1</span><span class="step-t">Panel opened</span>
+    <p class="step-d">Fetches nearby building footprints from OpenStreetMap Overpass on first open only (cached 30 days after).</p>
+  </li>
+  <li>
+    <span class="step-n">2</span><span class="step-t">Error (mirror exhausted)</span>
+    <p class="step-d">"Building data is overloaded right now — it happens; try again in a minute." + Retry button. Root cause (public Overpass instances 504ing without CORS headers, misread as a generic network failure) was diagnosed and fixed earlier this session with a 3-mirror rotation + timeout + local cache.</p>
+  </li>
+  <li>
+    <span class="step-n">3</span><span class="step-t">Ready</span>
+    <p class="step-d">Figure/ground SVG: building footprints + live sun-cast shadows for the current minute.</p>
+  </li>
+</ol>
+
+<h3>Screen inventory</h3>
+<div class="overflow"><table>
+  <tr><th>Screen</th><th>Purpose</th><th>Primary action</th><th>States (empty/loading/error)</th></tr>
+  <tr><td>ShadeMap</td><td>Show real building shadows near the user right now</td><td>Retry (on failure)</td><td>idle · busy · ready · error+retry · night (explained, not an error) — all present</td></tr>
+</table></div>
+
+<h3>Anti-pattern audit</h3>
+<div class="overflow"><table>
+  <tr><th>Check</th><th>Verdict</th><th>Note</th></tr>
+  <tr><td>Error message distinct from empty, with retry</td><td class="pass">PASS</td><td>Bordered error box + explicit Retry button, matches the dashboard's pattern for consistency.</td></tr>
+  <tr><td>Preserve cached/stale data over blanking</td><td class="pass">PASS</td><td>Building geometry is cached 30 days on-device — a retry after a transient failure serves cache instantly rather than re-fetching.</td></tr>
+  <tr><td>"No results" vs "error" conflated</td><td class="pass">PASS</td><td>Distinct copy for the true empty case ("No mapped buildings here — open ground, trust the sun toggle") vs the fetch-failed case.</td></tr>
+</table></div>
+
+<h2>Open questions & parked items</h2>
+<ul>
+  <li>Dashboard loading state: build a real skeleton matching the ready-state layout (hero, ledger rows, toggle groups, gauge, timeline) instead of plain text — named above, not built this session.</li>
+  <li>Push-notification denial copy: bring it to the same precision as geolocation's ("enable them in browser settings" → name the exact toggle path per browser, mirroring the aA-button pattern already written for location).</li>
+  <li>Whether to add a distinct priming screen before the geolocation/push OS dialogs, or keep the current single-tap approach (button-label-as-priming) — a genuine judgment call between flow-permissions' literal rule and Krug's don't-make-me-think; flagged, not decided.</li>
+</ul>
+
+<footer>Generated with <a href="https://github.com/jpoindexter/ux-flow-skills">ux-flow-skills</a> · patterns proven by shipped products, audited against each skill's anti-pattern list.</footer>
+
+</body>
+</html>

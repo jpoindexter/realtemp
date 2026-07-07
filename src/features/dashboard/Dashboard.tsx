@@ -25,9 +25,9 @@ export function Dashboard({ location, unit, onSetUnit, onChangeLocation, onOpenS
         <button type="button" onClick={onChangeLocation} aria-label={`Change location, currently ${location.label}`}>
           {location.label}
         </button>
-        <span>
+        <span role="status">
           {weather.status === 'ready'
-            ? `${weather.snapshot.localTimeIso.slice(11, 16)} · ${weather.isStale ? 'stale' : 'live'}`
+            ? `${weather.snapshot.localTimeIso.slice(11, 16)} · ${weather.isRefreshing ? 'updating…' : weather.isStale ? 'stale' : 'live'}`
             : '· · ·'}
         </span>
         <div className="icon-btns">

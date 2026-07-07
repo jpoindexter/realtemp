@@ -1,5 +1,6 @@
 import { z } from 'zod'
 
+import { config } from '@/lib/config'
 import { err, ok } from '@/lib/result'
 
 import { DEFAULT_LEVELS } from './shade-geometry'
@@ -8,9 +9,18 @@ import type { Building } from './shade-geometry'
 import type { WeatherError } from '@/features/weather/open-meteo'
 import type { Result } from '@/lib/result'
 
-// The public Overpass instances 504 under load and their error pages lack CORS
-// headers (browsers see "failed to fetch") — so: mirrors, timeouts, and a long
-// local cache. Buildings don't move.
+/**
+ * Building data is fetched server-side (the realtemp-api Worker) because
+ * Overpass's usage policy requires a client User-Agent header — and browser
+ * fetch() can never set one (it's forbidden, enforced by the browser itself).
+ * Confirmed root cause of persistent 406s: identical request, only the
+ * User-Agent differs, and only the identified one succeeds. No client-side
+ * retry or mirror rotation can fix a header the browser refuses to send.
+ *
+ * Direct-to-Overpass stays as a fallback only for local dev without
+ * VITE_API_BASE configured — it will hit the same 406 in a real browser,
+ * but keeps `wrangler dev`-less local development from hard-failing.
+ */
 const OVERPASS_MIRRORS = [
   'https://overpass-api.de/api/interpreter',
   'https://overpass.private.coffee/api/interpreter',
@@ -31,11 +41,13 @@ const overpassSchema = z.object({
   ),
 })
 
+const workerSchema = z.object({
+  buildings: z.array(z.object({ ring: z.array(z.tuple([z.number(), z.number()])), levels: z.number() })),
+})
+
 const cachedSchema = z.object({
   at: z.number(),
-  buildings: z.array(
-    z.object({ ring: z.array(z.tuple([z.number(), z.number()])), levels: z.number() }),
-  ),
+  buildings: z.array(z.object({ ring: z.array(z.tuple([z.number(), z.number()])), levels: z.number() })),
 })
 
 function levelsFromTags(tags: Record<string, string> | undefined): number {
@@ -46,8 +58,7 @@ function levelsFromTags(tags: Record<string, string> | undefined): number {
   return DEFAULT_LEVELS
 }
 
-const cacheKey = (lat: number, lon: number): string =>
-  `${CACHE_PREFIX}${lat.toFixed(3)},${lon.toFixed(3)}`
+const cacheKey = (lat: number, lon: number): string => `${CACHE_PREFIX}${lat.toFixed(3)},${lon.toFixed(3)}`
 
 function readCache(lat: number, lon: number): Building[] | null {
   try {
@@ -69,7 +80,20 @@ function writeCache(lat: number, lon: number, buildings: Building[]): void {
   }
 }
 
-async function tryMirror(url: string, query: string): Promise<Building[] | null> {
+async function fetchViaWorker(apiBase: string, latitude: number, longitude: number): Promise<Building[] | null> {
+  try {
+    const response = await fetch(`${apiBase}/api/buildings?latitude=${latitude}&longitude=${longitude}`, {
+      signal: AbortSignal.timeout(ATTEMPT_TIMEOUT_MS),
+    })
+    if (!response.ok) return null
+    const parsed = workerSchema.safeParse(await response.json())
+    return parsed.success ? (parsed.data.buildings as Building[]) : null
+  } catch {
+    return null
+  }
+}
+
+async function tryMirrorDirect(url: string, query: string): Promise<Building[] | null> {
   try {
     const response = await fetch(url, {
       method: 'POST',
@@ -89,7 +113,7 @@ async function tryMirror(url: string, query: string): Promise<Building[] | null>
   }
 }
 
-/** Buildings within ~220 m — cache first, then each mirror in turn. */
+/** Buildings within ~220 m — local cache first, then the worker proxy, then direct-fetch as a last resort. */
 export async function fetchBuildings(
   latitude: number,
   longitude: number,
@@ -97,9 +121,17 @@ export async function fetchBuildings(
   const cached = readCache(latitude, longitude)
   if (cached) return ok(cached)
 
+  if (config.apiBase) {
+    const buildings = await fetchViaWorker(config.apiBase, latitude, longitude)
+    if (buildings) {
+      writeCache(latitude, longitude, buildings)
+      return ok(buildings)
+    }
+  }
+
   const query = `[out:json][timeout:15];way[building](around:${RADIUS_M},${latitude},${longitude});out geom 400;`
   for (const mirror of OVERPASS_MIRRORS) {
-    const buildings = await tryMirror(mirror, query)
+    const buildings = await tryMirrorDirect(mirror, query)
     if (buildings) {
       writeCache(latitude, longitude, buildings)
       return ok(buildings)
@@ -107,6 +139,6 @@ export async function fetchBuildings(
   }
   return err({
     kind: 'network',
-    message: 'Building data is overloaded right now — it happens; try again in a minute.',
+    message: 'Building data is unreachable right now. Try again shortly.',
   })
 }

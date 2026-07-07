@@ -568,6 +568,17 @@
       "launch": "v0",
       "shipped": "2026-07-07",
       "summary": "/userflow audit (flow-onboarding, flow-permissions, flow-empty-states, flow-errors) found a real bug: refetch() changed the hooks internal key, which the render logic read as no data yet, blanking the entire dashboard back to Reading the street... on every background TTL refresh -- discarding good data and defeating the isStale badge entirely. Rewrote useWeather to key displayed data on location only, with isRefreshing derived separately (never hides content); a failed background refresh now keeps old good data instead of showing an error. Falsification-tested: new regression test fails against the reverted old hook, passes against the fix. Full flow-report.html delivered with the complete 4-skill audit."
+    },
+    {
+      "id": "BUG3",
+      "title": "Fix: shade map failed 100% of the time — Overpass needs a User-Agent browsers cannot send",
+      "column": "now",
+      "tier": "rock",
+      "track": "data",
+      "size": "M",
+      "launch": "v0",
+      "shipped": "2026-07-07",
+      "summary": "Jason reported the shade panel failing every single time, regardless of timing — ruled out transient overload immediately since real bugs are consistent, not random. Reproduced live in Chrome against prod: all 3 Overpass mirrors returned 503/timeout. Root-caused via direct curl A/B test: identical request, only the User-Agent header differs -> 406 without it, 200 with it. Browser fetch() can never set User-Agent (forbidden header, browser-enforced) -- client-side retries/mirrors could never have fixed this, structurally. Built a server-side proxy (GET /api/buildings) on the existing realtemp-api Worker with a proper UA + KV cache shared across all users (upgrade over the old per-device cache). Verified end-to-end in production: 213 real buildings returned for central Valencia, second call served from cache, then re-verified live in the browser on a fresh page load -- real shadows rendering, no error box."
     }
   ]
 }

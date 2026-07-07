@@ -1,3 +1,4 @@
+import { fetchBuildingsServerSide } from './buildings'
 import {
   COPY_CACHE_TTL_S,
   RATE_LIMIT_MS,
@@ -37,6 +38,7 @@ export default {
     if (url.pathname === '/api/copy' && request.method === 'POST') return copy(request, env)
     if (url.pathname === '/api/push/subscribe' && request.method === 'POST') return subscribePush(request, env)
     if (url.pathname === '/api/push/subscribe' && request.method === 'DELETE') return unsubscribePush(request, env)
+    if (url.pathname === '/api/buildings' && request.method === 'GET') return buildings(url, env)
 
     return json({ error: 'Not found' }, 404)
   },
@@ -81,6 +83,17 @@ async function reportSummary(url: URL, env: Env): Promise<Response> {
 
   const counts = { hotter: 0, cooler: 0, 'spot-on': 0, ...Object.fromEntries(results.map((r) => [r.vote, r.n])) }
   return json({ windowHours: 3, counts })
+}
+
+async function buildings(url: URL, env: Env): Promise<Response> {
+  const lat = Number(url.searchParams.get('latitude'))
+  const lon = Number(url.searchParams.get('longitude'))
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
+    return json({ error: 'Expected ?latitude=&longitude=' }, 400)
+  }
+  const result = await fetchBuildingsServerSide(lat, lon, env.CACHE)
+  if (!result) return json({ error: 'Building data is unreachable right now. Try again shortly.' }, 502)
+  return json(result)
 }
 
 async function copy(request: Request, env: Env): Promise<Response> {

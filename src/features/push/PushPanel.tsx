@@ -5,6 +5,10 @@ import { VAPID_PUBLIC_KEY } from '@/lib/config'
 import type { StoredLocation } from '@/features/location/geocoding'
 
 const DEFAULT_THRESHOLD_C = 36
+const IOS_HOME_SCREEN_ERROR =
+  'Could not subscribe. On iPhone, open RealTemp from the Home Screen icon, then try again.'
+const SERVICE_WORKER_ERROR = 'Could not subscribe. RealTemp is still setting up notifications - try again in a moment.'
+const SERVER_ERROR = 'Could not save this alert. Check your connection and try again.'
 
 function vapidKeyBytes(): Uint8Array {
   const raw = atob(VAPID_PUBLIC_KEY.replace(/-/g, '+').replace(/_/g, '/'))
@@ -13,6 +17,27 @@ function vapidKeyBytes(): Uint8Array {
 
 export function isPushSupported(): boolean {
   return 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window
+}
+
+function isAppleMobileDevice(): boolean {
+  const navigatorWithTouch = navigator as Navigator & { standalone?: boolean }
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigatorWithTouch.maxTouchPoints > 1)
+}
+
+function isStandaloneDisplay(): boolean {
+  const navigatorWithStandalone = navigator as Navigator & { standalone?: boolean }
+  return window.matchMedia?.('(display-mode: standalone)').matches || navigatorWithStandalone.standalone === true
+}
+
+function needsHomeScreenForPush(): boolean {
+  return isAppleMobileDevice() && !isStandaloneDisplay()
+}
+
+function pushErrorMessage(error: unknown): string {
+  const name = error instanceof DOMException ? error.name : ''
+  if (name === 'NotAllowedError') return IOS_HOME_SCREEN_ERROR
+  if (name === 'InvalidStateError' || name === 'AbortError') return SERVICE_WORKER_ERROR
+  return SERVER_ERROR
 }
 
 type PushState = 'off' | 'busy' | 'on' | 'denied' | 'error' | 'server-pending'
@@ -27,17 +52,24 @@ export function PushPanel({ apiBase, location }: PushPanelProps) {
   const [state, setState] = useState<PushState>(() =>
     typeof Notification !== 'undefined' && Notification.permission === 'denied' ? 'denied' : 'off',
   )
+  const [errorMessage, setErrorMessage] = useState(SERVER_ERROR)
   const [thresholdC, setThresholdC] = useState(DEFAULT_THRESHOLD_C)
 
   const enable = async () => {
     setState('busy')
     try {
+      if (needsHomeScreenForPush()) {
+        setErrorMessage(IOS_HOME_SCREEN_ERROR)
+        setState('error')
+        return
+      }
       const permission = await Notification.requestPermission()
       if (permission !== 'granted') {
         setState('denied')
         return
       }
-      const registration = await navigator.serviceWorker.register('/sw.js')
+      await navigator.serviceWorker.register('/sw.js')
+      const registration = await navigator.serviceWorker.ready
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: vapidKeyBytes().buffer as ArrayBuffer,
@@ -52,8 +84,14 @@ export function PushPanel({ apiBase, location }: PushPanelProps) {
           thresholdC,
         }),
       })
-      setState(r.ok ? 'on' : r.status === 404 ? 'server-pending' : 'error')
-    } catch {
+      if (r.ok) setState('on')
+      else if (r.status === 404) setState('server-pending')
+      else {
+        setErrorMessage(SERVER_ERROR)
+        setState('error')
+      }
+    } catch (error) {
+      setErrorMessage(pushErrorMessage(error))
       setState('error')
     }
   }
@@ -100,7 +138,7 @@ export function PushPanel({ apiBase, location }: PushPanelProps) {
         {state === 'denied' && (
           <p className="note" role="status">Notifications are blocked for this site — enable them in browser settings first.</p>
         )}
-        {state === 'error' && <p className="error">Could not subscribe. On iPhone, add RealTemp to your Home Screen first.</p>}
+        {state === 'error' && <p className="error" role="alert">{errorMessage}</p>}
         {state === 'server-pending' && (
           <p className="note" role="status">Warnings aren&rsquo;t switched on server-side yet — one deploy away (runbook &sect;2).</p>
         )}

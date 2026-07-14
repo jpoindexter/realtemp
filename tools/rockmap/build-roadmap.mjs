@@ -59,7 +59,8 @@ function validate(d, path) {
 }
 
 const BASE_CSS = `*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:system-ui,sans-serif;background:#0c0f14;color:#c8cdd8;padding:1.5rem}
+html{-webkit-text-size-adjust:100%}
+body{font-family:system-ui,sans-serif;background:#0c0f14;color:#c8cdd8;padding:max(1rem,env(safe-area-inset-top)) max(1rem,env(safe-area-inset-right)) max(1.25rem,env(safe-area-inset-bottom)) max(1rem,env(safe-area-inset-left))}
 h1{font-size:1.25rem;margin-bottom:.35rem;font-weight:600}
 .meta{color:#5e6e82;font-size:.72rem;margin-bottom:.9rem;line-height:1.6}
 .meta b{color:#f59e0b}
@@ -70,7 +71,7 @@ h1{font-size:1.25rem;margin-bottom:.35rem;font-weight:600}
 .legend i{width:.7rem;height:.7rem;display:inline-block;border:1px solid}
 .filters{display:flex;flex-wrap:wrap;gap:.75rem;margin-bottom:1.25rem;align-items:center}
 .filters label{font-size:.65rem;color:#3e4a5c;font-weight:700;font-family:ui-monospace,monospace;letter-spacing:.09em;text-transform:uppercase}
-select{background:#10141b;border:1px solid #1e2737;color:#5e6e82;padding:.35rem .6rem;cursor:pointer;font-size:.72rem;font-family:ui-monospace,monospace;min-width:110px}
+select{background:#10141b;border:1px solid #1e2737;color:#5e6e82;padding:.35rem .6rem;cursor:pointer;font-size:.72rem;font-family:ui-monospace,monospace;min-width:110px;min-height:44px}
 select:hover{border-color:#384454;color:#a0aab8}
 select:focus{outline:none;border-color:#f59e0b;color:#e8eaf0}
 option{background:#0c0f14;color:#c8cdd8}
@@ -97,14 +98,36 @@ details[open]>summary::before{content:"\\25be "}
 .done{font-size:.72rem;color:#7a8898;margin-top:.3rem;padding:.35rem .5rem;background:#0c0f14;border-left:2px solid #1e2737;line-height:1.5}
 .closes{font-size:.58rem;color:#3e4a5c;font-family:ui-monospace,monospace;margin-top:.3rem}
 .sh-section{margin-top:1.75rem}
-.sh-section>summary{color:#3e4a5c;cursor:pointer;font-size:.78rem;padding:.45rem .7rem;background:#10141b;border:1px solid #1e2737;list-style:none;font-family:ui-monospace,monospace}
+.sh-section>summary{color:#3e4a5c;cursor:pointer;font-size:.78rem;padding:.8rem .9rem;background:#10141b;border:1px solid #1e2737;list-style:none;font-family:ui-monospace,monospace;min-height:44px}
 .sh-section>summary::before{content:"\\25b8 "}
 .sh-section[open]>summary::before{content:"\\25be "}
 .sh-grid{columns:3;column-gap:1rem;margin-top:.75rem}
 .sh-grid .card{break-inside:avoid;opacity:.75}
 .hidden{display:none!important}
 @media(max-width:880px){.board{grid-template-columns:1fr 1fr}.sh-grid{columns:2}}
-@media(max-width:560px){.board{grid-template-columns:1fr}.sh-grid{columns:1}}`;
+@media(max-width:560px){
+html,body{max-width:100%;overflow-x:hidden}
+body{padding:max(.85rem,env(safe-area-inset-top)) max(.85rem,env(safe-area-inset-right)) max(1.15rem,env(safe-area-inset-bottom)) max(.85rem,env(safe-area-inset-left))}
+h1{font-size:1.15rem}
+.meta,.loop{font-size:.75rem;margin-bottom:.75rem;overflow-wrap:anywhere}
+.legend{gap:.45rem;margin:0 -.85rem .85rem;padding:0 .85rem .15rem;font-size:.66rem;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch}
+.legend span{max-width:none;flex:0 0 auto}
+.filters{display:grid;grid-template-columns:4.4rem minmax(0,1fr);gap:.45rem .55rem;margin-bottom:1rem;align-items:center;max-width:100%}
+.filters label{font-size:.66rem}
+select{width:100%;max-width:100%;min-width:0;font-size:.82rem;color:#a0aab8}
+.board{grid-template-columns:minmax(0,1fr);gap:.85rem;max-width:100%}
+.col,.tg,.card{min-width:0;max-width:100%}
+.col h2{position:sticky;top:0;z-index:2;background:#0c0f14;padding:.65rem .7rem;margin:.25rem 0 .6rem;font-size:.72rem;border-left-width:4px}
+.tg{margin-bottom:.65rem}
+.tg h3{font-size:.66rem;padding:.3rem .55rem}
+.card{padding:.85rem;margin-bottom:.55rem}
+.ttl{font-size:.92rem;min-width:0;overflow-wrap:anywhere}
+.sum{font-size:.82rem;overflow-wrap:anywhere}
+details>summary{font-size:.74rem;min-height:44px;display:flex;align-items:center}
+.done{font-size:.78rem;overflow-wrap:anywhere}
+.sh-section{margin-top:1.1rem}
+.sh-grid{columns:1}
+}`;
 
 function dynamicCss(d) {
   const rules = [];
@@ -182,7 +205,7 @@ function renderLegend(d) {
 function renderShipped(d, tracks) {
   if (!d.shipped?.length) return '';
   const cards = d.shipped.map((c) => renderCard(c, tracks, true)).join('\n');
-  return `<details class="sh-section" open><summary>✅ Shipped (${d.shipped.length})</summary>\n<div class="sh-grid">\n${cards}\n</div>\n</details>`;
+  return `<details class="sh-section"><summary>✅ Shipped (${d.shipped.length})</summary>\n<div class="sh-grid">\n${cards}\n</div>\n</details>`;
 }
 
 const FILTER_JS = `(function(){

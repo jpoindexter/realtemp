@@ -23,7 +23,14 @@ npx cap sync ios
 xcodebuild -project ios/App/App.xcodeproj -scheme App -destination 'platform=iOS,id=<DEVICE_UDID>' build
 ```
 
-Current blocker from this shell: only Command Line Tools are selected, no `Xcode.app`, `xcodebuild`, or `devicectl` is visible.
+If `xcode-select` still points at Command Line Tools but full Xcode is installed, use the verifier's printed override:
+
+```bash
+export DEVELOPER_DIR="/path/to/Xcode.app/Contents/Developer"
+npm run verify:ios-prereqs
+```
+
+Current blocker from this shell: only Command Line Tools are selected and no full `Xcode.app` is discoverable via `DEVELOPER_DIR`, `xcode-select`, `/Applications`, or Spotlight; therefore `xcodebuild`, `simctl`, and `devicectl` are unavailable to this task.
 
 ## 3. Crash reporting (N6c) — Sentry DSN
 

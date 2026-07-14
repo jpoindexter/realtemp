@@ -45,7 +45,13 @@ Zero bytes shipped until set; `npm run verify:sentry` intentionally fails until 
 
 ## 4. Name + domain (N7) — docs/naming.md
 
-Recommended: **StreetFeel** · streetfeel.app · $9.99/yr · vercel.com/domains. Formal EUIPO/USPTO check before public launch.
+Recommended: **StreetFeel** · streetfeel.app. Run the current domain evidence check, then complete the human gates:
+
+```bash
+npm run verify:naming
+```
+
+Formal EUIPO/TMview/USPTO/WIPO search, final taste call, and domain purchase are still required before public launch.
 
 ## 5. Time / purchase / decision gated
 

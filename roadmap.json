@@ -134,7 +134,7 @@
       "size": "S",
       "launch": "v1",
       "gated": true,
-      "summary": "GATED: taste + $10 + EUIPO check. Research done → docs/naming.md. Recommended: StreetFeel / streetfeel.app.",
+      "summary": "GATED: final taste call + domain purchase + formal trademark clearance. Current evidence lives in docs/naming.md; run npm run verify:naming to refresh RDAP domain status. Recommended: StreetFeel / streetfeel.app.",
       "closes": "closes P3-2 (trademark collision)"
     },
     {

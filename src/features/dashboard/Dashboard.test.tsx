@@ -23,6 +23,34 @@ afterEach(() => {
 })
 
 describe('Dashboard', () => {
+  it('paints the last good reading immediately on warm launch while refreshing', async () => {
+    localStorage.setItem(
+      'realtemp:weather:39.47,-0.376',
+      JSON.stringify({
+        version: 1,
+        snapshot: {
+          airTempC: 30,
+          dewPointC: 20,
+          windSpeedMs: 2,
+          uvIndex: 8,
+          localHour: 16,
+          localTimeIso: '2026-07-06T16:15',
+          fetchedAt: '2026-07-06T14:15:00.000Z',
+          utcOffsetSeconds: 7200,
+          hourly: [],
+          baseline14C: null,
+        },
+      }),
+    )
+    vi.stubGlobal('fetch', vi.fn(() => new Promise(() => {})))
+
+    render(<Dashboard location={valencia} unit="c" onSetUnit={() => {}} onChangeLocation={() => {}} onOpenSettings={() => {}} onOpenAbout={() => {}} />)
+
+    expect(screen.getByText('true feel')).toBeDefined()
+    expect(screen.getByText('humidity friction')).toBeDefined()
+    await waitFor(() => expect(screen.getByText(/updating/i)).toBeDefined())
+  })
+
   it('renders hero, a summing ledger, all toggles and the gauge from live data', async () => {
     vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, status: 200, json: async () => payload })))
     render(<Dashboard location={valencia} unit="c" onSetUnit={() => {}} onChangeLocation={() => {}} onOpenSettings={() => {}} onOpenAbout={() => {}} />)
@@ -32,7 +60,12 @@ describe('Dashboard', () => {
     expect(screen.getByText('base air')).toBeDefined()
     expect(screen.getByText('humidity friction')).toBeDefined()
     expect(screen.getByText(/sun premium/)).toBeDefined() // regex: label gains '· night' after dark
-    expect(screen.getAllByRole('radio')).toHaveLength(18) // 4 toggle groups + 2 body-panel groups
+    expect(screen.getAllByRole('radio')).toHaveLength(18)
+    expect(screen.getByText('Next 24 h + sweat').closest('details')?.open).toBe(false)
+    expect(screen.getByText('Acclimatization').closest('details')?.open).toBe(false)
+    expect(screen.getByText(/your body/i).closest('details')?.open).toBe(false)
+    screen.getByText('Next 24 h + sweat').click()
+    expect(screen.getByText('Next 24 h + sweat').closest('details')?.open).toBe(true)
     expect(screen.getByRole('meter', { name: /sweat efficiency/i })).toBeDefined()
     expect(screen.queryByText(/partial data/i)).toBeNull()
   })

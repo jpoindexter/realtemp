@@ -1,5 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <rect width="100" height="100" fill="#1b1b1e"/>
-  <text x="50" y="62" font-family="ui-monospace, Menlo, monospace" font-size="34" font-weight="700" fill="#f7f7f3" text-anchor="middle">+8°</text>
-  <rect x="14" y="76" width="72" height="6" fill="#e8720c"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <rect width="1024" height="1024" fill="#1b1b1e"/>
+  <circle cx="785" cy="215" r="156" fill="#c93a22"/>
+  <path d="M0 734 1024 486v538H0Z" fill="#33698c"/>
+  <path d="M111 705 913 512v91L111 796Z" fill="#f7f7f3" opacity=".92"/>
+  <text
+    x="512"
+    y="458"
+    font-family="Arial Black, ui-sans-serif, system-ui, sans-serif"
+    font-size="315"
+    font-weight="900"
+    letter-spacing="-18"
+    text-anchor="middle"
+    fill="#f7f7f3"
+  >RT</text>
+  <circle cx="708" cy="247" r="42" fill="#f7f7f3"/>
+  <rect x="171" y="816" width="682" height="54" fill="#c93a22"/>
 </svg>

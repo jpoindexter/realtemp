@@ -132,35 +132,53 @@ export function DashboardBody({ weather, location, toggles, updateToggles, unit,
           value={toggles.activity}
           onChange={(activity) => updateToggles({ activity })}
         />
-        <SegmentedControl
-          legend="Acclimatized to this weather"
-          name="acclimatization"
-          options={ACCLIM_OPTIONS}
-          value={toggles.acclimatization}
-          onChange={(acclimatization) => updateToggles({ acclimatization })}
-        />
       </div>
 
-      <SweatGauge pct={result.sweatEfficiencyPct} />
+      <details className="body-panel">
+        <summary>Next 24 h + sweat</summary>
+        <div className="stack">
+          <SweatGauge pct={result.sweatEfficiencyPct} />
 
-      <SafeWindowTimeline
-        points={computeHourlyTrueFeel(
-          weather.hourly,
-          {
-            utcOffsetSeconds: weather.utcOffsetSeconds,
-            latitude: location.latitude,
-            longitude: location.longitude,
-            baseline14C: weather.baseline14C,
-            bio,
-          },
-          toggles,
-        )}
-        unit={unit}
-      />
+          <SafeWindowTimeline
+            points={computeHourlyTrueFeel(
+              weather.hourly,
+              {
+                utcOffsetSeconds: weather.utcOffsetSeconds,
+                latitude: location.latitude,
+                longitude: location.longitude,
+                baseline14C: weather.baseline14C,
+                bio,
+              },
+              toggles,
+            )}
+            unit={unit}
+          />
+        </div>
+      </details>
+
+      <details className="body-panel">
+        <summary>Acclimatization</summary>
+        <div className="stack">
+          <SegmentedControl
+            legend="Acclimatized to this weather"
+            name="acclimatization"
+            options={ACCLIM_OPTIONS}
+            value={toggles.acclimatization}
+            onChange={(acclimatization) => updateToggles({ acclimatization })}
+          />
+        </div>
+      </details>
 
       <BodyPanel bio={bio} onChange={updateBio} />
 
-      {config.apiBase && <ReportButtons apiBase={config.apiBase} location={location} />}
+      {config.apiBase && (
+        <details className="body-panel">
+          <summary>Street feedback</summary>
+          <div className="stack">
+            <ReportButtons apiBase={config.apiBase} location={location} />
+          </div>
+        </details>
+      )}
 
       {config.apiBase && <PushPanel apiBase={config.apiBase} location={location} />}
 

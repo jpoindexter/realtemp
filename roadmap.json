@@ -96,6 +96,17 @@
       "done": "All PRD v0 checkboxes checked from a phone browser."
     },
     {
+      "id": "P5",
+      "title": "Harden native iPhone shell",
+      "column": "now",
+      "tier": "rock",
+      "track": "ops",
+      "size": "S",
+      "launch": "v0",
+      "summary": "Lock in the physical-iPhone fixes already proven: Vite relative asset paths for Capacitor, full-bleed iOS safe areas, signed device build, and a real RealTemp app icon.",
+      "done": "Fresh install on Jason's physical iPhone opens RealTemp without a black screen or white safe-area bars; Home Screen icon is the RealTemp icon; npm run build, npx cap sync ios, and xcodebuild for the physical device succeed."
+    },
+    {
       "id": "N2",
       "title": "Coefficient tuning from lived use",
       "column": "next",
@@ -187,6 +198,32 @@
     }
   ],
   "shipped": [
+    {
+      "id": "N9",
+      "title": "Native-feeling launch/loading handoff",
+      "column": "next",
+      "tier": "pebble",
+      "track": "ui",
+      "size": "M",
+      "launch": "v1",
+      "summary": "Reduce perceived startup delay: make the iOS launch screen visually match the app, render an immediate loading state, cache the last good weather snapshot, then refresh in the background.",
+      "done": "Cold launch shows branded RealTemp chrome immediately; warm launch paints the last successful reading before network fetch finishes; stale/refresh state remains visible and never blanks the dashboard.",
+      "shipped": "2026-07-14",
+      "closes": "closes launch perceived-speed gap and white/default native splash handoff"
+    },
+    {
+      "id": "N10",
+      "title": "Progressive-disclosure dashboard",
+      "column": "next",
+      "tier": "pebble",
+      "track": "ui",
+      "size": "M",
+      "launch": "v1",
+      "summary": "Cut extraneous load on the iPhone dashboard. First screen stays True Feel, warning, transparent math, and core microclimate toggles; timeline, body profile, reports, push, and shade map move behind compact sections or modes.",
+      "done": "On an iPhone viewport, the initial screen communicates the current True Feel decision without scrolling through secondary tools; all existing secondary features remain reachable and tested.",
+      "shipped": "2026-07-14",
+      "closes": "closes first-screen cognitive-load gap"
+    },
     {
       "id": "R1",
       "title": "Formula module — computeTrueFeel()",

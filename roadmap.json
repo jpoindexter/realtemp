@@ -92,8 +92,9 @@
       "track": "ops",
       "size": "S",
       "launch": "v0",
-      "summary": "GATED: your legs. Open https://realtemp-rho.vercel.app on your phone (or npx cap open ios) and walk outside. Checks the last PRD v0 box.",
-      "done": "All PRD v0 checkboxes checked from a phone browser."
+      "summary": "GATED: Jason physical street check. Open the deployed app or native shell on your iPhone in Valencia, use/search location, walk outside, and check the PRD v0 phone-browser box.",
+      "done": "All PRD v0 checkboxes checked from a phone browser.",
+      "gated": true
     },
     {
       "id": "P5",
@@ -103,8 +104,9 @@
       "track": "ops",
       "size": "S",
       "launch": "v0",
-      "summary": "Lock in the physical-iPhone fixes already proven: Vite relative asset paths for Capacitor, full-bleed iOS safe areas, signed device build, and a real RealTemp app icon.",
-      "done": "Fresh install on Jason's physical iPhone opens RealTemp without a black screen or white safe-area bars; Home Screen icon is the RealTemp icon; npm run build, npx cap sync ios, and xcodebuild for the physical device succeed."
+      "summary": "GATED: physical-device proof. Code fixes are in place, but current shell cannot find Xcode/xcodebuild/devicectl; completion requires an installed Xcode toolchain selected plus a fresh physical-iPhone install proof.",
+      "done": "Fresh install on Jason's physical iPhone opens RealTemp without a black screen or white safe-area bars; Home Screen icon is the RealTemp icon; npm run build, npx cap sync ios, and xcodebuild for the physical device succeed.",
+      "gated": true
     },
     {
       "id": "N2",
@@ -114,7 +116,8 @@
       "track": "core",
       "size": "S",
       "launch": "v1",
-      "summary": "GATED: wall-clock. Use the app ~2 weeks, then tune src/features/formula/constants.ts; log deltas in DECISIONS.md."
+      "summary": "GATED: wall-clock lived use. Use the app for about two weeks, then tune src/features/formula/constants.ts from observed street deltas and log changes in DECISIONS.md.",
+      "gated": true
     },
     {
       "id": "N6c",

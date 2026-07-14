@@ -1,27 +1,30 @@
-# Your runbook — everything left is one of these
+# Remaining gated runbook
 
-*2026-07-07. Every code seam is built, tested, and pushed. Each block below is copy-paste.*
+*Updated 2026-07-14. Code-backed v1 slices are built, tested, pushed, and deployed. The items below need a physical device, elapsed use, credentials, purchases, or a product decision.*
 
-## 1. Street check (P4) — 5 min, no accounts
-
-```bash
-npx cap open ios   # Run on your iPhone, search Valencia, walk outside
-```
-
-## 2. Backend update (L5b + L8b) — ~5 min, Cloudflare account
-D1, KV and the worker are ALREADY LIVE (deployed 2026-07-07). Remaining:
+## 1. Street check (P4) — physical iPhone, 5 min
 
 ```bash
-cd worker
-npx wrangler login
-npx wrangler d1 execute realtemp-reports --file schema.sql --remote   # adds push_subscriptions
-node -e "console.log(JSON.stringify(JSON.parse(require('fs').readFileSync('.vapid-keys.json')).privateJwk))" | npx wrangler secret put VAPID_PRIVATE_JWK
-npx wrangler secret put ANTHROPIC_API_KEY   # optional — enables the LLM copy line
-npm run deploy
-cd .. && npx vercel deploy --prod --yes --scope jasons-projects-998d5f27   # ships the push panel AFTER the worker has the routes
+open https://realtemp-rho.vercel.app
 ```
 
-## 3. Crash reporting (N6b) — 5 min, sentry.io
+On the iPhone, search/select Valencia, walk outside, and check the last PRD v0 box: the app runs on your phone browser in the real street context.
+
+## 2. Native shell proof (P5) — Xcode + physical iPhone
+
+The native fixes are in code: relative web assets, full-bleed iOS insets, launch screen color, splash, and app icon. Completion still needs current proof:
+
+```bash
+xcode-select -p
+xcrun --find xcodebuild
+npm run build
+npx cap sync ios
+xcodebuild -project ios/App/App.xcodeproj -scheme App -destination 'platform=iOS,id=<DEVICE_UDID>' build
+```
+
+Current blocker from this shell: only Command Line Tools are selected, no `Xcode.app`, `xcodebuild`, or `devicectl` is visible.
+
+## 3. Crash reporting (N6c) — Sentry DSN
 
 Create a React project on sentry.io → `.env` → `VITE_SENTRY_DSN=<dsn>`, rebuild. Zero bytes shipped until set.
 
@@ -29,8 +32,10 @@ Create a React project on sentry.io → `.env` → `VITE_SENTRY_DSN=<dsn>`, rebu
 
 Recommended: **StreetFeel** · streetfeel.app · $9.99/yr · vercel.com/domains. Formal EUIPO/USPTO check before public launch.
 
-## 5. Time-gated — no action now
+## 5. Time / purchase / decision gated
 
 - **N2:** tune `src/features/formula/constants.ts` after ~2 weeks of street use; log deltas in DECISIONS.md.
-- **L6/L7 (paywall, commercial license):** per your call, parked until you set up Stripe; Open-Meteo €29/mo triggers on first revenue.
-- **L8 (push), L4 (heatmap):** need APNs / 3D-data sourcing — own slices when you want them.
+- **L4b:** decide whether to proceed with the PNOA-LiDAR precision path in `docs/heatmap-prd.md`.
+- **L5b:** `cd worker && npx wrangler secret put ANTHROPIC_API_KEY && npm run deploy` to enable the LLM copy line.
+- **L6:** Stripe account and paywall go/no-go.
+- **L7:** Open-Meteo commercial license before charging users.

@@ -2,7 +2,7 @@
 
 *Updated 2026-07-14. Code-backed v1 slices are built, tested, pushed, and deployed. The items below need a physical device, credentials, purchases, legal clearance, or a product decision.*
 
-Run `npm run verify:roadmap-gates` for the current executable blocker list. It fails until every active roadmap card is proven complete.
+Run `npm run verify:roadmap-gates` for the current executable blocker list. It fails until every active roadmap card is proven complete, and prints the first action for each blocked card.
 
 ## 1. Street check (P4) — physical iPhone, 5 min
 

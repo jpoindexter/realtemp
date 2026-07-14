@@ -128,7 +128,7 @@
       "size": "S",
       "launch": "v1",
       "gated": true,
-      "summary": "Jason: sentry.io project → VITE_SENTRY_DSN in .env → rebuild. See docs/setup-remaining.md."
+      "summary": "GATED: private DSN. Create Sentry project, set VITE_SENTRY_DSN, run npm run verify:sentry, rebuild/deploy. See docs/setup-remaining.md."
     },
     {
       "id": "N7",
@@ -186,7 +186,7 @@
       "size": "S",
       "launch": "v2",
       "gated": true,
-      "summary": "Jason: wrangler secret put ANTHROPIC_API_KEY. Cost ≈ €0.006/user/mo cached."
+      "summary": "GATED: private key. Local proof: cd worker && npm run verify:anthropic; production: wrangler secret put ANTHROPIC_API_KEY && npm run deploy. Cost ≈ €0.006/user/mo cached."
     }
   ],
   "shipped": [

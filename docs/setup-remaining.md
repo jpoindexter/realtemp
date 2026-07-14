@@ -12,6 +12,14 @@ open https://realtemp-rho.vercel.app
 
 On the iPhone, search/select Valencia, walk outside, and check the last PRD v0 box: the app runs on your phone browser in the real street context.
 
+Record the result locally, then verify it:
+
+```bash
+npm run verify:street-check
+```
+
+Template: `docs/street-check.md`. Real evidence lives in ignored `realtemp-street-check.json`.
+
 ## 2. Native shell proof (P5) — Xcode + physical iPhone
 
 The native fixes are in code: relative web assets, full-bleed iOS insets, launch screen color, splash, and app icon. Completion still needs current proof:

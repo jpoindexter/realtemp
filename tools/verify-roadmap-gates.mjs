@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs'
 const roadmap = JSON.parse(readFileSync('roadmap.json', 'utf8'))
 
 const proofById = {
-  P4: 'Physical street check on Jason phone: open deployed/native app in Valencia, use/search location, walk outside, and confirm PRD v0 phone-browser box.',
+  P4: 'Physical street check on Jason phone: open deployed/native app in Valencia, use/search location, walk outside, record realtemp-street-check.json, and run npm run verify:street-check.',
   P5: 'Run npm run verify:ios-prereqs, then npm run build && npx cap sync ios, then install on Jason physical iPhone.',
   N2: 'Collect local-only lived street-use observations, run npm run verify:lived-use, tune src/features/formula/constants.ts, and log coefficient changes in DECISIONS.md.',
   N6c: 'Set VITE_SENTRY_DSN, run npm run verify:sentry, rebuild, and deploy.',

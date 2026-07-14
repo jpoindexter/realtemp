@@ -87,7 +87,7 @@
       "track": "ops",
       "size": "S",
       "launch": "v0",
-      "summary": "GATED: Jason physical street check. Open the deployed app or native shell on your iPhone in Valencia, use/search location, walk outside, and check the PRD v0 phone-browser box.",
+      "summary": "GATED: Jason physical street check. Open the deployed app or native shell on your iPhone in Valencia, use/search location, walk outside, record realtemp-street-check.json, and run npm run verify:street-check.",
       "done": "All PRD v0 checkboxes checked from a phone browser.",
       "gated": true
     },

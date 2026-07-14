@@ -12,7 +12,8 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "roadmap": "node tools/rockmap/build-roadmap.mjs roadmap.json roadmap.html",
-    "verify:sentry": "node tools/verify-sentry-env.mjs"
+    "verify:sentry": "node tools/verify-sentry-env.mjs",
+    "verify:ios-prereqs": "node tools/verify-ios-prereqs.mjs"
   },
   "dependencies": {
     "@capacitor/core": "^8.4.1",

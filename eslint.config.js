@@ -11,4 +11,8 @@ export default tseslint.config(
     files: ['public/sw.js'],
     languageOptions: { globals: { self: 'readonly' } },
   },
+  {
+    files: ['worker/tools/*.mjs'],
+    languageOptions: { globals: { console: 'readonly', process: 'readonly' } },
+  },
 )

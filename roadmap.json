@@ -104,7 +104,7 @@
       "track": "ops",
       "size": "S",
       "launch": "v0",
-      "summary": "GATED: physical-device proof. Code fixes are in place, but current shell cannot find Xcode/xcodebuild/devicectl; completion requires an installed Xcode toolchain selected plus a fresh physical-iPhone install proof.",
+      "summary": "GATED: physical-device proof. Code fixes are in place; run npm run verify:ios-prereqs, then build/sync and install on Jason's physical iPhone.",
       "done": "Fresh install on Jason's physical iPhone opens RealTemp without a black screen or white safe-area bars; Home Screen icon is the RealTemp icon; npm run build, npx cap sync ios, and xcodebuild for the physical device succeed.",
       "gated": true
     },

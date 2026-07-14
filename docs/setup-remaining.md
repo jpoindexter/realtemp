@@ -15,8 +15,7 @@ On the iPhone, search/select Valencia, walk outside, and check the last PRD v0 b
 The native fixes are in code: relative web assets, full-bleed iOS insets, launch screen color, splash, and app icon. Completion still needs current proof:
 
 ```bash
-xcode-select -p
-xcrun --find xcodebuild
+npm run verify:ios-prereqs
 npm run build
 npx cap sync ios
 xcodebuild -project ios/App/App.xcodeproj -scheme App -destination 'platform=iOS,id=<DEVICE_UDID>' build

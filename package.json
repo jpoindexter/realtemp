@@ -12,6 +12,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "roadmap": "node tools/rockmap/build-roadmap.mjs roadmap.json roadmap.html",
+    "verify:roadmap-gates": "node tools/verify-roadmap-gates.mjs",
     "verify:sentry": "node tools/verify-sentry-env.mjs",
     "verify:ios-prereqs": "node tools/verify-ios-prereqs.mjs"
   },

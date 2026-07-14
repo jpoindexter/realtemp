@@ -111,7 +111,7 @@
       "track": "core",
       "size": "S",
       "launch": "v1",
-      "summary": "GATED: wall-clock lived use. Use the app for about two weeks, then tune src/features/formula/constants.ts from observed street deltas and log changes in DECISIONS.md.",
+      "summary": "GATED: wall-clock lived use. Collect local-only observations in realtemp-lived-use.json, run npm run verify:lived-use, then tune src/features/formula/constants.ts from observed street deltas and log changes in DECISIONS.md.",
       "gated": true
     },
     {

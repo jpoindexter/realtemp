@@ -9,7 +9,7 @@ const proofById = {
   N2: 'Collect about two weeks of lived street-use observations, tune src/features/formula/constants.ts, and log coefficient changes in DECISIONS.md.',
   N6c: 'Set VITE_SENTRY_DSN, run npm run verify:sentry, rebuild, and deploy.',
   N7: 'Run npm run verify:naming for current RDAP evidence, then pick the name/domain, purchase it, and complete formal EUIPO/TMview/USPTO/WIPO checks before public launch.',
-  L4b: 'Jason go/no-go on docs/heatmap-prd.md option 1 before any PNOA-LiDAR pipeline work.',
+  L4b: 'Run npm run verify:heatmap-sources, then Jason go/no-go on docs/heatmap-prd.md option 1 before any PNOA-LiDAR pipeline work.',
   L5b: 'Set ANTHROPIC_API_KEY locally, run cd worker && npm run verify:anthropic, then add the Wrangler secret and deploy.',
 }
 

@@ -56,5 +56,5 @@ Formal EUIPO/TMview/USPTO/WIPO search, final taste call, and domain purchase are
 ## 5. Time / purchase / decision gated
 
 - **N2:** tune `src/features/formula/constants.ts` after ~2 weeks of street use; log deltas in DECISIONS.md.
-- **L4b:** decide whether to proceed with the PNOA-LiDAR precision path in `docs/heatmap-prd.md`.
+- **L4b:** run `npm run verify:heatmap-sources`, then decide whether to proceed with the PNOA-LiDAR precision path in `docs/heatmap-prd.md`.
 - **L5b:** `cd worker && npm run verify:anthropic` for local proof, then `npx wrangler secret put ANTHROPIC_API_KEY && npm run deploy` to enable the LLM copy line in production. The verifier intentionally fails until the private key exists locally.

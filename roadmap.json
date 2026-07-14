@@ -146,7 +146,7 @@
       "size": "L",
       "launch": "v2",
       "gated": true,
-      "summary": "GATED: Jason go/no-go on docs/heatmap-prd.md option 1 (free IGN LiDAR → precomputed tiles). Replaces estimated heights with measured ones."
+      "summary": "GATED: Jason go/no-go on docs/heatmap-prd.md option 1 (free IGN LiDAR → precomputed tiles). Run npm run verify:heatmap-sources to refresh official PNOA/CNIG/datos.gob source evidence before deciding."
     },
     {
       "id": "L5b",

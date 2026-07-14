@@ -1,6 +1,6 @@
 # Scoping PRD — Hyperlocal Thermal Heatmap (card L4)
 
-**Draft 2026-07-07 · status: awaiting Jason's go/no-go.** This closes L4's stated gate ("scope as its own PRD before any code"). No code until this is approved and a data pipeline slice is chosen.
+**Draft 2026-07-07 · refreshed 2026-07-14 · status: awaiting Jason's go/no-go.** This closes L4's stated gate ("scope as its own PRD before any code"). No code until this is approved and a data pipeline slice is chosen.
 
 ## One-liner
 
@@ -8,9 +8,16 @@ A street-level map layer showing where shade actually is right now, so a walk ca
 
 ## Why it's plausible (data exists, free)
 
-- **[PNOA-LiDAR 3rd coverage (2022–2025)](https://data.europa.eu/data/datasets/spaignlidar_cob3?locale=en)** — Spain-wide point clouds, ≥5 pts/m², free from IGN; Valencia covered.
-- **[Digital Surface Model of Spain](https://datos.gob.es/en/catalogo/e00125901-spaignmds)** — rasterized building + vegetation layers → building/canopy heights without processing raw clouds.
+- **[PNOA-LiDAR 3rd coverage status](https://pnoa.ign.es/pnoa-lidar/tercera-cobertura)** — official IGN status page for the third coverage. It describes 5 points/m² capture for the country.
+- **[PNOA-LiDAR downloadable products](https://pnoa.ign.es/pnoa-lidar/productos-a-descarga)** and **[CNIG LiDAR 3rd coverage download center](https://centrodedescargas.cnig.es/CentroDescargas/lidar-tercera-cobertura)** — official download path for the point-cloud source.
+- **[Digital Surface Model of Spain](https://datos.gob.es/en/catalogo/e00125901-spaignmds)** and **[CNIG MDS05 series](https://centrodedescargas.cnig.es/CentroDescargas/busquedaSerie.do?codSerie=MDS05)** — rasterized building + vegetation layers → building/canopy heights without processing raw clouds.
 - OSM building footprints + Catastro parcels for geometry cross-reference.
+
+Run the source check before any implementation:
+
+```bash
+npm run verify:heatmap-sources
+```
 
 ## Approach options (pick one)
 

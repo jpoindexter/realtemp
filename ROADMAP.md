@@ -29,6 +29,5 @@
 
 ## v2+ — Aspirational
 
-- Crowdsourced micro-reports → coefficient validation loop
 - Bio-calibration + Clo profiles (needs model + privacy work)
 - Thermal heatmap / shadow-casting (needs 3D data)

@@ -49,8 +49,8 @@ export function Settings({ unit, onSetUnit, location, onChangeLocation, onBack }
       <section className="settings-block">
         <h2 className="settings-label">Your data</h2>
         <p className="note">
-          Everything lives on this device — location, toggles, body profile, building cache. A street report (if
-          you send one) stores a ~1 km cell and your vote, nothing else. No account, no tracking.
+          Everything lives on this device — location, toggles, body profile, and building cache. No account, no
+          tracking.
         </p>
         {!confirmClear ? (
           <button type="button" className="btn quiet" onClick={() => setConfirmClear(true)}>

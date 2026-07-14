@@ -91,7 +91,3 @@ flowchart LR
     end
     v0 --> v1 --> v2
 ```
-
-## 6. Parked validation loop
-
-Crowdsourced hotter/cooler/spot-on feedback is parked in `PARKED.md`. It should not return as a button-only feature; it needs a real drift dashboard and a bounded, visible local-bias term before it can affect the formula.

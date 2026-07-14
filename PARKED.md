@@ -15,9 +15,6 @@
 ## Hyperlocal thermal heatmap
 **Captured:** 2026-07-06 (PDF v1.0 §3.2) · **Why parked:** Was contradictorily both MVP and post-MVP in v1.0; depends on 3D building/canopy data + CV tier. · **Cost to revisit:** Very high — data sourcing project of its own.
 
-## Crowdsourced micro-reports (hotter/cooler/spot-on)
-**Captured:** 2026-07-06 (PDF v1.0 §3.3) · **Why parked:** Needs backend, anti-spam, and a defined model-correction mechanism. Removed from the app on 2026-07-14 because the taps did not actually affect the formula. This is the eventual coefficient-tuning loop — valuable only when the bias/tuning model exists. · **Cost to revisit:** High — real backend + drift dashboard + bounded bias term.
-
 ## LLM weather copy
 **Captured:** 2026-07-06 (PDF v1.0 §4) · **Why parked:** Decoration on top of the core loop; v1.0's "terminal interface" wording suggests it was aspirational. · **Cost to revisit:** Low.
 

@@ -8,10 +8,10 @@
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "realtemp-reports",
-      // Legacy D1 name; now used for push subscriptions and any future app tables.
-      // Jason: create with `wrangler d1 create realtemp-reports`, paste the id here,
-      // then run `wrangler d1 execute realtemp-reports --file schema.sql --remote`
+      "database_name": "realtemp-app",
+      // Used for push subscriptions and any future app tables.
+      // Jason: create with `wrangler d1 create realtemp-app`, paste the id here,
+      // then run `wrangler d1 execute realtemp-app --file schema.sql --remote`
       "database_id": "7a29c49b-ba4c-4cbc-9b55-7d771b497e5d"
     }
   ],

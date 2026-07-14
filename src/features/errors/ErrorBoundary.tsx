@@ -22,7 +22,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
   componentDidCatch(error: Error, info: ErrorInfo): void {
     console.error('RealTemp crashed:', error, info.componentStack)
-    trackError(error) // no-op until VITE_SENTRY_DSN is set (card N6b)
+    trackError(error) // no-op until VITE_SENTRY_DSN is set (card N6c)
   }
 
   render(): ReactNode {

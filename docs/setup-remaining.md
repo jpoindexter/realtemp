@@ -26,7 +26,14 @@ Current blocker from this shell: only Command Line Tools are selected, no `Xcode
 
 ## 3. Crash reporting (N6c) — Sentry DSN
 
-Create a React project on sentry.io → `.env` → `VITE_SENTRY_DSN=<dsn>`, rebuild. Zero bytes shipped until set.
+Create a React project on sentry.io → copy `.env.example` to `.env` → set `VITE_SENTRY_DSN=<dsn>` locally and in Vercel → verify → rebuild.
+
+```bash
+npm run verify:sentry
+npm run build
+```
+
+Zero bytes shipped until set; `npm run verify:sentry` intentionally fails until the private DSN exists.
 
 ## 4. Name + domain (N7) — docs/naming.md
 

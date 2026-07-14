@@ -184,7 +184,9 @@
       "launch": "v2",
       "gated": true,
       "summary": "Jason: wrangler secret put ANTHROPIC_API_KEY. Cost ≈ €0.006/user/mo cached."
-    },
+    }
+  ],
+  "shipped": [
     {
       "id": "N8",
       "title": "Official weather alerts (AEMET via MeteoAlarm)",
@@ -193,11 +195,11 @@
       "track": "data",
       "size": "M",
       "launch": "v1",
-      "gated": true,
-      "summary": "GATED: worker deploy now DONE (push routes live). Remaining: CAP-feed mapping spike + province geocoding for AEMET/MeteoAlarm."
-    }
-  ],
-  "shipped": [
+      "summary": "GATED: worker deploy now DONE (push routes live). Remaining: CAP-feed mapping spike + province geocoding for AEMET/MeteoAlarm.",
+      "done": "Production Worker /api/alerts returns current AEMET-issued MeteoAlarm alerts for Valencia by matching EMMA_ID warning regions; dashboard renders official alerts in a collapsed AEMET panel; worker and web tests pass.",
+      "shipped": "2026-07-14",
+      "closes": "closes official warning feed mapping for Valencia daily use"
+    },
     {
       "id": "N9",
       "title": "Native-feeling launch/loading handoff",

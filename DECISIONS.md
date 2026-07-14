@@ -57,3 +57,9 @@
 **Alternatives:** PNOA-LiDAR precomputed tiles (docs/heatmap-prd.md option 1 — stays as the precision upgrade, card L4b); commercial shade API.
 **Why:** Shippable today, zero cost, works anywhere OSM has buildings, matches the asphalt figure/ground aesthetic. Heights are estimates — labeled beta.
 **Reversible?** Yes — swap the data source, keep the geometry module.
+
+## 2026-07-14 — Official alerts: MeteoAlarm Atom + EMMA_ID matcher
+**Choice:** Use MeteoAlarm's maintained Spain Atom feed in the Worker, parse CAP summary fields, and match the user's coordinates against known EMMA_ID warning-region polygons for Valencia. Render matches in a collapsed dashboard panel.
+**Alternatives:** AEMET direct CAP RSS fanout (most precise, and still unit-covered, but Cloudflare-to-AEMET detail XML fetches were unreliable in production); province-level geocoding (coarser and brittle around coastal/interior warning zones); MeteoAlarm EDR API (GeoJSON, but token-gated for direct access).
+**Why:** MeteoAlarm's Atom feed is public and Worker-reachable; AEMET is still the issuing authority behind Spain warnings. EMMA_ID matching preserves the coastal/interior Valencia split without browser CORS or a brittle province-only lookup.
+**Reversible?** Yes — the client reads a small `/api/alerts` JSON shape; the Worker can swap feed source later.

@@ -1,3 +1,4 @@
+import { officialAlerts } from './alerts-route'
 import { fetchBuildingsServerSide } from './buildings'
 import {
   COPY_CACHE_TTL_S,
@@ -39,6 +40,7 @@ export default {
     if (url.pathname === '/api/push/subscribe' && request.method === 'POST') return subscribePush(request, env)
     if (url.pathname === '/api/push/subscribe' && request.method === 'DELETE') return unsubscribePush(request, env)
     if (url.pathname === '/api/buildings' && request.method === 'GET') return buildings(url, env)
+    if (url.pathname === '/api/alerts' && request.method === 'GET') return officialAlerts(url, env.CACHE)
 
     return json({ error: 'Not found' }, 404)
   },

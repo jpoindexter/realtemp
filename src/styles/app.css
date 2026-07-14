@@ -222,6 +222,18 @@ fieldset.seg legend {
 .reports { display: flex; flex-direction: column; gap: var(--space-2); }
 .report-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-2); }
 
+/* official CAP alerts */
+.official-alert {
+  border: var(--border-w) solid var(--line);
+  padding: var(--space-3);
+  background: var(--ground);
+}
+.official-alert p { margin: var(--space-2) 0 0; font-size: var(--text-note); }
+.official-alert.yellow { border-color: var(--solar); }
+.official-alert.orange { border-color: var(--uhi); }
+.official-alert.red { border-color: var(--scorch); }
+.official-alert.red .lbl { color: var(--scorch); }
+
 /* shade map */
 .shade-map { margin: 0; display: flex; flex-direction: column; gap: var(--space-2); }
 .shade-map svg { width: 100%; height: auto; border: var(--border-w) solid var(--ink); background: var(--paper); }

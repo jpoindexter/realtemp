@@ -2,6 +2,7 @@ import { CopyLine } from '@/features/copy/CopyLine'
 import { computeTrueFeel } from '@/features/formula/compute-true-feel'
 import { solarZenithDeg } from '@/features/formula/solar-zenith'
 import { ShadeMap } from '@/features/heatmap/ShadeMap'
+import { OfficialAlertsPanel } from '@/features/official-alerts/OfficialAlertsPanel'
 import { PushPanel } from '@/features/push/PushPanel'
 import { ReportButtons } from '@/features/reports/ReportButtons'
 import { computeHourlyTrueFeel } from '@/features/timeline/compute-hourly'
@@ -179,6 +180,8 @@ export function DashboardBody({ weather, location, toggles, updateToggles, unit,
           </div>
         </details>
       )}
+
+      {config.apiBase && <OfficialAlertsPanel apiBase={config.apiBase} location={location} />}
 
       {config.apiBase && <PushPanel apiBase={config.apiBase} location={location} />}
 

@@ -25,6 +25,7 @@
 
 - 2026-07-14 — Native-feeling launch/loading handoff: launch screen matches app, last good reading paints instantly, background refresh updates it
 - 2026-07-14 — Progressive-disclosure dashboard: first iPhone viewport stays focused on True Feel, warnings, transparent math, and core toggles; secondary tools remain reachable behind compact panels
+- 2026-07-14 — Official AEMET/MeteoAlarm alerts: Worker returns Valencia official warnings by EMMA_ID region; dashboard shows them in a collapsed AEMET panel
 
 ## v2+ — Aspirational
 

@@ -19,7 +19,6 @@
 - Hourly Safe Window timeline (promote from PARKED)
 - °F toggle
 - Cold-weather term (wind chill)
-- Coefficient tuning from lived experience
 
 ## Shipped after v0
 

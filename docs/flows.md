@@ -1,6 +1,6 @@
 # RealTemp — System Maps
 
-All flows, uses, AI, cost, and paywall in one doc. Source of truth for behavior; PRD.md holds the formula.
+All active flows, uses, AI, and cost notes in one doc. Source of truth for behavior; PRD.md holds the formula. Paywall/Stripe work is parked in PARKED.md for now.
 
 ## 1. Core user flow (v0)
 
@@ -85,31 +85,14 @@ flowchart LR
     subgraph v1 [v1 — ~€1/mo]
         c4[Domain €12/yr] --- c5[Sentry free tier]
     end
-    subgraph v2 [v2 paid — ~€35/mo fixed + variable]
-        c6[Open-Meteo commercial €29/mo REQUIRED once revenue exists]
+    subgraph v2 [v2 optional backend — no paywall in active scope]
         c7[Workers backend ~€5/mo]
-        c8["Stripe 1.5% + €0.25/txn"]
         c9[LLM ~€0.006/user/mo cached]
     end
     v0 --> v1 --> v2
-    v2 --> BE["Break-even ≈ 20 subs @ €2.50/mo"]
 ```
 
-## 6. Paywall flow (v2, freemium)
-
-```mermaid
-flowchart TD
-    F[Free user: current conditions + toggles + breakdown] --> G{Taps gated feature}
-    G -->|timeline / heatmap / bio-cal / alerts / multi-location| P["Paywall: value framing — 'see your safe windows' — €2–3/mo"]
-    P -- subscribe --> S[Stripe Checkout] --> E[(Entitlement)] --> U[Feature unlocks]
-    P -- dismiss --> F
-    U --> M[Manage: cancel anytime → grace period → back to free]
-    style P fill:#ad7f58,color:#fff
-```
-
-Free tier stays genuinely useful (the differentiator — visible math — is FREE; it's the trust engine). Premium sells depth: time (timeline), space (heatmap), body (bio-cal), push (alerts).
-
-## 7. Crowdsource validation loop (v2 — how the formula earns accuracy)
+## 6. Crowdsource validation loop (v2 — how the formula earns accuracy)
 
 ```mermaid
 flowchart LR

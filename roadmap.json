@@ -62,11 +62,6 @@
       "id": "ai",
       "label": "AI",
       "color": "#d6409f"
-    },
-    {
-      "id": "monetize",
-      "label": "Monetize",
-      "color": "#ad7f58"
     }
   ],
   "launches": [
@@ -80,7 +75,7 @@
     },
     {
       "id": "v2",
-      "label": "v2 — public + paid"
+      "label": "v2 — public"
     }
   ],
   "cards": [
@@ -152,30 +147,6 @@
       "launch": "v2",
       "gated": true,
       "summary": "GATED: Jason go/no-go on docs/heatmap-prd.md option 1 (free IGN LiDAR → precomputed tiles). Replaces estimated heights with measured ones."
-    },
-    {
-      "id": "L6",
-      "title": "Paywall + pricing (freemium)",
-      "column": "later",
-      "tier": "rock",
-      "track": "monetize",
-      "size": "L",
-      "launch": "v2",
-      "gated": true,
-      "summary": "GATED: Stripe account (Jason: \"ill set it up later\"). Free tier + entitlement seam design in docs/flows.md §6.",
-      "done": "Checkout → entitlement → gated features unlock; cancel flow works."
-    },
-    {
-      "id": "L7",
-      "title": "Open-Meteo commercial license",
-      "column": "later",
-      "tier": "pebble",
-      "track": "monetize",
-      "size": "S",
-      "launch": "v2",
-      "gated": true,
-      "summary": "GATED: purchase. Open-Meteo commercial (~€29/mo) triggers on first revenue — before, not after, charging.",
-      "closes": "closes audit-2 cost gap"
     },
     {
       "id": "L5b",

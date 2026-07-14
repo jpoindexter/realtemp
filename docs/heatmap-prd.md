@@ -30,4 +30,4 @@ Routing, other cities, real-time cloud cover, tree seasonal foliage, CV from ima
 
 ## Decision needed from Jason
 
-Go/no-go + option pick. Realistic effort (nd-time-blindness): option 1 = 2–4 days pipeline + 1–2 days integration; worst case 2 weeks if IGN tile formats fight back. Premium-tier feature — consider sequencing after first paying users, per your own L6 gate.
+Go/no-go + option pick. Realistic effort (nd-time-blindness): option 1 = 2–4 days pipeline + 1–2 days integration; worst case 2 weeks if IGN tile formats fight back. Paywall/Stripe sequencing is parked, so judge this by street-use value rather than paid-tier packaging.

@@ -11,8 +11,6 @@ const proofById = {
   N7: 'Pick the name/domain, purchase it, and complete formal EUIPO/USPTO checks before public launch.',
   L4b: 'Jason go/no-go on docs/heatmap-prd.md option 1 before any PNOA-LiDAR pipeline work.',
   L5b: 'Set ANTHROPIC_API_KEY locally, run cd worker && npm run verify:anthropic, then add the Wrangler secret and deploy.',
-  L6: 'Create/confirm Stripe account and pricing go/no-go before checkout/entitlement implementation.',
-  L7: 'Purchase Open-Meteo commercial license before charging users.',
 }
 
 const activeCards = roadmap.cards.filter((card) => card.column !== 'shipped')

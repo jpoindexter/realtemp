@@ -45,5 +45,3 @@ Recommended: **StreetFeel** · streetfeel.app · $9.99/yr · vercel.com/domains.
 - **N2:** tune `src/features/formula/constants.ts` after ~2 weeks of street use; log deltas in DECISIONS.md.
 - **L4b:** decide whether to proceed with the PNOA-LiDAR precision path in `docs/heatmap-prd.md`.
 - **L5b:** `cd worker && npm run verify:anthropic` for local proof, then `npx wrangler secret put ANTHROPIC_API_KEY && npm run deploy` to enable the LLM copy line in production. The verifier intentionally fails until the private key exists locally.
-- **L6:** Stripe account and paywall go/no-go.
-- **L7:** Open-Meteo commercial license before charging users.

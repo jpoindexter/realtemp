@@ -21,6 +21,12 @@
 ## LLM weather copy
 **Captured:** 2026-07-06 (PDF v1.0 §4) · **Why parked:** Decoration on top of the core loop; v1.0's "terminal interface" wording suggests it was aspirational. · **Cost to revisit:** Low.
 
+## Paywall, Stripe, and paid-tier pricing
+**Captured:** 2026-07-14 (roadmap L6) · **Why parked:** Jason explicitly said to leave the paywall stuff out for now. Keep RealTemp focused on street-use proof, trust, and daily habit before monetization. · **Cost to revisit:** Medium — Stripe checkout, entitlement storage, cancel/manage flow, and pricing copy.
+
+## Open-Meteo commercial license
+**Captured:** 2026-07-14 (roadmap L7) · **Why parked:** Only needed before charging users; with the paywall out of scope, this is not an active roadmap blocker. · **Cost to revisit:** Low — purchase the commercial plan and update cost docs before any paid launch.
+
 ## Cold-weather model (wind chill, damp cold)
 **Captured:** 2026-07-06 (gap analysis) · **Why parked:** Valencia summer is the v0 use case; Steadman AT's wind term gives partial cold coverage. · **Cost to revisit:** Medium — add JAG/TI wind chill below 10°C.
 

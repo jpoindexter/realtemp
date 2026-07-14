@@ -18,8 +18,5 @@ worker/.dev.vars
 worker/dist-bundle/
 worker/.vapid-keys.json
 
-# Local lived-use observations for coefficient tuning (may include location/time notes)
-realtemp-lived-use.json
-
 # Local physical iPhone street-check evidence
 realtemp-street-check.json

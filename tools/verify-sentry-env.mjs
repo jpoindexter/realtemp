@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { existsSync, readFileSync } from 'node:fs'
+import { spawnSync } from 'node:child_process'
 
 function parseDotEnv(path) {
   if (!existsSync(path)) return {}
@@ -24,6 +25,14 @@ function parseDotEnv(path) {
 const envFile = parseDotEnv('.env')
 const dsn = process.env.VITE_SENTRY_DSN || envFile.VITE_SENTRY_DSN
 
+function run(cmd, args) {
+  const result = spawnSync(cmd, args, { encoding: 'utf8' })
+  return {
+    ok: result.status === 0,
+    text: `${result.stdout ?? ''}${result.stderr ?? ''}`.trim(),
+  }
+}
+
 if (!dsn) {
   console.error('N6c not ready: VITE_SENTRY_DSN is not set in the environment or .env.')
   console.error('Create a Sentry React project, add VITE_SENTRY_DSN to .env/Vercel, then rebuild.')
@@ -43,5 +52,19 @@ if (!['http:', 'https:'].includes(parsed.protocol) || !parsed.username || !parse
   process.exit(1)
 }
 
+const vercelEnv = run('vercel', ['env', 'list', 'production', '--format', 'json'])
+if (!vercelEnv.ok) {
+  console.error('N6c not ready: could not list Vercel production env vars.')
+  console.error(vercelEnv.text || 'Run `vercel login` and ensure this directory is linked to the realtemp project.')
+  process.exit(1)
+}
+
+if (!vercelEnv.text.includes('VITE_SENTRY_DSN')) {
+  console.error('N6c not ready: VITE_SENTRY_DSN is not configured in Vercel production.')
+  console.error('Run: vercel env add VITE_SENTRY_DSN production')
+  process.exit(1)
+}
+
 console.log(`N6c ready: VITE_SENTRY_DSN is configured for ${parsed.host}${parsed.pathname}.`)
+console.log('N6c ready: VITE_SENTRY_DSN is present in Vercel production env.')
 console.log('Next: run npm run build and deploy the rebuilt app.')

@@ -46,7 +46,7 @@ Hero dashboard · math breakdown · 3 toggles · sweat efficiency · geolocation
 
 ## Out of Scope → PARKED.md
 
-Bio-calibration (height/weight/metabolic/Clo/acclimatization) · hourly Safe Window timeline · thermal heatmap · crowdsourced reports · CV shadow-casting · LLM copy · notifications · °F · cold-weather model.
+Bio-calibration (height/weight/metabolic/Clo/acclimatization) · hourly Safe Window timeline · thermal heatmap · CV shadow-casting · LLM copy · notifications · °F · cold-weather model.
 
 ## Constraints
 
@@ -56,4 +56,4 @@ Bio-calibration (height/weight/metabolic/Clo/acclimatization) · hourly Safe Win
 
 ## Non-goals
 
-Meteorological accuracy claims. v0 coefficients are heuristic deltas on Steadman AT, tuned by feel; validation comes later via crowdsourced loop (parked).
+Meteorological accuracy claims. v0 coefficients are heuristic deltas on Steadman AT; validation or coefficient tuning requires an explicit product decision.

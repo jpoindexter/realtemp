@@ -6,8 +6,7 @@ const roadmap = JSON.parse(readFileSync('roadmap.json', 'utf8'))
 const proofById = {
   P4: 'Physical street check on Jason phone: open deployed/native app in Valencia, use/search location, walk outside, record realtemp-street-check.json, and run npm run verify:street-check.',
   P5: 'Run npm run verify:ios-prereqs, then npm run build && npx cap sync ios, then install on Jason physical iPhone.',
-  N2: 'Collect local-only lived street-use observations, run npm run verify:lived-use, tune src/features/formula/constants.ts, and log coefficient changes in DECISIONS.md.',
-  N6c: 'Set VITE_SENTRY_DSN, run npm run verify:sentry, rebuild, and deploy.',
+  N6c: 'Set VITE_SENTRY_DSN locally and in Vercel production, run npm run verify:sentry, rebuild, and deploy.',
   N7: 'Run npm run verify:naming for current RDAP evidence, then pick the name/domain, purchase it, and complete formal EUIPO/TMview/USPTO/WIPO checks before public launch.',
   L4b: 'Run npm run verify:heatmap-sources, then Jason go/no-go on docs/heatmap-prd.md option 1 before any PNOA-LiDAR pipeline work.',
   L5b: 'Set ANTHROPIC_API_KEY locally, run cd worker && npm run verify:anthropic, then add the Wrangler secret and deploy.',

@@ -104,17 +104,6 @@
       "gated": true
     },
     {
-      "id": "N2",
-      "title": "Coefficient tuning from lived use",
-      "column": "next",
-      "tier": "pebble",
-      "track": "core",
-      "size": "S",
-      "launch": "v1",
-      "summary": "GATED: wall-clock lived use. Collect local-only observations in realtemp-lived-use.json, run npm run verify:lived-use, then tune src/features/formula/constants.ts from observed street deltas and log changes in DECISIONS.md.",
-      "gated": true
-    },
-    {
       "id": "N6c",
       "title": "Paste Sentry DSN",
       "column": "next",
@@ -123,7 +112,7 @@
       "size": "S",
       "launch": "v1",
       "gated": true,
-      "summary": "GATED: private DSN. Create Sentry project, set VITE_SENTRY_DSN, run npm run verify:sentry, rebuild/deploy. See docs/setup-remaining.md."
+      "summary": "GATED: private DSN. Create Sentry project, set VITE_SENTRY_DSN locally and in Vercel production, run npm run verify:sentry, rebuild/deploy. See docs/setup-remaining.md."
     },
     {
       "id": "N7",

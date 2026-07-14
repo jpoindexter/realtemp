@@ -17,7 +17,6 @@
     "verify:ios-prereqs": "node tools/verify-ios-prereqs.mjs",
     "verify:naming": "node tools/verify-naming.mjs",
     "verify:heatmap-sources": "node tools/verify-heatmap-sources.mjs",
-    "verify:lived-use": "node tools/verify-lived-use.mjs",
     "verify:street-check": "node tools/verify-street-check.mjs"
   },
   "dependencies": {

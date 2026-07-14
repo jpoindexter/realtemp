@@ -63,3 +63,9 @@
 **Alternatives:** AEMET direct CAP RSS fanout (most precise, and still unit-covered, but Cloudflare-to-AEMET detail XML fetches were unreliable in production); province-level geocoding (coarser and brittle around coastal/interior warning zones); MeteoAlarm EDR API (GeoJSON, but token-gated for direct access).
 **Why:** MeteoAlarm's Atom feed is public and Worker-reachable; AEMET is still the issuing authority behind Spain warnings. EMMA_ID matching preserves the coastal/interior Valencia split without browser CORS or a brittle province-only lookup.
 **Reversible?** Yes — the client reads a small `/api/alerts` JSON shape; the Worker can swap feed source later.
+
+## 2026-07-14 — Lived-use feedback tuning removed from active scope
+**Choice:** Remove the active N2 lived-use/coefficient-tuning gate, local feedback log template, and verifier.
+**Alternatives:** Keep a manual "felt hotter/colder" evidence loop as a gated roadmap card.
+**Why:** There is no shipped feedback capture loop, and RealTemp should not promise formula learning from user feedback until that product behavior is actually designed and implemented.
+**Reversible?** Yes — add a new PRD change and roadmap card if feedback capture becomes a real feature.

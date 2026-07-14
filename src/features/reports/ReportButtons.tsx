@@ -68,7 +68,7 @@ export function ReportButtons({ apiBase, location }: ReportButtonsProps) {
         <span>Does it feel right?</span>
         {nearby && <span>{nearby}</span>}
       </div>
-      {state === 'sent' && <p className="note" role="status">Logged — thanks. It tunes the formula.</p>}
+      {state === 'sent' && <p className="note" role="status">Logged — thanks. This helps calibrate future tuning.</p>}
       {state === 'limited' && <p className="note" role="status">Already logged — one report per 10 minutes.</p>}
       {(state === 'idle' || state === 'sending') && (
         <div className="report-row">

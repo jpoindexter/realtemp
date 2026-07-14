@@ -4,7 +4,6 @@ import { solarZenithDeg } from '@/features/formula/solar-zenith'
 import { ShadeMap } from '@/features/heatmap/ShadeMap'
 import { OfficialAlertsPanel } from '@/features/official-alerts/OfficialAlertsPanel'
 import { PushPanel } from '@/features/push/PushPanel'
-import { ReportButtons } from '@/features/reports/ReportButtons'
 import { computeHourlyTrueFeel } from '@/features/timeline/compute-hourly'
 import { SafeWindowTimeline } from '@/features/timeline/SafeWindowTimeline'
 import { deriveWarnings } from '@/features/warnings/derive-warnings'
@@ -171,15 +170,6 @@ export function DashboardBody({ weather, location, toggles, updateToggles, unit,
       </details>
 
       <BodyPanel bio={bio} onChange={updateBio} />
-
-      {config.apiBase && (
-        <details className="body-panel">
-          <summary>Street feedback</summary>
-          <div className="stack">
-            <ReportButtons apiBase={config.apiBase} location={location} />
-          </div>
-        </details>
-      )}
 
       {config.apiBase && <OfficialAlertsPanel apiBase={config.apiBase} location={location} />}
 

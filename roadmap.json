@@ -195,7 +195,7 @@
       "track": "ui",
       "size": "M",
       "launch": "v1",
-      "summary": "Cut extraneous load on the iPhone dashboard. First screen stays True Feel, warning, transparent math, and core microclimate toggles; timeline, body profile, reports, push, and shade map move behind compact sections or modes.",
+      "summary": "Cut extraneous load on the iPhone dashboard. First screen stays True Feel, warning, transparent math, and core microclimate toggles; timeline, body profile, push, and shade map move behind compact sections or modes.",
       "done": "On an iPhone viewport, the initial screen communicates the current True Feel decision without scrolling through secondary tools; all existing secondary features remain reachable and tested.",
       "shipped": "2026-07-14",
       "closes": "closes first-screen cognitive-load gap"
@@ -418,19 +418,6 @@
       "gated": true,
       "summary": "Height/weight/metabolism/clothing — bounded thermal-sign heuristic, on-device only, zero-effect defaults. Model in DECISIONS.md.",
       "closes": "closes PARKED bio-calibration + Clo",
-      "shipped": "2026-07-07"
-    },
-    {
-      "id": "L1a",
-      "title": "Crowdsourced micro-reports — code complete",
-      "column": "later",
-      "tier": "rock",
-      "track": "data",
-      "size": "L",
-      "launch": "v2",
-      "gated": true,
-      "summary": "Worker API (D1, 1km cells, 10-min IP rate limit, 3h summary) + one-tap client UI, config-gated by VITE_API_BASE. Local-verified via wrangler dev.",
-      "done": "Reports adjust local bias term; validation dashboard shows drift.",
       "shipped": "2026-07-07"
     },
     {

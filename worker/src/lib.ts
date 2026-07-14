@@ -1,19 +1,10 @@
 /** Pure helpers — unit-tested without the Workers runtime. */
 
-export const VOTES = ['hotter', 'cooler', 'spot-on'] as const
-export type Vote = (typeof VOTES)[number]
-
-export const REPORT_WINDOW_MS = 3 * 60 * 60 * 1000
-export const RATE_LIMIT_MS = 10 * 60 * 1000
 export const COPY_CACHE_TTL_S = 3600
 
-/** ~1 km grid: 0.01° buckets keep reports hyperlocal without storing raw coordinates. */
+/** ~1 km grid: 0.01° buckets keep cache keys local without storing raw coordinates. */
 export function toCell(latitude: number, longitude: number): string {
   return `${latitude.toFixed(2)},${longitude.toFixed(2)}`
-}
-
-export function isVote(v: unknown): v is Vote {
-  return typeof v === 'string' && (VOTES as readonly string[]).includes(v)
 }
 
 export interface CopyRequest {

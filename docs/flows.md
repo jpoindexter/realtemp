@@ -92,12 +92,6 @@ flowchart LR
     v0 --> v1 --> v2
 ```
 
-## 6. Crowdsource validation loop (v2 — how the formula earns accuracy)
+## 6. Parked validation loop
 
-```mermaid
-flowchart LR
-    U[User on street] -->|one tap: hotter / cooler / spot-on| R[(Reports DB)]
-    R --> Agg[Aggregate by cell + hour] --> Bias[Local bias term per microcell]
-    Bias --> TF[True Feel adjustment] --> U
-    Agg --> Dash[Drift dashboard] -->|tune| K[constants.ts coefficients]
-```
+Crowdsourced hotter/cooler/spot-on feedback is parked in `PARKED.md`. It should not return as a button-only feature; it needs a real drift dashboard and a bounded, visible local-bias term before it can affect the formula.

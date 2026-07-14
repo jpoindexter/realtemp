@@ -1,21 +1,12 @@
 import { describe, expect, it } from 'vitest'
 
-import { copyCacheKey, copyPrompt, isCopyRequest, isVote, toCell } from './lib'
+import { copyCacheKey, copyPrompt, isCopyRequest, toCell } from './lib'
 
 describe('toCell', () => {
   it('buckets to a ~1km 0.01° grid', () => {
     expect(toCell(39.4699, -0.3763)).toBe('39.47,-0.38')
     expect(toCell(39.4749, -0.3763)).toBe('39.47,-0.38')
     expect(toCell(39.4849, -0.3763)).toBe('39.48,-0.38')
-  })
-})
-
-describe('isVote', () => {
-  it('accepts only the three votes', () => {
-    expect(isVote('hotter')).toBe(true)
-    expect(isVote('spot-on')).toBe(true)
-    expect(isVote('freezing')).toBe(false)
-    expect(isVote(3)).toBe(false)
   })
 })
 

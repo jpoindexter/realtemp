@@ -8,8 +8,14 @@ const validPayload = {
     time: '2026-07-06T16:15',
     temperature_2m: 30.4,
     dew_point_2m: 19.8,
+    relative_humidity_2m: 58,
     wind_speed_10m: 2.3,
     uv_index: 7.5,
+    precipitation: 0.2,
+    rain: 0.1,
+    showers: 0.1,
+    weather_code: 61,
+    cloud_cover: 74,
   },
 }
 
@@ -31,14 +37,25 @@ describe('fetchCurrentWeather', () => {
     expect(r.value.airTempC).toBe(30.4)
     expect(r.value.localHour).toBe(16)
     expect(r.value.uvIndex).toBe(7.5)
+    expect(r.value.relativeHumidityPct).toBe(58)
+    expect(r.value.precipitationMm).toBe(0.2)
+    expect(r.value.rainMm).toBe(0.1)
+    expect(r.value.showersMm).toBe(0.1)
+    expect(r.value.weatherCode).toBe(61)
+    expect(r.value.cloudCoverPct).toBe(74)
   })
 
-  it('requests wind in m/s explicitly (km/h default would corrupt the formula)', async () => {
+  it('requests wind in m/s explicitly and includes sky/rain/humidity fields', async () => {
     mockFetchOnce(validPayload)
     await fetchCurrentWeather(39.47, -0.376)
     const url = vi.mocked(fetch).mock.calls[0]?.[0] as string
     expect(url).toContain('wind_speed_unit=ms')
     expect(url).toContain('timezone=auto')
+    expect(url).toContain('relative_humidity_2m')
+    expect(url).toContain('precipitation')
+    expect(url).toContain('precipitation_probability')
+    expect(url).toContain('weather_code')
+    expect(url).toContain('cloud_cover')
   })
 
   it('normalizes missing optional fields to null instead of failing', async () => {
@@ -59,8 +76,15 @@ describe('fetchCurrentWeather', () => {
         time: ['2026-07-07T01:00', '2026-07-07T02:00', '2026-07-07T03:00'],
         temperature_2m: [20, null, 22],
         dew_point_2m: [10, 11, null],
+        relative_humidity_2m: [50, 55, 60],
         wind_speed_10m: [2, 2, 2],
         uv_index: [0, 0, 0],
+        precipitation_probability: [10, 20, 30],
+        precipitation: [0, 0.1, 0.2],
+        rain: [0, 0.1, 0.2],
+        showers: [0, 0, 0.1],
+        weather_code: [0, 2, 61],
+        cloud_cover: [5, 50, 90],
       },
     }
     mockFetchOnce(withHourly)
@@ -72,8 +96,15 @@ describe('fetchCurrentWeather', () => {
       timeIso: '2026-07-07T03:00',
       airTempC: 22,
       dewPointC: null,
+      relativeHumidityPct: 60,
       windSpeedMs: 2,
       uvIndex: 0,
+      precipitationMm: 0.2,
+      precipitationProbabilityPct: 30,
+      rainMm: 0.2,
+      showersMm: 0.1,
+      weatherCode: 61,
+      cloudCoverPct: 90,
     })
     expect(r.value.utcOffsetSeconds).toBe(7200)
     const url = vi.mocked(fetch).mock.calls[0]?.[0] as string

@@ -19,8 +19,28 @@ const payload = {
     time: '2026-07-06T16:15',
     temperature_2m: 30,
     dew_point_2m: 20,
+    relative_humidity_2m: 58,
     wind_speed_10m: 2,
     uv_index: 8,
+    precipitation: 0.2,
+    rain: 0.1,
+    showers: 0.1,
+    weather_code: 61,
+    cloud_cover: 74,
+  },
+  hourly: {
+    time: ['2026-07-06T17:00', '2026-07-06T18:00', '2026-07-06T19:00'],
+    temperature_2m: [31, 30, 29],
+    dew_point_2m: [20, 20, 19],
+    relative_humidity_2m: [55, 58, 60],
+    wind_speed_10m: [2, 2.5, 3],
+    uv_index: [7, 5, 2],
+    precipitation_probability: [20, 40, 60],
+    precipitation: [0, 0.2, 0.6],
+    rain: [0, 0.2, 0.6],
+    showers: [0, 0, 0.2],
+    weather_code: [2, 61, 80],
+    cloud_cover: [40, 70, 90],
   },
 }
 
@@ -86,8 +106,14 @@ describe('Dashboard', () => {
       expect(screen.getByText('base air')).toBeDefined()
       expect(screen.getByText('humidity friction')).toBeDefined()
       expect(screen.getByText(/sun premium/)).toBeDefined() // regex: label gains '· night' after dark
+      expect(screen.getByRole('heading', { name: /current weather factors/i })).toBeDefined()
+      expect(screen.getAllByText('rain').length).toBeGreaterThan(0)
+      expect(screen.getByText('74%')).toBeDefined()
+      expect(screen.getAllByText('0.2 mm').length).toBeGreaterThan(0)
       expect(screen.getAllByRole('radio')).toHaveLength(18)
       expect(screen.getByRole('heading', { name: 'Next 24 h + sweat' })).toBeDefined()
+      expect(screen.getByLabelText(/next hours forecast/i)).toBeDefined()
+      expect(screen.getByText('40% rain')).toBeDefined()
       expect(screen.getByRole('heading', { name: 'Acclimatization' })).toBeDefined()
       expect(screen.getByRole('heading', { name: /your body/i })).toBeDefined()
       expect(screen.getByRole('meter', { name: /sweat efficiency/i })).toBeDefined()
@@ -159,7 +185,7 @@ describe('Dashboard', () => {
     // previously-loaded dashboard must still be fully rendered, not blanked
     // to a loading screen. This is the exact bug: a background refresh used
     // to discard perfectly good data the instant it started refetching.
-    expect(screen.getByText('true feel')).toBeDefined()
+    expect(screen.getAllByText('true feel').length).toBeGreaterThan(0)
     expect(screen.getByText(/updating/i)).toBeDefined()
 
     hung.resolve?.({ ok: true, status: 200, json: async () => payload })

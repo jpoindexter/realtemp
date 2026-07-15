@@ -4,7 +4,7 @@ import { fetchCurrentWeather } from '@/features/weather/open-meteo'
 import { ok } from '@/lib/result'
 
 import type { StoredLocation } from '@/features/location/geocoding'
-import type { WeatherError, WeatherSnapshot } from '@/features/weather/open-meteo'
+import type { HourlyPoint, WeatherError, WeatherSnapshot } from '@/features/weather/open-meteo'
 import type { Result } from '@/lib/result'
 
 /** Past this age a reading is marked stale; a focus/visibility event refetches it. */
@@ -30,6 +30,35 @@ function cacheKey(locationKey: string): string {
   return `${WEATHER_CACHE_PREFIX}${locationKey}`
 }
 
+function numberOrNull(value: unknown): number | null {
+  return typeof value === 'number' ? value : null
+}
+
+function readCachedHourly(value: unknown): HourlyPoint[] {
+  if (!Array.isArray(value)) return []
+  return value.flatMap((point): HourlyPoint[] => {
+    if (!point || typeof point !== 'object' || Array.isArray(point)) return []
+    const cached = point as Partial<HourlyPoint>
+    if (typeof cached.timeIso !== 'string' || typeof cached.airTempC !== 'number') return []
+    return [
+      {
+        timeIso: cached.timeIso,
+        airTempC: cached.airTempC,
+        dewPointC: numberOrNull(cached.dewPointC),
+        relativeHumidityPct: numberOrNull(cached.relativeHumidityPct),
+        windSpeedMs: numberOrNull(cached.windSpeedMs),
+        uvIndex: numberOrNull(cached.uvIndex),
+        precipitationMm: numberOrNull(cached.precipitationMm),
+        precipitationProbabilityPct: numberOrNull(cached.precipitationProbabilityPct),
+        rainMm: numberOrNull(cached.rainMm),
+        showersMm: numberOrNull(cached.showersMm),
+        weatherCode: numberOrNull(cached.weatherCode),
+        cloudCoverPct: numberOrNull(cached.cloudCoverPct),
+      },
+    ]
+  })
+}
+
 function readCachedWeather(locationKey: string): WeatherSnapshot | null {
   try {
     const raw = localStorage.getItem(cacheKey(locationKey))
@@ -41,14 +70,20 @@ function readCachedWeather(locationKey: string): WeatherSnapshot | null {
     if (typeof parsed.snapshot.airTempC !== 'number' || typeof parsed.snapshot.localTimeIso !== 'string') return null
     return {
       airTempC: parsed.snapshot.airTempC,
-      dewPointC: typeof parsed.snapshot.dewPointC === 'number' ? parsed.snapshot.dewPointC : null,
-      windSpeedMs: typeof parsed.snapshot.windSpeedMs === 'number' ? parsed.snapshot.windSpeedMs : null,
-      uvIndex: typeof parsed.snapshot.uvIndex === 'number' ? parsed.snapshot.uvIndex : null,
+      dewPointC: numberOrNull(parsed.snapshot.dewPointC),
+      relativeHumidityPct: numberOrNull(parsed.snapshot.relativeHumidityPct),
+      windSpeedMs: numberOrNull(parsed.snapshot.windSpeedMs),
+      uvIndex: numberOrNull(parsed.snapshot.uvIndex),
+      precipitationMm: numberOrNull(parsed.snapshot.precipitationMm),
+      rainMm: numberOrNull(parsed.snapshot.rainMm),
+      showersMm: numberOrNull(parsed.snapshot.showersMm),
+      weatherCode: numberOrNull(parsed.snapshot.weatherCode),
+      cloudCoverPct: numberOrNull(parsed.snapshot.cloudCoverPct),
       localHour: typeof parsed.snapshot.localHour === 'number' ? parsed.snapshot.localHour : new Date().getHours(),
       localTimeIso: parsed.snapshot.localTimeIso,
       fetchedAt,
       utcOffsetSeconds: typeof parsed.snapshot.utcOffsetSeconds === 'number' ? parsed.snapshot.utcOffsetSeconds : 0,
-      hourly: Array.isArray(parsed.snapshot.hourly) ? parsed.snapshot.hourly : [],
+      hourly: readCachedHourly(parsed.snapshot.hourly),
       baseline14C: typeof parsed.snapshot.baseline14C === 'number' ? parsed.snapshot.baseline14C : null,
     }
   } catch {

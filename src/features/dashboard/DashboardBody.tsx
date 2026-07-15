@@ -12,8 +12,10 @@ import { config } from '@/lib/config'
 
 import { BodyPanel } from './BodyPanel'
 import { BreakdownLedger } from './BreakdownLedger'
+import { ForecastList } from './ForecastList'
 import { SegmentedControl } from './SegmentedControl'
 import { SweatGauge } from './SweatGauge'
+import { WeatherFactors } from './WeatherFactors'
 import { displayTemp } from './format-temp'
 import { useBio } from './use-bio'
 
@@ -71,6 +73,17 @@ export function DashboardBody({ weather, location, toggles, updateToggles, unit,
     toggles,
     bio,
   )
+  const hourlyTrueFeel = computeHourlyTrueFeel(
+    weather.hourly,
+    {
+      utcOffsetSeconds: weather.utcOffsetSeconds,
+      latitude: location.latitude,
+      longitude: location.longitude,
+      baseline14C: weather.baseline14C,
+      bio,
+    },
+    toggles,
+  )
 
   return (
     <>
@@ -102,6 +115,8 @@ export function DashboardBody({ weather, location, toggles, updateToggles, unit,
           isNight: result.isNight,
         })}
       />
+
+      <WeatherFactors weather={weather} unit={unit} />
 
       <BreakdownLedger result={result} unit={unit} />
 
@@ -140,19 +155,10 @@ export function DashboardBody({ weather, location, toggles, updateToggles, unit,
           <SweatGauge pct={result.sweatEfficiencyPct} />
 
           <SafeWindowTimeline
-            points={computeHourlyTrueFeel(
-              weather.hourly,
-              {
-                utcOffsetSeconds: weather.utcOffsetSeconds,
-                latitude: location.latitude,
-                longitude: location.longitude,
-                baseline14C: weather.baseline14C,
-                bio,
-              },
-              toggles,
-            )}
+            points={hourlyTrueFeel}
             unit={unit}
           />
+          <ForecastList hourly={weather.hourly} trueFeel={hourlyTrueFeel} unit={unit} />
         </div>
       </section>
 

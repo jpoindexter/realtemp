@@ -126,6 +126,64 @@ h1.title { font-size: var(--text-title); font-weight: 800; letter-spacing: -0.02
 .warning.caution { background: var(--paper); border-color: var(--solar); color: var(--ink); }
 .warning.caution .warning-level { color: var(--solar); }
 
+/* weather factors */
+.weather-factors {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border: var(--border-w) solid var(--line);
+  background: var(--paper);
+}
+.weather-factors-title {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: var(--space-3);
+  border-bottom: 1px solid var(--line);
+  font-family: var(--mono);
+  font-weight: 400;
+  font-size: var(--text-label);
+  text-transform: uppercase;
+  letter-spacing: var(--track-label);
+  color: var(--ink-2);
+}
+.factor {
+  min-width: 0;
+  padding: var(--space-3);
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.factor:nth-of-type(2n) { border-right: none; }
+.factor span,
+.forecast-list .lbl,
+.forecast-row time,
+.forecast-row span {
+  font-family: var(--mono);
+  font-size: var(--text-label);
+  text-transform: uppercase;
+  letter-spacing: var(--track-tight);
+  color: var(--ink-2);
+}
+.factor b {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin-top: var(--space-1);
+  font-size: var(--text-note);
+  line-height: 1.2;
+}
+.factor small {
+  font: 400 var(--text-seg) var(--mono);
+  color: var(--ink-2);
+  text-transform: uppercase;
+  letter-spacing: var(--track-tight);
+}
+.factor.condition { grid-column: 1 / -1; }
+.factor.condition b { font-size: var(--text-copy); }
+.factor:last-of-type {
+  grid-column: 1 / -1;
+  border-right: none;
+  border-bottom: none;
+}
+
 /* ledger */
 .ledger {
   border-top: var(--rule-w) solid var(--ink);
@@ -200,6 +258,28 @@ fieldset.seg legend {
 .timeline .legend, .shade-map .legend { margin: 0; font-size: var(--text-seg); color: var(--ink-2); }
 .timeline .feel-key { font-weight: 700; color: var(--ink); }
 .timeline .base-key { color: var(--ink-2); }
+
+/* forecast */
+.forecast-list { display: flex; flex-direction: column; gap: var(--space-2); }
+.forecast-rows { display: flex; flex-direction: column; border-top: 1px solid var(--line); }
+.forecast-row {
+  display: grid;
+  grid-template-columns: 3.2rem 3.5rem 1fr;
+  gap: var(--space-2);
+  align-items: center;
+  min-height: var(--tap);
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--line);
+}
+.forecast-row b { font-size: var(--text-note); font-variant-numeric: tabular-nums; }
+.forecast-row > span { justify-self: end; }
+.forecast-meta {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
 
 /* secondary panels */
 .body-panel { border: var(--border-w) solid var(--line); background: var(--paper); }

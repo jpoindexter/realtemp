@@ -28,16 +28,29 @@ const currentResponseSchema = z.object({
     time: z.string(),
     temperature_2m: z.number(),
     dew_point_2m: maybeNumber,
+    relative_humidity_2m: maybeNumber,
     wind_speed_10m: maybeNumber,
     uv_index: maybeNumber,
+    precipitation: maybeNumber,
+    rain: maybeNumber,
+    showers: maybeNumber,
+    weather_code: maybeNumber,
+    cloud_cover: maybeNumber,
   }),
   hourly: z
     .object({
       time: z.array(z.string()),
       temperature_2m: maybeNumberArray,
       dew_point_2m: maybeNumberArray,
+      relative_humidity_2m: maybeNumberArray,
       wind_speed_10m: maybeNumberArray,
       uv_index: maybeNumberArray,
+      precipitation_probability: maybeNumberArray,
+      precipitation: maybeNumberArray,
+      rain: maybeNumberArray,
+      showers: maybeNumberArray,
+      weather_code: maybeNumberArray,
+      cloud_cover: maybeNumberArray,
     })
     .nullish()
     .transform((v) => v ?? null),
@@ -47,15 +60,28 @@ export interface HourlyPoint {
   timeIso: string
   airTempC: number
   dewPointC: number | null
+  relativeHumidityPct: number | null
   windSpeedMs: number | null
   uvIndex: number | null
+  precipitationMm: number | null
+  precipitationProbabilityPct: number | null
+  rainMm: number | null
+  showersMm: number | null
+  weatherCode: number | null
+  cloudCoverPct: number | null
 }
 
 export interface WeatherSnapshot {
   airTempC: number
   dewPointC: number | null
+  relativeHumidityPct: number | null
   windSpeedMs: number | null
   uvIndex: number | null
+  precipitationMm: number | null
+  rainMm: number | null
+  showersMm: number | null
+  weatherCode: number | null
+  cloudCoverPct: number | null
   localHour: number
   localTimeIso: string
   fetchedAt: Date
@@ -93,8 +119,10 @@ async function fetchBaseline14(latitude: number, longitude: number): Promise<num
 
 const FORECAST_URL = 'https://api.open-meteo.com/v1/forecast'
 // wind_speed_unit=ms is load-bearing: the default is km/h and would silently corrupt the formula.
-const CURRENT_FIELDS = 'temperature_2m,dew_point_2m,wind_speed_10m,uv_index'
-const HOURLY_FIELDS = CURRENT_FIELDS
+const CURRENT_FIELDS =
+  'temperature_2m,dew_point_2m,relative_humidity_2m,wind_speed_10m,uv_index,precipitation,rain,showers,weather_code,cloud_cover'
+const HOURLY_FIELDS =
+  `${CURRENT_FIELDS},precipitation_probability`
 const FORECAST_HOURS = 24
 const FETCH_ATTEMPTS = 3
 const RETRY_DELAYS_MS = [300, 900]
@@ -151,8 +179,14 @@ export async function fetchCurrentWeather(
   return ok({
     airTempC: current.temperature_2m,
     dewPointC: current.dew_point_2m,
+    relativeHumidityPct: current.relative_humidity_2m,
     windSpeedMs: current.wind_speed_10m,
     uvIndex: current.uv_index,
+    precipitationMm: current.precipitation,
+    rainMm: current.rain,
+    showersMm: current.showers,
+    weatherCode: current.weather_code,
+    cloudCoverPct: current.cloud_cover,
     localHour: Number.isFinite(localHour) ? localHour : new Date().getHours(),
     localTimeIso: current.time,
     fetchedAt: new Date(),
@@ -175,8 +209,15 @@ function toHourlyPoints(hourly: HourlyBlock | null): HourlyPoint[] {
         timeIso,
         airTempC,
         dewPointC: hourly.dew_point_2m[i] ?? null,
+        relativeHumidityPct: hourly.relative_humidity_2m[i] ?? null,
         windSpeedMs: hourly.wind_speed_10m[i] ?? null,
         uvIndex: hourly.uv_index[i] ?? null,
+        precipitationMm: hourly.precipitation[i] ?? null,
+        precipitationProbabilityPct: hourly.precipitation_probability[i] ?? null,
+        rainMm: hourly.rain[i] ?? null,
+        showersMm: hourly.showers[i] ?? null,
+        weatherCode: hourly.weather_code[i] ?? null,
+        cloudCoverPct: hourly.cloud_cover[i] ?? null,
       },
     ]
   })

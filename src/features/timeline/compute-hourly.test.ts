@@ -18,8 +18,15 @@ const hour = (timeIso: string, airTempC: number, dewPointC: number): HourlyPoint
   timeIso,
   airTempC,
   dewPointC,
+  relativeHumidityPct: null,
   windSpeedMs: 2,
   uvIndex: 0,
+  precipitationMm: null,
+  precipitationProbabilityPct: null,
+  rainMm: null,
+  showersMm: null,
+  weatherCode: null,
+  cloudCoverPct: null,
 })
 
 // Night hours + shade → solar 0; open/stagnant → env 0, activity 0. Deterministic.

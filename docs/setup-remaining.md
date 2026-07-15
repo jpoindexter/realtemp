@@ -1,8 +1,16 @@
 # Remaining gated runbook
 
-*Updated 2026-07-14. Code-backed v1 slices are built, tested, pushed, and deployed. The items below need a physical device, credentials, purchases, legal clearance, or a product decision.*
+*Updated 2026-07-15. Code-backed v1 slices are built, tested, pushed, and deployed. The items below need a physical device, credentials, purchases, legal clearance, or a product decision.*
 
 Run `npm run verify:roadmap-gates` for the current executable blocker list. It fails until every active roadmap card is proven complete, and prints the first action for each blocked card.
+
+Current audit, 2026-07-15:
+
+- `npm run verify:roadmap-gates` fails only because 6 active cards are externally gated.
+- `npm run verify:naming` passes RDAP checks; purchase, final taste call, and formal trademark clearance remain manual.
+- `npm run verify:heatmap-sources` passes official PNOA/CNIG/datos.gob source reachability; Jason go/no-go remains manual.
+- `npm run verify:ios-prereqs` fails because this shell only sees Command Line Tools, not a full Xcode app, and no physical iPhone is visible.
+- `npm run verify:street-check`, `npm run verify:sentry`, and `cd worker && npm run verify:anthropic` fail because their required local evidence or private secrets are absent.
 
 ## 1. Street check (P4) — physical iPhone, 5 min
 

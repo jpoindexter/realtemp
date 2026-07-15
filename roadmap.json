@@ -568,6 +568,50 @@
       "launch": "v0",
       "shipped": "2026-07-07",
       "summary": "Jason reported the shade panel failing every single time, regardless of timing — ruled out transient overload immediately since real bugs are consistent, not random. Reproduced live in Chrome against prod: all 3 Overpass mirrors returned 503/timeout. Root-caused via direct curl A/B test: identical request, only the User-Agent header differs -> 406 without it, 200 with it. Browser fetch() can never set User-Agent (forbidden header, browser-enforced) -- client-side retries/mirrors could never have fixed this, structurally. Built a server-side proxy (GET /api/buildings) on the existing realtemp-api Worker with a proper UA + KV cache shared across all users (upgrade over the old per-device cache). Verified end-to-end in production: 213 real buildings returned for central Valencia, second call served from cache, then re-verified live in the browser on a fresh page load -- real shadows rendering, no error box."
+    },
+    {
+      "id": "WX1",
+      "title": "Weather factors + short forecast",
+      "column": "next",
+      "tier": "pebble",
+      "track": "data",
+      "size": "M",
+      "launch": "v1",
+      "shipped": "2026-07-15",
+      "summary": "Open-Meteo adapter now requests and parses current humidity, precipitation, rain, showers, weather code, cloud cover, and hourly precipitation probability. Dashboard renders current weather factors plus a next-6-hour forecast with True Feel, condition, rain chance, precipitation, and cloud cover. Full test/build/deploy gate passed and production alias returned 200."
+    },
+    {
+      "id": "TAB1",
+      "title": "iPhone dashboard tabs",
+      "column": "next",
+      "tier": "pebble",
+      "track": "ui",
+      "size": "M",
+      "launch": "v1",
+      "shipped": "2026-07-15",
+      "summary": "Split the long iPhone dashboard into top-level Now, Forecast, and Tune tabs. Now keeps current factors and transparent math first; Forecast holds timeline, sweat, forecast, and shade map; Tune holds microclimate controls, acclimatization, body settings, and push setup. Tested by dashboard integration coverage and deployed to production."
+    },
+    {
+      "id": "UI1",
+      "title": "Header icon polish: real settings gear",
+      "column": "now",
+      "tier": "sand",
+      "track": "ui",
+      "size": "S",
+      "launch": "v0",
+      "shipped": "2026-07-15",
+      "summary": "Settings button was correctly wired but its inline SVG looked like a sun/ray glyph. Replaced the path with a gear-shaped icon while keeping the separate moon/sun light-dark toggle intact. Full test/build/deploy gate passed and production alias returned 200."
+    },
+    {
+      "id": "BUG4",
+      "title": "Fix: open dashboard could drift behind live weather",
+      "column": "now",
+      "tier": "rock",
+      "track": "data",
+      "size": "S",
+      "launch": "v0",
+      "shipped": "2026-07-15",
+      "summary": "Jason compared Apple Weather to RealTemp and found the app lagging. Root cause: RealTemp could sit open on a cached reading and only refetch after focus/visibility changed. Added one auto-refresh per stale reading once the 10-minute TTL passes while the dashboard remains open, with a regression test proving a stale open dashboard fetches and updates the displayed air temperature."
     }
   ]
 }

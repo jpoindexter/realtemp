@@ -126,6 +126,7 @@ export function useWeather(location: StoredLocation): [WeatherState, () => void]
   })
   const [now, setNow] = useState(() => Date.now())
   const fetchedAtRef = useRef<number | null>(fetched?.result.ok ? fetched.result.value.fetchedAt.getTime() : null)
+  const autoRefreshForFetchedAtRef = useRef<number | null>(null)
 
   const requestKey = `${locationKey}#${attempt}`
   const refetch = useCallback(() => setAttempt((n) => n + 1), [])
@@ -136,9 +137,11 @@ export function useWeather(location: StoredLocation): [WeatherState, () => void]
       const cached = readCachedWeather(locationKey)
       if (cached) {
         fetchedAtRef.current = cached.fetchedAt.getTime()
+        autoRefreshForFetchedAtRef.current = null
         return { requestKey: `${locationKey}#cache`, locationKey, result: ok(cached) }
       }
       fetchedAtRef.current = null
+      autoRefreshForFetchedAtRef.current = null
       return null
     })
   }, [locationKey])
@@ -149,6 +152,7 @@ export function useWeather(location: StoredLocation): [WeatherState, () => void]
       if (cancelled) return
       if (result.ok) {
         fetchedAtRef.current = result.value.fetchedAt.getTime()
+        autoRefreshForFetchedAtRef.current = null
         writeCachedWeather(locationKey, result.value)
         setFetched({ requestKey, locationKey, result })
         return
@@ -163,15 +167,22 @@ export function useWeather(location: StoredLocation): [WeatherState, () => void]
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [requestKey, locationKey])
 
-  // Staleness is time-driven: a slow ticker re-evaluates it, and returning to the
-  // app (focus/visibility) refetches immediately when past TTL.
+  // Staleness is time-driven: a slow ticker re-evaluates it, auto-refreshes
+  // once per stale reading, and returning to the app refetches immediately.
   useEffect(() => {
-    const tick = setInterval(() => setNow(Date.now()), STALE_CHECK_INTERVAL_MS)
+    const refreshIfStale = () => {
+      const current = Date.now()
+      setNow(current)
+      const at = fetchedAtRef.current
+      if (at !== null && current - at > WEATHER_TTL_MS && autoRefreshForFetchedAtRef.current !== at) {
+        autoRefreshForFetchedAtRef.current = at
+        refetch()
+      }
+    }
+    const tick = setInterval(refreshIfStale, STALE_CHECK_INTERVAL_MS)
     const onVisible = () => {
       if (document.visibilityState !== 'visible') return
-      setNow(Date.now())
-      const at = fetchedAtRef.current
-      if (at !== null && Date.now() - at > WEATHER_TTL_MS) refetch()
+      refreshIfStale()
     }
     document.addEventListener('visibilitychange', onVisible)
     window.addEventListener('focus', onVisible)

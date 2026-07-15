@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@/features/heatmap/ShadeMap', () => ({
@@ -199,6 +199,29 @@ describe('Dashboard', () => {
     hung.resolve?.({ ok: true, status: 200, json: async () => payload })
     await waitFor(() => expect(screen.getByText(/live/)).toBeDefined())
     expect(screen.queryByText(/updating/i)).toBeNull()
+    vi.useRealTimers()
+  })
+
+  it('auto-refreshes when an open dashboard crosses the stale TTL', async () => {
+    vi.useFakeTimers({ toFake: ['Date', 'setInterval', 'clearInterval'] })
+    let mainCallCount = 0
+    const refreshed = { ...payload, current: { ...payload.current, time: '2026-07-06T16:30', temperature_2m: 36 } }
+    const fetchMock = vi.fn(async (url: string) => {
+      if (url.includes('daily=')) return { ok: true, status: 200, json: async () => ({ daily: { time: [], temperature_2m_mean: [] } }) }
+      mainCallCount++
+      return { ok: true, status: 200, json: async () => (mainCallCount === 1 ? payload : refreshed) }
+    })
+    vi.stubGlobal('fetch', fetchMock)
+    renderDashboard()
+
+    await waitFor(() => expect(screen.getByText(/live/)).toBeDefined())
+    expect(fetchMock).toHaveBeenCalledTimes(2)
+
+    vi.setSystemTime(Date.now() + 11 * 60_000)
+    act(() => vi.advanceTimersByTime(60_000))
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(4))
+    await waitFor(() => expect(screen.getByText(/air says 36.0°/i)).toBeDefined())
     vi.useRealTimers()
   })
 

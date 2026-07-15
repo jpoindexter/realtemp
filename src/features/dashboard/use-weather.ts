@@ -11,7 +11,7 @@ import type { Result } from '@/lib/result'
 export const WEATHER_TTL_MS = 600_000
 const STALE_CHECK_INTERVAL_MS = 60_000
 const WEATHER_CACHE_PREFIX = 'realtemp:weather:'
-const WEATHER_CACHE_VERSION = 1
+const WEATHER_CACHE_VERSION = 2
 
 export type WeatherState =
   | { status: 'loading' }

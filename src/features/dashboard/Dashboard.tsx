@@ -1,5 +1,5 @@
 import { DashboardBody } from './DashboardBody'
-import { GearIcon, InfoIcon, MoonIcon, SunIcon } from './icons'
+import { GearIcon, InfoIcon, MoonIcon, RefreshIcon, SunIcon } from './icons'
 import { useToggles } from './use-toggles'
 import { useWeather } from './use-weather'
 
@@ -44,6 +44,17 @@ export function Dashboard({
             : '· · ·'}
         </span>
         <div className="icon-btns">
+          {weather.status === 'ready' && (
+            <button
+              type="button"
+              className="icon-btn"
+              onClick={refetch}
+              disabled={weather.isRefreshing}
+              aria-label={weather.isRefreshing ? 'Refreshing weather reading' : 'Refresh weather reading'}
+            >
+              <RefreshIcon />
+            </button>
+          )}
           <button type="button" className="icon-btn" onClick={onOpenAbout} aria-label="How this works">
             <InfoIcon />
           </button>

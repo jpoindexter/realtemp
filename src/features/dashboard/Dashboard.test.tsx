@@ -71,7 +71,7 @@ describe('Dashboard', () => {
     localStorage.setItem(
       'realtemp:weather:39.47,-0.376',
       JSON.stringify({
-        version: 1,
+        version: 2,
         snapshot: {
           airTempC: 30,
           dewPointC: 20,
@@ -93,6 +93,34 @@ describe('Dashboard', () => {
     expect(screen.getByText('true feel')).toBeDefined()
     expect(screen.getByText('humidity friction')).toBeDefined()
     await waitFor(() => expect(screen.getByText(/updating/i)).toBeDefined())
+  })
+
+  it('ignores old cached weather so installs do not keep pre-fix readings', async () => {
+    localStorage.setItem(
+      'realtemp:weather:39.47,-0.376',
+      JSON.stringify({
+        version: 1,
+        snapshot: {
+          airTempC: 24,
+          dewPointC: 20,
+          windSpeedMs: 2,
+          uvIndex: 8,
+          localHour: 16,
+          localTimeIso: '2026-07-06T16:15',
+          fetchedAt: '2026-07-06T14:15:00.000Z',
+          utcOffsetSeconds: 7200,
+          hourly: [],
+          baseline14C: null,
+        },
+      }),
+    )
+    vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, status: 200, json: async () => payload })))
+
+    renderDashboard()
+
+    expect(screen.getByText(/reading the street/i)).toBeDefined()
+    await waitFor(() => expect(screen.getByText(/air says 30.0°/i)).toBeDefined())
+    expect(screen.queryByText(/air says 24.0°/i)).toBeNull()
   })
 
   it(
@@ -136,7 +164,26 @@ describe('Dashboard', () => {
 
     await waitFor(() => expect(screen.getByRole('button', { name: /settings/i })).toBeDefined())
     expect(screen.getByRole('button', { name: /how this works/i })).toBeDefined()
+    expect(screen.getByRole('button', { name: /refresh weather reading/i })).toBeDefined()
     expect(screen.getByRole('button', { name: /switch to dark mode/i })).toBeDefined()
+  })
+
+  it('lets the user force-refresh the reading when comparing web and native app', async () => {
+    let mainCallCount = 0
+    const refreshed = { ...payload, current: { ...payload.current, time: '2026-07-06T16:30', temperature_2m: 36 } }
+    const fetchMock = vi.fn(async (url: string) => {
+      if (url.includes('daily=')) return { ok: true, status: 200, json: async () => ({ daily: { time: [], temperature_2m_mean: [] } }) }
+      mainCallCount++
+      return { ok: true, status: 200, json: async () => (mainCallCount === 1 ? payload : refreshed) }
+    })
+    vi.stubGlobal('fetch', fetchMock)
+    renderDashboard()
+
+    await waitFor(() => expect(screen.getByText(/air says 30.0°/i)).toBeDefined())
+    fireEvent.click(screen.getByRole('button', { name: /refresh weather reading/i }))
+
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(4))
+    await waitFor(() => expect(screen.getByText(/air says 36.0°/i)).toBeDefined())
   })
 
   it('uses a separate theme button instead of folding theme into settings', async () => {

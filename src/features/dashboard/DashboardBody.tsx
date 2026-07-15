@@ -111,7 +111,7 @@ export function DashboardBody({ weather, location, toggles, updateToggles, unit,
           </button>
         </div>
         <p className="cap">
-          True Feel &middot; air says {displayTemp(result.baseC, unit)}&deg;
+          True Feel &middot; Open-Meteo air says {displayTemp(result.baseC, unit)}&deg;
           {result.isWeatherShock && <span className="badge shock">weather shock</span>}
           {result.missing.length > 0 && <span className="badge">partial data</span>}
         </p>

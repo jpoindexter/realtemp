@@ -69,7 +69,9 @@ h1.title { font-size: var(--text-title); font-weight: 800; letter-spacing: -0.02
   border: none;
   color: var(--ink-2);
   cursor: pointer;
+  text-decoration: none;
 }
+.icon-btn:disabled { opacity: 0.45; cursor: wait; }
 .icon-btn:focus-visible { outline: var(--focus-ring); outline-offset: -3px; }
 
 /* hero */

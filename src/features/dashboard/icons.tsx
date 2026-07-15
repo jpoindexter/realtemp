@@ -20,6 +20,17 @@ export function GearIcon() {
   )
 }
 
+export function RefreshIcon() {
+  return (
+    <svg {...SHARED} strokeWidth={1.75} aria-hidden="true" focusable="false">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M20 12a8 8 0 0 1-13.2 6.1" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M4 12A8 8 0 0 1 17.2 5.9" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M17.2 2.8v3.1h-3.1" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M6.8 21.2v-3.1h3.1" />
+    </svg>
+  )
+}
+
 export function InfoIcon() {
   return (
     <svg {...SHARED} strokeWidth={1.75} aria-hidden="true" focusable="false">

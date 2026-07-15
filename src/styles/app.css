@@ -126,6 +126,45 @@ h1.title { font-size: var(--text-title); font-weight: 800; letter-spacing: -0.02
 .warning.caution { background: var(--paper); border-color: var(--solar); color: var(--ink); }
 .warning.caution .warning-level { color: var(--solar); }
 
+/* dashboard tabs */
+.dashboard-tabs {
+  position: sticky;
+  bottom: max(var(--space-2), env(safe-area-inset-bottom));
+  z-index: 5;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border: var(--border-w) solid var(--ink);
+  background: var(--paper);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.14);
+}
+.dashboard-tabs button {
+  min-width: 0;
+  min-height: var(--tap);
+  border: none;
+  border-right: var(--border-w) solid var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+  font: 700 var(--text-seg) var(--mono);
+  text-transform: uppercase;
+  letter-spacing: var(--track-tight);
+  cursor: pointer;
+}
+.dashboard-tabs button:last-child { border-right: none; }
+.dashboard-tabs button[aria-selected="true"] {
+  background: var(--ink);
+  color: var(--paper);
+}
+.dashboard-tabs button:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: -3px;
+  z-index: 1;
+}
+.tab-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
 /* weather factors */
 .weather-factors {
   display: grid;

@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 import { CopyLine } from '@/features/copy/CopyLine'
 import { computeTrueFeel } from '@/features/formula/compute-true-feel'
 import { solarZenithDeg } from '@/features/formula/solar-zenith'
@@ -48,6 +50,14 @@ const ACCLIM_OPTIONS = [
   { value: 'local', label: 'Local' },
 ] as const
 
+const TAB_OPTIONS = [
+  { value: 'now', label: 'Now' },
+  { value: 'forecast', label: 'Forecast' },
+  { value: 'tune', label: 'Tune' },
+] as const
+
+type DashboardTab = (typeof TAB_OPTIONS)[number]['value']
+
 interface DashboardBodyProps {
   weather: WeatherSnapshot
   location: StoredLocation
@@ -59,6 +69,7 @@ interface DashboardBodyProps {
 
 export function DashboardBody({ weather, location, toggles, updateToggles, unit, onSetUnit }: DashboardBodyProps) {
   const [bio, updateBio] = useBio()
+  const [activeTab, setActiveTab] = useState<DashboardTab>('now')
   const zenith = solarZenithDeg(weather.fetchedAt, location.latitude, location.longitude)
   const result = computeTrueFeel(
     {
@@ -116,72 +127,107 @@ export function DashboardBody({ weather, location, toggles, updateToggles, unit,
         })}
       />
 
-      <WeatherFactors weather={weather} unit={unit} />
-
-      <BreakdownLedger result={result} unit={unit} />
-
-      <div className="segs">
-        <SegmentedControl
-          legend="Exposure"
-          name="exposure"
-          options={EXPOSURE_OPTIONS}
-          value={toggles.exposure}
-          onChange={(exposure) => updateToggles({ exposure })}
-        />
-        {result.isNight && (
-          <p className="note" role="status">
-            Night — there's no sun to toggle. Your exposure choice kicks back in at dawn.
-          </p>
-        )}
-        <SegmentedControl
-          legend="Surroundings"
-          name="environment"
-          options={ENVIRONMENT_OPTIONS}
-          value={toggles.environment}
-          onChange={(environment) => updateToggles({ environment })}
-        />
-        <SegmentedControl
-          legend="Activity"
-          name="activity"
-          options={ACTIVITY_OPTIONS}
-          value={toggles.activity}
-          onChange={(activity) => updateToggles({ activity })}
-        />
+      <div className="dashboard-tabs" role="tablist" aria-label="Dashboard sections">
+        {TAB_OPTIONS.map((tab) => (
+          <button
+            key={tab.value}
+            type="button"
+            role="tab"
+            id={`dashboard-tab-${tab.value}`}
+            aria-selected={activeTab === tab.value}
+            aria-controls={`dashboard-panel-${tab.value}`}
+            onClick={() => setActiveTab(tab.value)}
+          >
+            {tab.label}
+          </button>
+        ))}
       </div>
 
-      <section className="body-panel" aria-labelledby="next-24h-title">
-        <h2 id="next-24h-title" className="body-panel-title">Next 24 h + sweat</h2>
-        <div className="stack">
-          <SweatGauge pct={result.sweatEfficiencyPct} />
+      {activeTab === 'now' && (
+        <section
+          className="tab-panel"
+          id="dashboard-panel-now"
+          role="tabpanel"
+          aria-labelledby="dashboard-tab-now"
+        >
+          <WeatherFactors weather={weather} unit={unit} />
+          <BreakdownLedger result={result} unit={unit} />
+          {config.apiBase && <OfficialAlertsPanel apiBase={config.apiBase} location={location} />}
+        </section>
+      )}
 
-          <SafeWindowTimeline
-            points={hourlyTrueFeel}
-            unit={unit}
-          />
-          <ForecastList hourly={weather.hourly} trueFeel={hourlyTrueFeel} unit={unit} />
-        </div>
-      </section>
+      {activeTab === 'forecast' && (
+        <section
+          className="tab-panel"
+          id="dashboard-panel-forecast"
+          role="tabpanel"
+          aria-labelledby="dashboard-tab-forecast"
+        >
+          <section className="body-panel" aria-labelledby="next-24h-title">
+            <h2 id="next-24h-title" className="body-panel-title">Next 24 h + sweat</h2>
+            <div className="stack">
+              <SweatGauge pct={result.sweatEfficiencyPct} />
+              <SafeWindowTimeline points={hourlyTrueFeel} unit={unit} />
+              <ForecastList hourly={weather.hourly} trueFeel={hourlyTrueFeel} unit={unit} />
+            </div>
+          </section>
+          <ShadeMap location={location} />
+        </section>
+      )}
 
-      <section className="body-panel" aria-labelledby="acclimatization-title">
-        <h2 id="acclimatization-title" className="body-panel-title">Acclimatization</h2>
-        <div className="stack">
-          <SegmentedControl
-            legend="Acclimatized to this weather"
-            name="acclimatization"
-            options={ACCLIM_OPTIONS}
-            value={toggles.acclimatization}
-            onChange={(acclimatization) => updateToggles({ acclimatization })}
-          />
-        </div>
-      </section>
+      {activeTab === 'tune' && (
+        <section
+          className="tab-panel"
+          id="dashboard-panel-tune"
+          role="tabpanel"
+          aria-labelledby="dashboard-tab-tune"
+        >
+          <div className="segs">
+            <SegmentedControl
+              legend="Exposure"
+              name="exposure"
+              options={EXPOSURE_OPTIONS}
+              value={toggles.exposure}
+              onChange={(exposure) => updateToggles({ exposure })}
+            />
+            {result.isNight && (
+              <p className="note" role="status">
+                Night — there's no sun to toggle. Your exposure choice kicks back in at dawn.
+              </p>
+            )}
+            <SegmentedControl
+              legend="Surroundings"
+              name="environment"
+              options={ENVIRONMENT_OPTIONS}
+              value={toggles.environment}
+              onChange={(environment) => updateToggles({ environment })}
+            />
+            <SegmentedControl
+              legend="Activity"
+              name="activity"
+              options={ACTIVITY_OPTIONS}
+              value={toggles.activity}
+              onChange={(activity) => updateToggles({ activity })}
+            />
+          </div>
 
-      <BodyPanel bio={bio} onChange={updateBio} />
+          <section className="body-panel" aria-labelledby="acclimatization-title">
+            <h2 id="acclimatization-title" className="body-panel-title">Acclimatization</h2>
+            <div className="stack">
+              <SegmentedControl
+                legend="Acclimatized to this weather"
+                name="acclimatization"
+                options={ACCLIM_OPTIONS}
+                value={toggles.acclimatization}
+                onChange={(acclimatization) => updateToggles({ acclimatization })}
+              />
+            </div>
+          </section>
 
-      {config.apiBase && <OfficialAlertsPanel apiBase={config.apiBase} location={location} />}
-
-      {config.apiBase && <PushPanel apiBase={config.apiBase} location={location} />}
-
-      <ShadeMap location={location} />
+          <BodyPanel bio={bio} onChange={updateBio} />
+          {config.apiBase && <PushPanel apiBase={config.apiBase} location={location} />}
+        </section>
+      )}
     </>
   )
 }

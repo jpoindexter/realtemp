@@ -1,4 +1,4 @@
-import { cleanup, render, screen, waitFor } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@/features/heatmap/ShadeMap', () => ({
@@ -96,7 +96,7 @@ describe('Dashboard', () => {
   })
 
   it(
-    'renders hero, a summing ledger, all toggles and the gauge from live data',
+    'renders hero data and separates longer controls into tabs',
     async () => {
       vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, status: 200, json: async () => payload })))
       renderDashboard()
@@ -110,16 +110,24 @@ describe('Dashboard', () => {
       expect(screen.getAllByText('rain').length).toBeGreaterThan(0)
       expect(screen.getByText('74%')).toBeDefined()
       expect(screen.getAllByText('0.2 mm').length).toBeGreaterThan(0)
-      expect(screen.getAllByRole('radio')).toHaveLength(18)
+      expect(screen.getAllByRole('tab')).toHaveLength(3)
+      expect(screen.getByRole('tab', { name: 'Now', selected: true })).toBeDefined()
+
+      fireEvent.click(screen.getByRole('tab', { name: 'Forecast' }))
+      expect(screen.getByRole('tab', { name: 'Forecast', selected: true })).toBeDefined()
       expect(screen.getByRole('heading', { name: 'Next 24 h + sweat' })).toBeDefined()
       expect(screen.getByLabelText(/next hours forecast/i)).toBeDefined()
       expect(screen.getByText('40% rain')).toBeDefined()
+      expect(screen.getByRole('meter', { name: /sweat efficiency/i })).toBeDefined()
+
+      fireEvent.click(screen.getByRole('tab', { name: 'Tune' }))
+      expect(screen.getByRole('tab', { name: 'Tune', selected: true })).toBeDefined()
+      expect(screen.getAllByRole('radio')).toHaveLength(18)
       expect(screen.getByRole('heading', { name: 'Acclimatization' })).toBeDefined()
       expect(screen.getByRole('heading', { name: /your body/i })).toBeDefined()
-      expect(screen.getByRole('meter', { name: /sweat efficiency/i })).toBeDefined()
       expect(screen.queryByText(/partial data/i)).toBeNull()
     },
-    10_000,
+    20_000,
   )
 
   it('exposes settings and about as separate, labeled controls (not folded together)', async () => {

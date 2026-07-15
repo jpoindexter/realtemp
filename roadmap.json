@@ -136,17 +136,6 @@
       "launch": "v2",
       "gated": true,
       "summary": "GATED: Jason go/no-go on docs/heatmap-prd.md option 1 (free IGN LiDAR → precomputed tiles). Run npm run verify:heatmap-sources to refresh official PNOA/CNIG/datos.gob source evidence before deciding."
-    },
-    {
-      "id": "L5b",
-      "title": "Enable LLM copy (secret)",
-      "column": "later",
-      "tier": "sand",
-      "track": "ai",
-      "size": "S",
-      "launch": "v2",
-      "gated": true,
-      "summary": "GATED: private key. Local proof: cd worker && npm run verify:anthropic; production: wrangler secret put ANTHROPIC_API_KEY && npm run deploy. Cost ≈ €0.006/user/mo cached."
     }
   ],
   "shipped": [

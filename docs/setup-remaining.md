@@ -8,11 +8,11 @@ See `docs/roadmap-completion-audit.md` for the current requirement-by-requiremen
 
 Current audit, 2026-07-15:
 
-- `npm run verify:roadmap-gates` fails only because 6 active cards are externally gated.
+- `npm run verify:roadmap-gates` fails only because 5 active cards are externally gated.
 - `npm run verify:naming` passes RDAP checks; purchase, final taste call, and formal trademark clearance remain manual.
 - `npm run verify:heatmap-sources` passes official PNOA/CNIG/datos.gob source reachability; Jason go/no-go remains manual.
 - `npm run verify:ios-prereqs` fails because this shell only sees Command Line Tools, not a full Xcode app, and no physical iPhone is visible.
-- `npm run verify:street-check`, `npm run verify:sentry`, and `cd worker && npm run verify:anthropic` fail because their required local evidence or private secrets are absent.
+- `npm run verify:street-check` and `npm run verify:sentry` fail because their required local evidence or private secrets are absent.
 
 ## 1. Street check (P4) — physical iPhone, 5 min
 
@@ -74,4 +74,5 @@ Formal EUIPO/TMview/USPTO/WIPO search, final taste call, and domain purchase are
 ## 5. Time / purchase / decision gated
 
 - **L4b:** run `npm run verify:heatmap-sources`, then decide whether to proceed with the PNOA-LiDAR precision path in `docs/heatmap-prd.md`.
-- **L5b:** `cd worker && npm run verify:anthropic` for local proof, then `npx wrangler secret put ANTHROPIC_API_KEY && npm run deploy` to enable the LLM copy line in production. The verifier intentionally fails until the private key exists locally.
+
+AI/LLM copy is parked in `PARKED.md`; no Anthropic key is required for the active roadmap.

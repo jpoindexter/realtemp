@@ -9,7 +9,6 @@ const proofById = {
   N6c: 'Set VITE_SENTRY_DSN locally and in Vercel production, run npm run verify:sentry, rebuild, and deploy.',
   N7: 'Run npm run verify:naming for current RDAP evidence, then pick the name/domain, purchase it, and complete formal EUIPO/TMview/USPTO/WIPO checks before public launch.',
   L4b: 'Run npm run verify:heatmap-sources, then Jason go/no-go on docs/heatmap-prd.md option 1 before any PNOA-LiDAR pipeline work.',
-  L5b: 'Set ANTHROPIC_API_KEY locally, run cd worker && npm run verify:anthropic, then add the Wrangler secret and deploy.',
 }
 
 const firstActionById = {
@@ -18,7 +17,6 @@ const firstActionById = {
   N6c: 'Create the Sentry DSN, set it locally and in Vercel production, then run npm run verify:sentry.',
   N7: 'Run npm run verify:naming, then complete formal trademark clearance and buy the selected domain.',
   L4b: 'Run npm run verify:heatmap-sources, then make the go/no-go call for docs/heatmap-prd.md option 1.',
-  L5b: 'Set ANTHROPIC_API_KEY locally or in worker/.dev.vars, then run cd worker && npm run verify:anthropic.',
 }
 
 const activeCards = roadmap.cards.filter((card) => card.column !== 'shipped')

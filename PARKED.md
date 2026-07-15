@@ -16,7 +16,7 @@
 **Captured:** 2026-07-06 (PDF v1.0 §3.2) · **Why parked:** Was contradictorily both MVP and post-MVP in v1.0; depends on 3D building/canopy data + CV tier. · **Cost to revisit:** Very high — data sourcing project of its own.
 
 ## LLM weather copy
-**Captured:** 2026-07-06 (PDF v1.0 §4) · **Why parked:** Decoration on top of the core loop; v1.0's "terminal interface" wording suggests it was aspirational. · **Cost to revisit:** Low.
+**Captured:** 2026-07-06 (PDF v1.0 §4); reconfirmed 2026-07-15 · **Why parked:** Decoration on top of the core loop; Jason explicitly said RealTemp can proceed without AI, so Anthropic key/LLM copy is not an active roadmap blocker. · **Cost to revisit:** Low.
 
 ## Paywall, Stripe, and paid-tier pricing
 **Captured:** 2026-07-14 (roadmap L6) · **Why parked:** Jason explicitly said to leave the paywall stuff out for now. Keep RealTemp focused on street-use proof, trust, and daily habit before monetization. · **Cost to revisit:** Medium — Stripe checkout, entitlement storage, cancel/manage flow, and pricing copy.

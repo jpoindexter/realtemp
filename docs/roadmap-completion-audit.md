@@ -6,7 +6,7 @@ Goal: complete items on roadmap.
 
 ## Summary
 
-The executable app/code roadmap slices are shipped, tested, pushed, and deployed. The roadmap is not fully complete because six active cards still require evidence or decisions that cannot be produced from this repo alone.
+The executable app/code roadmap slices are shipped, tested, pushed, and deployed. The roadmap is not fully complete because five active cards still require evidence or decisions that cannot be produced from this repo alone.
 
 Current active roadmap cards:
 
@@ -17,7 +17,8 @@ Current active roadmap cards:
 | N6c — Paste Sentry DSN | Blocked by private credential | `npm run verify:sentry` fails because `VITE_SENTRY_DSN` is absent locally and cannot be verified in Vercel production | Create Sentry project, set DSN locally and in Vercel production, rebuild/deploy |
 | N7 — Real name + domain | Partially verified, still human/legal gated | `npm run verify:naming` passes RDAP availability evidence for candidates | Final name decision, domain purchase, and formal trademark clearance |
 | L4b — Shade precision: PNOA-LiDAR tiles | Source evidence verified, decision gated | `npm run verify:heatmap-sources` passes official PNOA/CNIG/datos.gob reachability | Jason go/no-go on the PNOA-LiDAR path before pipeline work |
-| L5b — Enable LLM copy (secret) | Blocked by private credential | `cd worker && npm run verify:anthropic` fails because `ANTHROPIC_API_KEY` is absent | Add local/production Anthropic key and deploy worker secret |
+
+AI/LLM copy is parked in `PARKED.md` per the 2026-07-15 product decision; Anthropic is no longer an active roadmap gate.
 
 ## Checks run
 
@@ -26,13 +27,12 @@ Current active roadmap cards:
 - `npm run lint` — passed
 - `npm run test` — 93 tests passed
 - `npm run build` — passed
-- `npm run verify:roadmap-gates` — failed by design, listing the six active externally gated cards
+- `npm run verify:roadmap-gates` — failed by design, listing the five active externally gated cards
 - `npm run verify:ios-prereqs` — failed on missing full Xcode/device tooling
 - `npm run verify:street-check` — failed on missing local street-check evidence
 - `npm run verify:sentry` — failed on missing private Sentry DSN
 - `npm run verify:naming` — passed RDAP evidence, still requires manual legal/business actions
 - `npm run verify:heatmap-sources` — passed source reachability, still requires product decision
-- `cd worker && npm run verify:anthropic` — failed on missing private Anthropic key
 
 ## Xcode/device audit
 

@@ -4,6 +4,8 @@
 
 Run `npm run verify:roadmap-gates` for the current executable blocker list. It fails until every active roadmap card is proven complete, and prints the first action for each blocked card.
 
+See `docs/roadmap-completion-audit.md` for the current requirement-by-requirement completion audit.
+
 Current audit, 2026-07-15:
 
 - `npm run verify:roadmap-gates` fails only because 6 active cards are externally gated.

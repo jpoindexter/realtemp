@@ -25,11 +25,11 @@ function toBounded(raw: string, min: number, max: number): number | null {
   return Number.isFinite(v) && v >= min && v <= max ? v : null
 }
 
-/** Opt-in personal calibration — collapsed by default, stored on-device only. */
+/** Opt-in personal calibration, stored on-device only. */
 export function BodyPanel({ bio, onChange }: BodyPanelProps) {
   return (
-    <details className="body-panel">
-      <summary>Your body · optional, stays on this device</summary>
+    <section className="body-panel" aria-labelledby="body-panel-title">
+      <h2 id="body-panel-title" className="body-panel-title">Your body · optional, stays on this device</h2>
       <div className="stack">
         <div className="body-fields">
           <div className="field">
@@ -74,6 +74,6 @@ export function BodyPanel({ bio, onChange }: BodyPanelProps) {
           onChange={(clothing) => onChange({ clothing })}
         />
       </div>
-    </details>
+    </section>
   )
 }

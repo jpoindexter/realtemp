@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { Dashboard } from '@/features/dashboard/Dashboard'
 import { useUnit } from '@/features/dashboard/use-unit'
@@ -10,6 +10,9 @@ import { Settings } from '@/features/settings/Settings'
 import type { StoredLocation } from '@/features/location/geocoding'
 
 const LOCATION_KEY = 'realtemp:location'
+const THEME_KEY = 'realtemp:theme'
+
+export type ThemeMode = 'light' | 'dark'
 
 function readStoredLocation(): StoredLocation | null {
   try {
@@ -24,10 +27,30 @@ function readStoredLocation(): StoredLocation | null {
 
 type Screen = 'dashboard' | 'settings' | 'about'
 
+function readTheme(): ThemeMode {
+  try {
+    const saved = localStorage.getItem(THEME_KEY)
+    if (saved === 'light' || saved === 'dark') return saved
+  } catch {
+    // storage blocked — fall through to system preference
+  }
+  return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+}
+
+function applyTheme(theme: ThemeMode): void {
+  document.documentElement.setAttribute('data-theme', theme)
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#141311' : '#edede8')
+}
+
 export function App() {
   const [location, setLocation] = useState<StoredLocation | null>(readStoredLocation)
   const [screen, setScreen] = useState<Screen>('dashboard')
+  const [theme, setTheme] = useState<ThemeMode>(readTheme)
   const [unit, setUnit] = useUnit()
+
+  useEffect(() => {
+    applyTheme(theme)
+  }, [theme])
 
   const pickLocation = (next: StoredLocation) => {
     try {
@@ -37,6 +60,18 @@ export function App() {
     }
     setLocation(next)
     setScreen('dashboard')
+  }
+
+  const toggleTheme = () => {
+    setTheme((current) => {
+      const next = current === 'dark' ? 'light' : 'dark'
+      try {
+        localStorage.setItem(THEME_KEY, next)
+      } catch {
+        // storage blocked — visual theme still updates for the session
+      }
+      return next
+    })
   }
 
   if (!location) return <LocationSearch onPick={pickLocation} />
@@ -65,6 +100,8 @@ export function App() {
       onChangeLocation={() => setLocation(null)}
       onOpenSettings={() => setScreen('settings')}
       onOpenAbout={() => setScreen('about')}
+      theme={theme}
+      onToggleTheme={toggleTheme}
     />
   )
 }

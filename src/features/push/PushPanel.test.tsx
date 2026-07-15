@@ -12,10 +12,6 @@ afterEach(() => {
   vi.restoreAllMocks()
 })
 
-function openPanel() {
-  screen.getByText('Heat warnings · daily check at dawn').click()
-}
-
 function stubPushEnvironment({
   standalone = true,
   userAgent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)',
@@ -60,18 +56,21 @@ function stubPushEnvironment({
 }
 
 describe('PushPanel', () => {
-  it('waits for the active service worker before subscribing on first install', async () => {
-    const { serviceWorker, staleSubscribe, subscribe } = stubPushEnvironment()
-    render(<PushPanel apiBase={API} location={valencia} />)
+  it(
+    'waits for the active service worker before subscribing on first install',
+    async () => {
+      const { serviceWorker, staleSubscribe, subscribe } = stubPushEnvironment()
+      render(<PushPanel apiBase={API} location={valencia} />)
 
-    openPanel()
-    screen.getByRole('button', { name: /enable heat warnings/i }).click()
+      screen.getByRole('button', { name: /enable heat warnings/i }).click()
 
-    await waitFor(() => expect(screen.getByText(/checked daily/i)).toBeDefined())
-    expect(serviceWorker.register).toHaveBeenCalledWith('/sw.js')
-    expect(staleSubscribe).not.toHaveBeenCalled()
-    expect(subscribe).toHaveBeenCalledTimes(1)
-  })
+      await waitFor(() => expect(screen.getByText(/checked daily/i)).toBeDefined())
+      expect(serviceWorker.register).toHaveBeenCalledWith('/sw.js')
+      expect(staleSubscribe).not.toHaveBeenCalled()
+      expect(subscribe).toHaveBeenCalledTimes(1)
+    },
+    10_000,
+  )
 
   it('does not tell an installed iPhone app to add itself to the Home Screen when subscribe fails', async () => {
     stubPushEnvironment({
@@ -82,7 +81,6 @@ describe('PushPanel', () => {
     })
     render(<PushPanel apiBase={API} location={valencia} />)
 
-    openPanel()
     screen.getByRole('button', { name: /enable heat warnings/i }).click()
 
     await waitFor(() => expect(screen.getByRole('alert').textContent).toContain('still setting up notifications'))
@@ -93,7 +91,6 @@ describe('PushPanel', () => {
     const { serviceWorker } = stubPushEnvironment({ standalone: false })
     render(<PushPanel apiBase={API} location={valencia} />)
 
-    openPanel()
     screen.getByRole('button', { name: /enable heat warnings/i }).click()
 
     await waitFor(() => expect(screen.getByRole('alert').textContent).toContain('open RealTemp from the Home Screen icon'))

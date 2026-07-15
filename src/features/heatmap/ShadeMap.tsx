@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import { solarAzimuthDeg } from '@/features/formula/solar-azimuth'
 import { solarZenithDeg } from '@/features/formula/solar-zenith'
@@ -21,25 +21,26 @@ type MapState =
 export function ShadeMap({ location }: { location: StoredLocation }) {
   const [state, setState] = useState<MapState>({ status: 'idle' })
 
-  const load = async () => {
-    setState({ status: 'busy' })
-    const result = await fetchBuildings(location.latitude, location.longitude)
-    if (result.ok) setState({ status: 'ready', buildings: result.value })
-    else setState({ status: 'error', message: result.error.message })
-  }
-
   const now = new Date()
   const zenith = solarZenithDeg(now, location.latitude, location.longitude)
   const isNight = zenith >= 90
 
+  const load = useCallback(async () => {
+    setState({ status: 'busy' })
+    const result = await fetchBuildings(location.latitude, location.longitude)
+    if (result.ok) setState({ status: 'ready', buildings: result.value })
+    else setState({ status: 'error', message: result.error.message })
+  }, [location.latitude, location.longitude])
+
+  useEffect(() => {
+    if (isNight) return
+    const id = window.setTimeout(() => void load(), 0)
+    return () => window.clearTimeout(id)
+  }, [isNight, load])
+
   return (
-    <details
-      className="body-panel"
-      onToggle={(e) => {
-        if ((e.target as HTMLDetailsElement).open && state.status === 'idle') void load()
-      }}
-    >
-      <summary>Shade nearby · beta</summary>
+    <section className="body-panel" aria-labelledby="shade-map-title">
+      <h2 id="shade-map-title" className="body-panel-title">Shade nearby · beta</h2>
       <div className="stack">
         {isNight && <p className="note">Night — everything is shade. Open again in daylight.</p>}
         {!isNight && state.status === 'busy' && <p className="note">Reading the buildings…</p>}
@@ -55,7 +56,7 @@ export function ShadeMap({ location }: { location: StoredLocation }) {
           <ShadeSvg buildings={state.buildings} location={location} zenith={zenith} now={now} />
         )}
       </div>
-    </details>
+    </section>
   )
 }
 

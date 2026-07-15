@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import type { StoredLocation } from '@/features/location/geocoding'
 
@@ -19,31 +19,36 @@ export function OfficialAlertsPanel({ apiBase, location }: OfficialAlertsPanelPr
   const [state, setState] = useState<AlertsState>('idle')
   const [alerts, setAlerts] = useState<OfficialAlert[]>([])
 
-  const load = async () => {
-    if (state !== 'idle') return
-    setState('loading')
-    try {
-      const response = await fetch(`${apiBase}/api/alerts?latitude=${location.latitude}&longitude=${location.longitude}`)
-      if (!response.ok) {
-        setState('error')
-        return
+  useEffect(() => {
+    let cancelled = false
+
+    const load = async () => {
+      setState('loading')
+      try {
+        const response = await fetch(`${apiBase}/api/alerts?latitude=${location.latitude}&longitude=${location.longitude}`)
+        if (!response.ok) {
+          if (!cancelled) setState('error')
+          return
+        }
+        const data = (await response.json()) as { alerts?: OfficialAlert[] }
+        if (cancelled) return
+        setAlerts(Array.isArray(data.alerts) ? data.alerts : [])
+        setState('ready')
+      } catch {
+        if (!cancelled) setState('error')
       }
-      const data = (await response.json()) as { alerts?: OfficialAlert[] }
-      setAlerts(Array.isArray(data.alerts) ? data.alerts : [])
-      setState('ready')
-    } catch {
-      setState('error')
     }
-  }
+
+    void load()
+
+    return () => {
+      cancelled = true
+    }
+  }, [apiBase, location.latitude, location.longitude])
 
   return (
-    <details
-      className="body-panel"
-      onToggle={(event) => {
-        if (event.currentTarget.open) void load()
-      }}
-    >
-      <summary>Official alerts &middot; AEMET</summary>
+    <section className="body-panel" aria-labelledby="official-alerts-title">
+      <h2 id="official-alerts-title" className="body-panel-title">Official alerts &middot; AEMET</h2>
       <div className="stack official-alerts">
         {state === 'loading' && <p className="note" role="status">Checking official CAP alerts...</p>}
         {state === 'error' && <p className="error" role="alert">Official alerts are unreachable right now.</p>}
@@ -60,6 +65,6 @@ export function OfficialAlertsPanel({ apiBase, location }: OfficialAlertsPanelPr
           </article>
         ))}
       </div>
-    </details>
+    </section>
   )
 }

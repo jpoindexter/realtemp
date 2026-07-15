@@ -12,7 +12,7 @@ afterEach(() => {
 })
 
 describe('OfficialAlertsPanel', () => {
-  it('fetches official CAP alerts only after the user opens the panel', async () => {
+  it('fetches official CAP alerts when the panel renders', async () => {
     const fetchMock = vi.fn(async () => ({
       ok: true,
       status: 200,
@@ -31,9 +31,6 @@ describe('OfficialAlertsPanel', () => {
     vi.stubGlobal('fetch', fetchMock)
 
     render(<OfficialAlertsPanel apiBase={API} location={valencia} />)
-
-    expect(fetchMock).not.toHaveBeenCalled()
-    screen.getByText('Official alerts · AEMET').click()
 
     await waitFor(() => expect(screen.getByText('Extreme high-temperature warning. Litoral norte de Valencia')).toBeDefined())
     expect(screen.getByText('red')).toBeDefined()

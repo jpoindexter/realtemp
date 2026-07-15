@@ -1,10 +1,12 @@
 import { DashboardBody } from './DashboardBody'
-import { GearIcon, InfoIcon } from './icons'
+import { GearIcon, InfoIcon, MoonIcon, SunIcon } from './icons'
 import { useToggles } from './use-toggles'
 import { useWeather } from './use-weather'
 
 import type { TempUnit } from './format-temp'
 import type { StoredLocation } from '@/features/location/geocoding'
+
+type ThemeMode = 'light' | 'dark'
 
 interface DashboardProps {
   location: StoredLocation
@@ -13,9 +15,20 @@ interface DashboardProps {
   onChangeLocation: () => void
   onOpenSettings: () => void
   onOpenAbout: () => void
+  theme: ThemeMode
+  onToggleTheme: () => void
 }
 
-export function Dashboard({ location, unit, onSetUnit, onChangeLocation, onOpenSettings, onOpenAbout }: DashboardProps) {
+export function Dashboard({
+  location,
+  unit,
+  onSetUnit,
+  onChangeLocation,
+  onOpenSettings,
+  onOpenAbout,
+  theme,
+  onToggleTheme,
+}: DashboardProps) {
   const [weather, refetch] = useWeather(location)
   const [toggles, updateToggles] = useToggles()
 
@@ -33,6 +46,15 @@ export function Dashboard({ location, unit, onSetUnit, onChangeLocation, onOpenS
         <div className="icon-btns">
           <button type="button" className="icon-btn" onClick={onOpenAbout} aria-label="How this works">
             <InfoIcon />
+          </button>
+          <button
+            type="button"
+            className="icon-btn"
+            onClick={onToggleTheme}
+            aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+            aria-pressed={theme === 'dark'}
+          >
+            {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
           </button>
           <button type="button" className="icon-btn" onClick={onOpenSettings} aria-label="Settings">
             <GearIcon />

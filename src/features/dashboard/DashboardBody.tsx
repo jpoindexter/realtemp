@@ -134,8 +134,8 @@ export function DashboardBody({ weather, location, toggles, updateToggles, unit,
         />
       </div>
 
-      <details className="body-panel">
-        <summary>Next 24 h + sweat</summary>
+      <section className="body-panel" aria-labelledby="next-24h-title">
+        <h2 id="next-24h-title" className="body-panel-title">Next 24 h + sweat</h2>
         <div className="stack">
           <SweatGauge pct={result.sweatEfficiencyPct} />
 
@@ -154,10 +154,10 @@ export function DashboardBody({ weather, location, toggles, updateToggles, unit,
             unit={unit}
           />
         </div>
-      </details>
+      </section>
 
-      <details className="body-panel">
-        <summary>Acclimatization</summary>
+      <section className="body-panel" aria-labelledby="acclimatization-title">
+        <h2 id="acclimatization-title" className="body-panel-title">Acclimatization</h2>
         <div className="stack">
           <SegmentedControl
             legend="Acclimatized to this weather"
@@ -167,7 +167,7 @@ export function DashboardBody({ weather, location, toggles, updateToggles, unit,
             onChange={(acclimatization) => updateToggles({ acclimatization })}
           />
         </div>
-      </details>
+      </section>
 
       <BodyPanel bio={bio} onChange={updateBio} />
 

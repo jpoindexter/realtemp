@@ -28,3 +28,23 @@ export function InfoIcon() {
     </svg>
   )
 }
+
+export function MoonIcon() {
+  return (
+    <svg {...SHARED} strokeWidth={1.75} aria-hidden="true" focusable="false">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M20 14.2A7.7 7.7 0 0 1 9.8 4a8 8 0 1 0 10.2 10.2Z" />
+    </svg>
+  )
+}
+
+export function SunIcon() {
+  return (
+    <svg {...SHARED} strokeWidth={1.75} aria-hidden="true" focusable="false">
+      <circle cx="12" cy="12" r="3.8" />
+      <path
+        strokeLinecap="round"
+        d="M12 2.8v2M12 19.2v2M21.2 12h-2M4.8 12h-2M18.5 5.5 17 7M7 17l-1.5 1.5M18.5 18.5 17 17M7 7 5.5 5.5"
+      />
+    </svg>
+  )
+}

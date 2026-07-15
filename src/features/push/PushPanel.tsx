@@ -118,8 +118,8 @@ export function PushPanel({ apiBase, location }: PushPanelProps) {
   if (!isPushSupported()) return null
 
   return (
-    <details className="body-panel">
-      <summary>Heat warnings · daily check at dawn</summary>
+    <section className="body-panel" aria-labelledby="push-panel-title">
+      <h2 id="push-panel-title" className="body-panel-title">Heat warnings · daily check at dawn</h2>
       <div className="stack">
         <div className="field">
           <label htmlFor="push-threshold">Warn when the day&rsquo;s high reaches (°C air)</label>
@@ -155,6 +155,6 @@ export function PushPanel({ apiBase, location }: PushPanelProps) {
           </>
         )}
       </div>
-    </details>
+    </section>
   )
 }

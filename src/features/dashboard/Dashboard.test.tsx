@@ -1,6 +1,14 @@
 import { cleanup, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
+vi.mock('@/features/heatmap/ShadeMap', () => ({
+  ShadeMap: () => (
+    <section className="body-panel" aria-labelledby="shade-map-title">
+      <h2 id="shade-map-title">Shade nearby · beta</h2>
+    </section>
+  ),
+}))
+
 import { Dashboard } from './Dashboard'
 
 const valencia = { label: 'Valencia', latitude: 39.47, longitude: -0.376 }
@@ -21,6 +29,22 @@ afterEach(() => {
   vi.unstubAllGlobals()
   localStorage.clear()
 })
+
+function renderDashboard(overrides: Partial<Parameters<typeof Dashboard>[0]> = {}) {
+  return render(
+    <Dashboard
+      location={valencia}
+      unit="c"
+      onSetUnit={() => {}}
+      onChangeLocation={() => {}}
+      onOpenSettings={() => {}}
+      onOpenAbout={() => {}}
+      theme="light"
+      onToggleTheme={() => {}}
+      {...overrides}
+    />,
+  )
+}
 
 describe('Dashboard', () => {
   it('paints the last good reading immediately on warm launch while refreshing', async () => {
@@ -44,7 +68,7 @@ describe('Dashboard', () => {
     )
     vi.stubGlobal('fetch', vi.fn(() => new Promise(() => {})))
 
-    render(<Dashboard location={valencia} unit="c" onSetUnit={() => {}} onChangeLocation={() => {}} onOpenSettings={() => {}} onOpenAbout={() => {}} />)
+    renderDashboard()
 
     expect(screen.getByText('true feel')).toBeDefined()
     expect(screen.getByText('humidity friction')).toBeDefined()
@@ -55,7 +79,7 @@ describe('Dashboard', () => {
     'renders hero, a summing ledger, all toggles and the gauge from live data',
     async () => {
       vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, status: 200, json: async () => payload })))
-      render(<Dashboard location={valencia} unit="c" onSetUnit={() => {}} onChangeLocation={() => {}} onOpenSettings={() => {}} onOpenAbout={() => {}} />)
+      renderDashboard()
 
       await waitFor(() => expect(screen.getAllByText(/true feel/i).length).toBeGreaterThan(0))
       // base + humidity + wind + solar(zenith-dependent) + urban 2 + walking 1 — assert structure, not zenith
@@ -63,11 +87,9 @@ describe('Dashboard', () => {
       expect(screen.getByText('humidity friction')).toBeDefined()
       expect(screen.getByText(/sun premium/)).toBeDefined() // regex: label gains '· night' after dark
       expect(screen.getAllByRole('radio')).toHaveLength(18)
-      expect(screen.getByText('Next 24 h + sweat').closest('details')?.open).toBe(false)
-      expect(screen.getByText('Acclimatization').closest('details')?.open).toBe(false)
-      expect(screen.getByText(/your body/i).closest('details')?.open).toBe(false)
-      screen.getByText('Next 24 h + sweat').click()
-      expect(screen.getByText('Next 24 h + sweat').closest('details')?.open).toBe(true)
+      expect(screen.getByRole('heading', { name: 'Next 24 h + sweat' })).toBeDefined()
+      expect(screen.getByRole('heading', { name: 'Acclimatization' })).toBeDefined()
+      expect(screen.getByRole('heading', { name: /your body/i })).toBeDefined()
       expect(screen.getByRole('meter', { name: /sweat efficiency/i })).toBeDefined()
       expect(screen.queryByText(/partial data/i)).toBeNull()
     },
@@ -76,16 +98,33 @@ describe('Dashboard', () => {
 
   it('exposes settings and about as separate, labeled controls (not folded together)', async () => {
     vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, status: 200, json: async () => payload })))
-    render(<Dashboard location={valencia} unit="c" onSetUnit={() => {}} onChangeLocation={() => {}} onOpenSettings={() => {}} onOpenAbout={() => {}} />)
+    renderDashboard()
 
     await waitFor(() => expect(screen.getByRole('button', { name: /settings/i })).toBeDefined())
     expect(screen.getByRole('button', { name: /how this works/i })).toBeDefined()
+    expect(screen.getByRole('button', { name: /switch to dark mode/i })).toBeDefined()
+  })
+
+  it('uses a separate theme button instead of folding theme into settings', async () => {
+    const onOpenSettings = vi.fn()
+    const onToggleTheme = vi.fn()
+    vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, status: 200, json: async () => payload })))
+    renderDashboard({ onOpenSettings, onToggleTheme })
+
+    await waitFor(() => expect(screen.getByRole('button', { name: /switch to dark mode/i })).toBeDefined())
+    screen.getByRole('button', { name: /switch to dark mode/i }).click()
+    expect(onToggleTheme).toHaveBeenCalledTimes(1)
+    expect(onOpenSettings).not.toHaveBeenCalled()
+
+    screen.getByRole('button', { name: /settings/i }).click()
+    expect(onOpenSettings).toHaveBeenCalledTimes(1)
+    expect(onToggleTheme).toHaveBeenCalledTimes(1)
   })
 
   it('shows the partial-data badge when the feed drops fields', async () => {
     const degraded = { ...payload, current: { ...payload.current, uv_index: null, dew_point_2m: null } }
     vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, status: 200, json: async () => degraded })))
-    render(<Dashboard location={valencia} unit="c" onSetUnit={() => {}} onChangeLocation={() => {}} onOpenSettings={() => {}} onOpenAbout={() => {}} />)
+    renderDashboard()
 
     await waitFor(() => expect(screen.getByText(/partial data/i)).toBeDefined())
     expect(screen.queryByText(/sun premium/)).toBeNull()
@@ -105,7 +144,7 @@ describe('Dashboard', () => {
       })
     })
     vi.stubGlobal('fetch', fetchMock)
-    render(<Dashboard location={valencia} unit="c" onSetUnit={() => {}} onChangeLocation={() => {}} onOpenSettings={() => {}} onOpenAbout={() => {}} />)
+    renderDashboard()
 
     await waitFor(() => expect(screen.getByText(/live/)).toBeDefined())
     expect(fetchMock).toHaveBeenCalledTimes(2)
@@ -135,7 +174,7 @@ describe('Dashboard', () => {
       // Real timers deliberately: the adapter's retry backoff (~1.2s) fights
       // fake-timer interplay with the dashboard's own stale-check interval.
       vi.stubGlobal('fetch', vi.fn(async () => ({ ok: false, status: 503, json: async () => ({}) })))
-      render(<Dashboard location={valencia} unit="c" onSetUnit={() => {}} onChangeLocation={() => {}} onOpenSettings={() => {}} onOpenAbout={() => {}} />)
+      renderDashboard()
 
       await waitFor(() => expect(screen.getByRole('button', { name: /retry/i })).toBeDefined(), { timeout: 4000 })
       expect(screen.getByText(/momentarily unreachable/i)).toBeDefined()

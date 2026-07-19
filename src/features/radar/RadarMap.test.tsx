@@ -37,6 +37,9 @@ describe('RadarMap', () => {
     expect(radarTiles).toHaveLength(9)
     expect(radarTiles[0]?.src).toContain('/v2/radar/1784130000/256/7/')
     expect(screen.getByText(/openstreetmap contributors/i)).toBeDefined()
+    expect(screen.getByText(/live precip/i)).toBeDefined()
+    expect(screen.getByLabelText(/radar intensity legend/i)).toBeDefined()
+    expect(screen.getByText('heavy')).toBeDefined()
   })
 
   it('shows an inline failure state without breaking the forecast tab', async () => {

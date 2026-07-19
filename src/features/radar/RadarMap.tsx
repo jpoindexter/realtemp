@@ -128,6 +128,7 @@ export function RadarMap({ location }: { location: StoredLocation }) {
       <div className="panel-head">
         <div>
           <h2 id="radar-title" className="body-panel-title">Radar near you</h2>
+          <span className="radar-kicker">Live precip · 3 tile radius</span>
           <p className="note">
             {state.status === 'ready'
               ? `RainViewer frame ${timeLabel(state.frame.time)}`
@@ -149,7 +150,11 @@ export function RadarMap({ location }: { location: StoredLocation }) {
       </div>
 
       <div className="radar-map" role="img" aria-label={`Precipitation radar centered on ${location.label}`}>
-        <div className="radar-layer">
+        <div className="radar-grid-label top">N</div>
+        <div className="radar-grid-label right">E</div>
+        <div className="radar-grid-label bottom">S</div>
+        <div className="radar-grid-label left">W</div>
+        <div className="radar-layer radar-base">
           {tiles.map((tile) => (
             <img
               key={`base-${tile.key}`}
@@ -179,6 +184,11 @@ export function RadarMap({ location }: { location: StoredLocation }) {
         <div className="radar-attribution">
           Radar: RainViewer · Map: © OpenStreetMap contributors
         </div>
+      </div>
+      <div className="radar-legend" aria-label="Radar intensity legend">
+        <span><i className="dry" /> dry</span>
+        <span><i className="rain" /> rain</span>
+        <span><i className="core" /> heavy</span>
       </div>
 
       {state.status === 'error' && (

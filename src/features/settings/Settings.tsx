@@ -2,8 +2,20 @@ import { useState } from 'react'
 
 import { SegmentedControl } from '@/features/dashboard/SegmentedControl'
 
+import type { StyleMode, ThemeMode } from '@/App'
 import type { TempUnit } from '@/features/dashboard/format-temp'
 import type { StoredLocation } from '@/features/location/geocoding'
+
+const THEME_OPTIONS = [
+  { value: 'light', label: 'Light' },
+  { value: 'dark', label: 'Dark' },
+] as const
+
+const STYLE_OPTIONS = [
+  { value: 'soft', label: 'Soft' },
+  { value: 'signal', label: 'Signal' },
+  { value: 'classic', label: 'Classic' },
+] as const
 
 const UNIT_OPTIONS = [
   { value: 'c', label: 'Metric °C' },
@@ -13,6 +25,10 @@ const UNIT_OPTIONS = [
 interface SettingsProps {
   unit: TempUnit
   onSetUnit: (unit: TempUnit) => void
+  theme: ThemeMode
+  onSetTheme: (theme: ThemeMode) => void
+  style: StyleMode
+  onSetStyle: (style: StyleMode) => void
   location: StoredLocation
   onChangeLocation: () => void
   onBack: () => void
@@ -24,7 +40,17 @@ function clearAllData(): void {
   window.location.reload()
 }
 
-export function Settings({ unit, onSetUnit, location, onChangeLocation, onBack }: SettingsProps) {
+export function Settings({
+  unit,
+  onSetUnit,
+  theme,
+  onSetTheme,
+  style,
+  onSetStyle,
+  location,
+  onChangeLocation,
+  onBack,
+}: SettingsProps) {
   const [confirmClear, setConfirmClear] = useState(false)
 
   return (
@@ -33,6 +59,12 @@ export function Settings({ unit, onSetUnit, location, onChangeLocation, onBack }
         <button type="button" onClick={onBack}>&larr; back</button>
         <span>settings</span>
       </div>
+
+      <section className="settings-block">
+        <h2 className="settings-label">Appearance</h2>
+        <SegmentedControl legend="Color mode" name="theme" options={THEME_OPTIONS} value={theme} onChange={onSetTheme} />
+        <SegmentedControl legend="Visual style" name="style" options={STYLE_OPTIONS} value={style} onChange={onSetStyle} />
+      </section>
 
       <SegmentedControl legend="Temperature unit" name="unit" options={UNIT_OPTIONS} value={unit} onChange={onSetUnit} />
 

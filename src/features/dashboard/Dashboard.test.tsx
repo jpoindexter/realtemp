@@ -9,6 +9,14 @@ vi.mock('@/features/heatmap/ShadeMap', () => ({
   ),
 }))
 
+vi.mock('@/features/radar/RadarMap', () => ({
+  RadarMap: () => (
+    <section className="body-panel" aria-labelledby="radar-title">
+      <h2 id="radar-title">Radar near you</h2>
+    </section>
+  ),
+}))
+
 import { Dashboard } from './Dashboard'
 
 const valencia = { label: 'Valencia', latitude: 39.47, longitude: -0.376 }
@@ -138,7 +146,7 @@ describe('Dashboard', () => {
       expect(screen.getAllByText('rain').length).toBeGreaterThan(0)
       expect(screen.getByText('74%')).toBeDefined()
       expect(screen.getAllByText('0.2 mm').length).toBeGreaterThan(0)
-      expect(screen.getAllByRole('tab')).toHaveLength(3)
+      expect(screen.getAllByRole('tab')).toHaveLength(4)
       expect(screen.getByRole('tab', { name: 'Now', selected: true })).toBeDefined()
 
       fireEvent.click(screen.getByRole('tab', { name: 'Forecast' }))
@@ -147,6 +155,12 @@ describe('Dashboard', () => {
       expect(screen.getByLabelText(/next hours forecast/i)).toBeDefined()
       expect(screen.getByText('40% rain')).toBeDefined()
       expect(screen.getByRole('meter', { name: /sweat efficiency/i })).toBeDefined()
+      expect(screen.queryByRole('heading', { name: /radar near you/i })).toBeNull()
+
+      fireEvent.click(screen.getByRole('tab', { name: 'Maps' }))
+      expect(screen.getByRole('tab', { name: 'Maps', selected: true })).toBeDefined()
+      expect(screen.getByRole('heading', { name: /radar near you/i })).toBeDefined()
+      expect(screen.getByRole('heading', { name: /shade nearby/i })).toBeDefined()
 
       fireEvent.click(screen.getByRole('tab', { name: 'Tune' }))
       expect(screen.getByRole('tab', { name: 'Tune', selected: true })).toBeDefined()

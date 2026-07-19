@@ -24,7 +24,7 @@ body {
   gap: var(--space-4);
 }
 
-h1.title { font-size: var(--text-title); font-weight: 800; letter-spacing: -0.02em; margin: 0; }
+h1.title { font-size: var(--text-title); font-weight: 800; letter-spacing: 0; margin: 0; }
 
 .stack { display: flex; flex-direction: column; gap: var(--space-3); }
 
@@ -78,7 +78,7 @@ h1.title { font-size: var(--text-title); font-weight: 800; letter-spacing: -0.02
 .hero .big {
   font-size: var(--text-hero);
   font-weight: 800;
-  letter-spacing: -0.045em;
+  letter-spacing: 0;
   line-height: 1;
   font-variant-numeric: tabular-nums;
 }
@@ -134,10 +134,12 @@ h1.title { font-size: var(--text-title); font-weight: 800; letter-spacing: -0.02
   bottom: max(var(--space-2), env(safe-area-inset-bottom));
   z-index: 5;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   border: var(--border-w) solid var(--ink);
+  border-radius: var(--radius-control);
   background: var(--paper);
-  box-shadow: 0 8px 24px rgb(0 0 0 / 0.14);
+  box-shadow: var(--tabs-shadow);
+  overflow: hidden;
 }
 .dashboard-tabs button {
   min-width: 0;
@@ -172,7 +174,10 @@ h1.title { font-size: var(--text-title); font-weight: 800; letter-spacing: -0.02
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   border: var(--border-w) solid var(--line);
+  border-radius: var(--radius-panel);
   background: var(--paper);
+  box-shadow: var(--panel-shadow);
+  overflow: hidden;
 }
 .weather-factors-title {
   grid-column: 1 / -1;
@@ -252,7 +257,14 @@ fieldset.seg legend {
   color: var(--ink-2);
   padding: 0 0 var(--space-1);
 }
-.seg-options { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; border: var(--border-w) solid var(--ink); }
+.seg-options {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  border: var(--border-w) solid var(--ink);
+  border-radius: var(--radius-control);
+  overflow: hidden;
+}
 .seg-options label {
   position: relative;
   display: flex;
@@ -290,7 +302,13 @@ fieldset.seg legend {
 
 /* safe-window timeline */
 .timeline { display: flex; flex-direction: column; gap: var(--space-2); }
-.timeline svg { width: 100%; height: auto; border: var(--border-w) solid var(--ink); background: var(--paper); }
+.timeline svg {
+  width: 100%;
+  height: auto;
+  border: var(--border-w) solid var(--ink);
+  border-radius: var(--radius-panel);
+  background: var(--paper);
+}
 .timeline .band { fill: var(--shade); opacity: 0.14; }
 .timeline .axis { font: var(--text-axis) var(--mono); fill: var(--ink-2); }
 .timeline .base-line { fill: none; stroke: var(--line); stroke-width: 1.5; }
@@ -323,7 +341,12 @@ fieldset.seg legend {
 }
 
 /* secondary panels */
-.body-panel { border: var(--border-w) solid var(--line); background: var(--paper); }
+.body-panel {
+  border: var(--border-w) solid var(--line);
+  border-radius: var(--radius-panel);
+  background: var(--paper);
+  box-shadow: var(--panel-shadow);
+}
 .body-panel-title {
   margin: 0;
   padding: var(--space-3);
@@ -357,6 +380,7 @@ fieldset.seg legend {
   min-height: var(--tap);
   padding: 0 var(--space-3);
   border: var(--border-w) solid var(--ink);
+  border-radius: var(--radius-control);
   background: var(--paper);
   color: var(--ink);
   font: 700 var(--text-seg) var(--mono);
@@ -438,6 +462,7 @@ fieldset.seg legend {
   color: var(--ink);
   background: color-mix(in srgb, var(--paper) 84%, transparent);
   border: 1px solid var(--ink);
+  border-radius: calc(var(--radius-control) / 2);
   padding: 1px var(--space-1);
 }
 .radar-grid-label.top { top: var(--space-2); left: 50%; transform: translateX(-50%); }
@@ -482,6 +507,7 @@ fieldset.seg legend {
   background: color-mix(in srgb, var(--paper) 88%, transparent);
   color: var(--ink);
   border: 1px solid var(--line);
+  border-radius: calc(var(--radius-control) / 2);
   font: 400 0.625rem var(--mono);
 }
 .radar-panel > .note { margin: 0; padding: var(--space-3); }
@@ -500,7 +526,13 @@ fieldset.seg legend {
 
 /* shade map */
 .shade-map { margin: 0; display: flex; flex-direction: column; gap: var(--space-2); }
-.shade-map svg { width: 100%; height: auto; border: var(--border-w) solid var(--ink); background: var(--paper); }
+.shade-map svg {
+  width: 100%;
+  height: auto;
+  border: var(--border-w) solid var(--ink);
+  border-radius: var(--radius-panel);
+  background: var(--paper);
+}
 .shade-map .shadows { opacity: 0.35; }
 .shade-map .shadows path { fill: var(--shade); stroke: none; }
 .shade-map .footprints path { fill: var(--ink); fill-opacity: 0.85; stroke: none; }
@@ -512,6 +544,7 @@ fieldset.seg legend {
   min-height: var(--tap);
   padding: 0 var(--space-4);
   border: var(--border-w) solid var(--ink);
+  border-radius: var(--radius-control);
   background: var(--ink);
   color: var(--paper);
   cursor: pointer;
@@ -525,12 +558,20 @@ fieldset.seg legend {
   font: var(--text-input) var(--sans);
   padding: var(--space-3);
   border: var(--border-w) solid var(--ink);
+  border-radius: var(--radius-control);
   background: var(--paper);
   width: 100%;
 }
 .search-input:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }
 
-.place-list { list-style: none; margin: 0; padding: 0; border: var(--border-w) solid var(--ink); }
+.place-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: var(--border-w) solid var(--ink);
+  border-radius: var(--radius-panel);
+  overflow: hidden;
+}
 .place-list li + li { border-top: 1px solid var(--line); }
 .place-list button {
   display: flex;

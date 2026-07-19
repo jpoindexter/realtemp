@@ -11,8 +11,10 @@ import type { StoredLocation } from '@/features/location/geocoding'
 
 const LOCATION_KEY = 'realtemp:location'
 const THEME_KEY = 'realtemp:theme'
+const STYLE_KEY = 'realtemp:style'
 
 export type ThemeMode = 'light' | 'dark'
+export type StyleMode = 'soft' | 'classic' | 'signal'
 
 function readStoredLocation(): StoredLocation | null {
   try {
@@ -37,20 +39,39 @@ function readTheme(): ThemeMode {
   return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
 }
 
-function applyTheme(theme: ThemeMode): void {
+function readStyle(): StyleMode {
+  try {
+    const saved = localStorage.getItem(STYLE_KEY)
+    if (saved === 'soft' || saved === 'classic' || saved === 'signal') return saved
+  } catch {
+    // storage blocked — fall through to the calmer default style
+  }
+  return 'soft'
+}
+
+function applyAppearance(theme: ThemeMode, style: StyleMode): void {
   document.documentElement.setAttribute('data-theme', theme)
-  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#141311' : '#edede8')
+  document.documentElement.setAttribute('data-style', style)
+  const lightColors: Record<StyleMode, string> = {
+    classic: '#edede8',
+    soft: '#f1efe8',
+    signal: '#eaf2ee',
+  }
+  document
+    .querySelector('meta[name="theme-color"]')
+    ?.setAttribute('content', theme === 'dark' ? '#141311' : lightColors[style])
 }
 
 export function App() {
   const [location, setLocation] = useState<StoredLocation | null>(readStoredLocation)
   const [screen, setScreen] = useState<Screen>('dashboard')
   const [theme, setTheme] = useState<ThemeMode>(readTheme)
+  const [style, setStyle] = useState<StyleMode>(readStyle)
   const [unit, setUnit] = useUnit()
 
   useEffect(() => {
-    applyTheme(theme)
-  }, [theme])
+    applyAppearance(theme, style)
+  }, [theme, style])
 
   const pickLocation = (next: StoredLocation) => {
     try {
@@ -65,13 +86,31 @@ export function App() {
   const toggleTheme = () => {
     setTheme((current) => {
       const next = current === 'dark' ? 'light' : 'dark'
-      try {
-        localStorage.setItem(THEME_KEY, next)
-      } catch {
-        // storage blocked — visual theme still updates for the session
-      }
+      saveTheme(next)
       return next
     })
+  }
+
+  const saveTheme = (next: ThemeMode) => {
+    try {
+      localStorage.setItem(THEME_KEY, next)
+    } catch {
+      // storage blocked — visual theme still updates for the session
+    }
+  }
+
+  const pickTheme = (next: ThemeMode) => {
+    saveTheme(next)
+    setTheme(next)
+  }
+
+  const pickStyle = (next: StyleMode) => {
+    try {
+      localStorage.setItem(STYLE_KEY, next)
+    } catch {
+      // storage blocked — visual style still updates for the session
+    }
+    setStyle(next)
   }
 
   if (!location) return <LocationSearch onPick={pickLocation} />
@@ -81,6 +120,10 @@ export function App() {
       <Settings
         unit={unit}
         onSetUnit={setUnit}
+        theme={theme}
+        onSetTheme={pickTheme}
+        style={style}
+        onSetStyle={pickStyle}
         location={location}
         onChangeLocation={() => setLocation(null)}
         onBack={() => setScreen('dashboard')}

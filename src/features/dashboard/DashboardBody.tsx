@@ -54,6 +54,7 @@ const ACCLIM_OPTIONS = [
 const TAB_OPTIONS = [
   { value: 'now', label: 'Now' },
   { value: 'forecast', label: 'Forecast' },
+  { value: 'maps', label: 'Maps' },
   { value: 'tune', label: 'Tune' },
 ] as const
 
@@ -172,6 +173,16 @@ export function DashboardBody({ weather, location, toggles, updateToggles, unit,
               <ForecastList hourly={weather.hourly} trueFeel={hourlyTrueFeel} unit={unit} />
             </div>
           </section>
+        </section>
+      )}
+
+      {activeTab === 'maps' && (
+        <section
+          className="tab-panel"
+          id="dashboard-panel-maps"
+          role="tabpanel"
+          aria-labelledby="dashboard-tab-maps"
+        >
           <RadarMap location={location} />
           <ShadeMap location={location} />
         </section>

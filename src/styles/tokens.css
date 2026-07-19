@@ -33,9 +33,9 @@
   --text-copy: 0.9375rem;   /* 15px — copy line, ledger total */
   --text-input: 1rem;       /* 16px — inputs; also the iOS zoom-on-focus floor */
   --text-title: 1.5rem;     /* 24px */
-  --text-hero: clamp(4.5rem, 24vw, 6rem); /* 72–96px */
-  --track-label: 0.1em;  /* uppercase label tracking */
-  --track-tight: 0.06em; /* dense uppercase rows */
+  --text-hero: 5.25rem;      /* 84px */
+  --track-label: 0;
+  --track-tight: 0;
 
   /* space — 4px base, expressed in rem */
   --space-1: 0.25rem;  /* 4px */
@@ -49,6 +49,10 @@
   --rule-w: 2px;         /* ledger rules, section rules */
   --tap: 44px;           /* minimum touch target (WCAG 2.5.8 / iOS HIG) */
   --app-width: 430px;
+  --radius-panel: 0;
+  --radius-control: 0;
+  --panel-shadow: none;
+  --tabs-shadow: 0 8px 24px rgb(0 0 0 / 0.14);
 
   /* focus — one ring everywhere */
   --focus-ring: 3px solid var(--shade);
@@ -104,4 +108,70 @@
   --shade: #33698c;
   --uhi: #a1543a;
   --on-strong: #ffffff;
+}
+
+:root[data-style='soft'] {
+  --border-w: 1px;
+  --rule-w: 1.5px;
+  --radius-panel: 8px;
+  --radius-control: 7px;
+  --panel-shadow: 0 10px 28px rgb(31 28 20 / 0.07);
+  --tabs-shadow: 0 8px 28px rgb(31 28 20 / 0.15);
+}
+:root[data-theme='light'][data-style='soft'] {
+  --ink: #202126;
+  --ink-2: #626158;
+  --ground: #f1efe8;
+  --paper: #fbfaf5;
+  --line: #ddd8cc;
+  --solar: #9c5b18;
+  --scorch: #b93e28;
+  --shade: #2f7182;
+  --uhi: #8f5f43;
+  --on-strong: #ffffff;
+}
+:root[data-theme='dark'][data-style='soft'] {
+  --ink: #ece7dc;
+  --ink-2: #aaa294;
+  --ground: #171612;
+  --paper: #25231d;
+  --line: #474134;
+  --solar: #d39a55;
+  --scorch: #df6958;
+  --shade: #86b8c8;
+  --uhi: #c2906d;
+  --on-strong: #16151b;
+}
+
+:root[data-style='signal'] {
+  --border-w: 1px;
+  --rule-w: 1.5px;
+  --radius-panel: 4px;
+  --radius-control: 4px;
+  --panel-shadow: 0 0 0 1px color-mix(in srgb, var(--shade) 18%, transparent);
+  --tabs-shadow: 0 10px 30px rgb(17 34 31 / 0.18);
+}
+:root[data-theme='light'][data-style='signal'] {
+  --ink: #13221f;
+  --ink-2: #4c625a;
+  --ground: #eaf2ee;
+  --paper: #f8fbf7;
+  --line: #c6d7d0;
+  --solar: #925d0c;
+  --scorch: #b23b2c;
+  --shade: #196f89;
+  --uhi: #7f6242;
+  --on-strong: #ffffff;
+}
+:root[data-theme='dark'][data-style='signal'] {
+  --ink: #e6f1ed;
+  --ink-2: #9fb4ad;
+  --ground: #101816;
+  --paper: #1b2925;
+  --line: #345048;
+  --solar: #d9a343;
+  --scorch: #e16051;
+  --shade: #6fc0dc;
+  --uhi: #bea068;
+  --on-strong: #101816;
 }

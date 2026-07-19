@@ -2,15 +2,19 @@ import { describe, expect, it, vi } from 'vitest'
 
 import { officialAlerts } from './alerts-route'
 
-const ATOM_XML = `<?xml version="1.0" encoding="UTF-8"?>
+function atomXml(): string {
+  const sent = new Date(Date.now() - 60 * 60 * 1000).toISOString()
+  const onset = new Date(Date.now()).toISOString()
+  const expires = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+  return `<?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom" xmlns:cap="urn:oasis:names:tc:emergency:cap:1.2">
   <entry>
     <cap:geocode><valueName>EMMA_ID</valueName><value>ES247</value></cap:geocode>
     <cap:areaDesc>Litoral norte de Valencia</cap:areaDesc>
     <cap:event>Extreme high-temperature warning</cap:event>
-    <cap:sent>2026-07-14T09:30:09+00:00</cap:sent>
-    <cap:expires>2026-07-15T18:59:59+00:00</cap:expires>
-    <cap:onset>2026-07-15T11:00:00+00:00</cap:onset>
+    <cap:sent>${sent}</cap:sent>
+    <cap:expires>${expires}</cap:expires>
+    <cap:onset>${onset}</cap:onset>
     <cap:certainty>Likely</cap:certainty>
     <cap:severity>Extreme</cap:severity>
     <cap:urgency>Future</cap:urgency>
@@ -18,6 +22,7 @@ const ATOM_XML = `<?xml version="1.0" encoding="UTF-8"?>
     <title>Red High-temperature Warning issued for Spain - Litoral norte de Valencia</title>
   </entry>
 </feed>`
+}
 
 function makeCache(hit: string | null = null) {
   return {
@@ -29,7 +34,7 @@ function makeCache(hit: string | null = null) {
 describe('officialAlerts', () => {
   it('returns only active AEMET CAP alerts whose polygon contains the requested point', async () => {
     const cache = makeCache()
-    const fetchMock = vi.fn().mockResolvedValueOnce(new Response(ATOM_XML, { status: 200 }))
+    const fetchMock = vi.fn().mockResolvedValueOnce(new Response(atomXml(), { status: 200 }))
 
     const response = await officialAlerts(new URL('https://api.realtemp.test/api/alerts?latitude=39.47&longitude=-0.376'), cache, fetchMock)
     const body = (await response.json()) as { alerts: { headline: string; level: string; geocode: string }[] }

@@ -49,5 +49,12 @@ export function useThermal(trueFeelC: number | null): void {
     root.style.setProperty('--ink', thermalCss(ink))
     root.style.setProperty('--ink-2', thermalCss(ink2))
     document.body.style.backgroundColor = wash
+
+    // Tear the overrides down when the dashboard unmounts. Without this they
+    // outlive the screen that set them: Settings, About and the location search
+    // kept a stale --ink from whichever theme was last active while --paper
+    // still followed the current one, so the buttons rendered dark-on-dark with
+    // invisible labels. Off the dashboard, the theme tokens own the page.
+    return clear
   }, [trueFeelC, themeAttr])
 }

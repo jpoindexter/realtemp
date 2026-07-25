@@ -720,3 +720,76 @@ fieldset.seg legend {
 }
 .city-rail .city-add { font-size: var(--text-note); color: var(--ink); }
 .city-rail button:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }
+
+/* ---------------------------------------------------------------------------
+   Desktop. Below 60rem this stays exactly as designed: a 430px phone column,
+   which is the real use case (you, on a Valencia street). Above it the single
+   column was stranded in ~70% empty page, so the layout becomes two columns:
+   the reading stays put on the left while the tab content scrolls beside it.
+
+   Breakpoint is content-driven, not device-driven — 60rem is where 430px of
+   content plus a second readable column both fit without either getting narrow.
+   --------------------------------------------------------------------------- */
+@media (min-width: 60rem) {
+  #root { align-items: flex-start; }
+
+  .app {
+    width: min(100%, 68rem);
+    display: grid;
+    grid-template-columns: minmax(0, 22rem) minmax(0, 1fr);
+    grid-template-areas:
+      'loc     loc'
+      'rail    rail'
+      'hero    panel'
+      'warning panel'
+      'tabs    panel'
+      'slack   panel';
+    /* the trailing 1fr row absorbs the height difference between the two
+       columns; without it the tab strip stretched to ~150px tall trying to
+       fill its share of the panel's height */
+    grid-template-rows: auto auto auto auto auto 1fr;
+    align-content: start;
+    column-gap: var(--space-5);
+    row-gap: var(--space-4);
+    padding-inline: var(--space-5);
+  }
+
+  .loc-bar { grid-area: loc; }
+  .city-rail { grid-area: rail; }
+  .hero { grid-area: hero; }
+  .warnings { grid-area: warning; }
+  .dashboard-tabs { grid-area: tabs; }
+
+  /* every tab panel lands in the same right-hand column */
+  .tab-panel { grid-area: panel; align-self: start; }
+
+  /* the reading can afford to be larger when it is not sharing a column */
+  .hero .big { font-size: 6.5rem; }
+
+  .hero,
+  .warnings,
+  .dashboard-tabs { align-self: start; }
+
+  /* loading, error and the search screen stay single-column and centred —
+     there is no second column of content to place beside them */
+  .app > .note,
+  .app > .stack { grid-column: 1 / -1; }
+}
+
+/* Wider still: let the data breathe rather than stretching rows to fill. */
+@media (min-width: 84rem) {
+  .app { grid-template-columns: minmax(0, 24rem) minmax(0, 1fr); }
+}
+
+/* Settings, About and the location search are not the dashboard, so they have
+   no hero/panel areas to land in. Give them their own explicit two-column
+   placement at desktop rather than relying on implicit grid flow. */
+@media (min-width: 60rem) {
+  .app:not(:has(.dashboard-tabs)) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas: none;
+    grid-template-rows: none;
+    align-content: start;
+  }
+  .app:not(:has(.dashboard-tabs)) > * { grid-column: auto; }
+}

@@ -81,7 +81,7 @@ export function Settings({
       <section className="settings-block">
         <h2 className="settings-label">Your data</h2>
         <p className="note">
-          Everything lives on this device — location, toggles, body profile, and building cache. No account, no
+          Everything lives on this device — saved cities, toggles, and building cache. No account, no
           tracking.
         </p>
         {!confirmClear ? (

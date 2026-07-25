@@ -9,6 +9,7 @@ import {
   EXPOSURE_FACTOR,
   MS_TO_KMH,
   NATURE_DELTA_C,
+  NIGHT_ZENITH_DEG,
   SOLAR_PREMIUM_MAX_C,
   STEADMAN_BASELINE,
   STEADMAN_VAPOR_COEF,
@@ -83,10 +84,20 @@ function windDelta(airTempC: number, windSpeedMs10: number, streetWindMs: number
   return (1 - coldWeight) * warmWindDelta(streetWindMs) + coldWeight * coldWindDelta(airTempC, windSpeedMs10)
 }
 
+/**
+ * Sun premium from the UV index.
+ *
+ * Zenith is a night GATE, not a weight. The UV index already encodes solar
+ * elevation — UV reads 2 at 19:00 precisely because the sun is low — so
+ * multiplying by cos(zenith) as well attenuated the same physics twice. At a
+ * 78 degree zenith that cut the premium from 1.6 to 0.3, while midday
+ * (cos 15 = 0.97) was barely touched, which is why it stayed hidden: the app
+ * looked correct in the sun and inert in the evening.
+ */
 function solarDelta(uvIndex: number, zenithDeg: number, exposure: Toggles['exposure']): number {
-  const zenithWeight = Math.max(0, Math.cos((zenithDeg * Math.PI) / 180))
+  if (zenithDeg > NIGHT_ZENITH_DEG) return 0
   const premium = clamp(uvIndex * UV_TO_PREMIUM, 0, SOLAR_PREMIUM_MAX_C)
-  return premium * zenithWeight * EXPOSURE_FACTOR[exposure]
+  return premium * EXPOSURE_FACTOR[exposure]
 }
 
 function environmentDelta(environment: Toggles['environment'], localHour: number): number {
@@ -161,7 +172,7 @@ export function computeTrueFeel(inputs: WeatherInputs, toggles: Toggles): TrueFe
     trueFeelC,
     sweatEfficiencyPct: inputs.dewPointC === null ? null : sweatEfficiencyPct(inputs.dewPointC),
     missing,
-    isNight: inputs.solarZenithDeg > 90,
+    isNight: inputs.solarZenithDeg > NIGHT_ZENITH_DEG,
     isWeatherShock: baseline !== null && Math.abs(inputs.airTempC - baseline) >= WEATHER_SHOCK_DELTA_C,
   }
 }

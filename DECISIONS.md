@@ -89,3 +89,18 @@
 **Alternatives:** Build a conversational weather assistant now (CARROT's actual moat is personality, and it is the most 2026 surface available); or delete the AI path entirely.
 **Why:** The static ledger has never been opened by a single user, including Jason. Building a conversational version of an explanation nobody has read yet is solving the second problem first. Deferred rather than deleted because the argument for it is real and the plumbing already exists.
 **Reversible?** Yes — C5 carries the unblock recipe.
+
+## 2026-07-25 — Steadman's baseline gets its own ledger row
+**Choice:** `humidityDelta` returns the bare vapour term (`0.33·e`); Steadman's `−4.00` calibration constant is emitted as a separate `baseline offset` row.
+**Alternatives:** Leave it bundled (status quo); drop the constant entirely.
+**Why:** Bundled, the ledger showed humidity *cooling* you in dry air — "humidity friction −1.1" at a 5°C dew point while vapour was contributing +2.9. Humidity never cools you. It also hid a 4° drag with no row, directly against the PRD rule that every premium is computed and displayed independently. Dropping the constant was rejected: it is part of the validated Steadman formula and removing it would inflate every reading by 4°.
+**Consequence:** Displayed total unchanged. The ledger gains a row.
+**Reversible?** Yes.
+
+## 2026-07-25 — Solar elevation is counted once (reopens N2 in part)
+**Choice:** Zenith gates the solar premium off below the horizon; it no longer multiplies it. `solarDelta = clamp(UVI × 0.8, 0, 8) × exposureFactor`, zero when zenith > 90°.
+**Alternatives:** Keep the cos-weighting the PRD specifies; introduce a separate low-sun correction.
+**Why:** The UV index already encodes solar elevation — UV reads 2 at 19:00 *because* the sun is low. Multiplying by cos(zenith) attenuated the same physics twice. At a 78° zenith that cut the premium from 1.6 to 0.3; at midday (cos 15° = 0.97) it was almost a no-op, so the error hid in plain sight: correct in the sun, inert in the evening. This is a correction to a double-count, not a coefficient tuning.
+**Consequence:** Morning and evening readings rise; midday is essentially unchanged. The PRD's `cos-weighted by solar zenith` wording is now wrong and should be amended. The scorcher fixture moves 41.9 → 42.3.
+**Note:** This touches the N2 territory retired on 2026-07-14. It is defensible without lived-use data because it fixes a demonstrable double-count rather than tuning a heuristic. Genuine dry-climate calibration of the Steadman baseline remains open and unaddressed.
+**Reversible?** Yes.

@@ -36,13 +36,13 @@ describe('computeTrueFeel — Valencia scorcher fixture', () => {
     expect(delta(r, 'humidity')).toBeCloseTo(7.7, 5) // 0.33·23.323, vapour only
     expect(delta(r, 'baseline')).toBeCloseTo(-4, 5) // Steadman offset, its own row
     expect(delta(r, 'wind')).toBeCloseTo(-0.8, 5) // −0.7·1.2
-    expect(delta(r, 'solar')).toBeCloseTo(6.0, 5) // clamp(6.4)·cos20°
+    expect(delta(r, 'solar')).toBeCloseTo(6.4, 5) // clamp(8×0.8); UV already encodes sun angle
     expect(delta(r, 'environment')).toBe(2) // urban, 16h peak
     expect(delta(r, 'activity')).toBe(1) // walking, calm
   })
 
-  it('totals 41.9 and the ledger sums exactly', () => {
-    expect(r.trueFeelC).toBeCloseTo(41.9, 5)
+  it('totals 42.3 and the ledger sums exactly', () => {
+    expect(r.trueFeelC).toBeCloseTo(42.3, 5) // 30 +7.7 -4 -0.8 +6.4 +2 +1
     const sum = r.deltas.reduce((s, d) => s + d.deltaC, r.baseC)
     expect(r.trueFeelC).toBeCloseTo(sum, 5)
     expect(r.missing).toEqual([])
@@ -61,7 +61,7 @@ describe('solar premium edge cases', () => {
     const shade = computeTrueFeel(scorcher, { ...streetDay, exposure: 'shade' })
     const overcast = computeTrueFeel(scorcher, { ...streetDay, exposure: 'overcast' })
     expect(delta(shade, 'solar')).toBe(0)
-    expect(delta(overcast, 'solar')).toBeCloseTo(1.5, 5) // 6.014·0.25
+    expect(delta(overcast, 'solar')).toBeCloseTo(1.6, 5) // 6.4·0.25
   })
 
   it('caps the premium at 8° before weighting', () => {
@@ -206,5 +206,33 @@ describe('separability — no term may hide another', () => {
     const r = computeTrueFeel(dryHeat, streetDay)
     const sum = r.deltas.reduce((s, d) => s + d.deltaC, r.baseC)
     expect(r.trueFeelC).toBeCloseTo(sum, 5)
+  })
+})
+
+describe('solar elevation is counted once, not twice', () => {
+  const lowSun = {
+    airTempC: 35.4,
+    dewPointC: 5,
+    windSpeedMs: 5,
+    uvIndex: 2,
+    solarZenithDeg: 78, // 19:00 — UV is already 2 BECAUSE the sun is this low
+    localHour: 19,
+    baseline14C: null,
+  }
+
+  it('does not re-attenuate a UV reading that already encodes sun angle', () => {
+    // clamp(2 × 0.8) = 1.6. Weighting again by cos(78°) would give 0.33.
+    expect(delta(computeTrueFeel(lowSun, streetDay), 'solar')).toBeCloseTo(1.6, 5)
+  })
+
+  it('still zeroes below the horizon — zenith remains the night gate', () => {
+    const night = computeTrueFeel({ ...lowSun, solarZenithDeg: 95, uvIndex: 2 }, streetDay)
+    expect(delta(night, 'solar')).toBe(0)
+    expect(night.isNight).toBe(true)
+  })
+
+  it('leaves the midday case essentially where it was', () => {
+    const noon = computeTrueFeel({ ...lowSun, uvIndex: 9, solarZenithDeg: 15 }, streetDay)
+    expect(delta(noon, 'solar')).toBeCloseTo(7.2, 5)
   })
 })

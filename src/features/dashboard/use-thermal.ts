@@ -1,56 +1,53 @@
 import { useEffect } from 'react'
 
-import { THERMAL_COLD_C, THERMAL_HOT_C } from '@/features/formula/constants'
+import { inkForTheme, thermalCss, thermalStop } from './thermal-scale'
+
+import type { ThermalTheme } from './thermal-scale'
 
 /**
- * Drives the interface's thermal tint from the reading on screen.
+ * Paints the page ground as a meteorological temperature scale — violet-white
+ * through blue, cyan, green, yellow, amber, orange, red-orange — and sets the
+ * ink pair that ground can carry.
  *
- * Presentation only — this never touches the formula. It maps True Feel onto a
- * 0..1 scalar and writes the resulting ground colour as a literal.
+ * Presentation only; the formula is untouched.
  *
- * Why a literal rather than `color-mix(... var(--thermal))` in CSS: Chrome does
- * not reliably invalidate a var() chain nested inside a colour function. Both
- * `oklch(from var(--ground) l c var(--hue))` and
- * `color-mix(..., var(--ground-hot) var(--thermal-mix))` computed once at the
- * cold end and then ignored every later change, while the same expressions
- * evaluated correctly when written inline on a probe element. The endpoints
- * still live in tokens.css; only the interpolation happens here.
+ * Painted directly rather than through `background: var(--token)`. Chrome
+ * resolves that declaration once and does not invalidate it when the referenced
+ * custom property changes on :root — measured: the token held the right value
+ * while the body kept painting the stylesheet's fallback.
  */
-
-/** Parse `oklch(L C H)` — accepts the `95.8%` form Chrome serialises to. */
-function parseOklch(value: string): [number, number, number] | null {
-  const m = value.trim().match(/^oklch\(\s*([\d.]+)(%?)\s+([\d.]+)\s+([\d.]+)/)
-  if (!m) return null
-  const l = Number(m[1]) / (m[2] === '%' ? 100 : 1)
-  return [l, Number(m[3]), Number(m[4])]
-}
-
 export function useThermal(trueFeelC: number | null): void {
+  // Re-read on theme change: the attribute is set by App's appearance effect,
+  // and the ramp has to swap with it.
+  const themeAttr =
+    typeof document === 'undefined' ? 'light' : document.documentElement.getAttribute('data-theme')
+
   useEffect(() => {
     const root = document.documentElement
     const clear = () => {
-      root.style.removeProperty('--thermal')
-      root.style.removeProperty('--thermal-wash')
+      for (const prop of ['--thermal', '--thermal-wash', '--ink', '--ink-2']) {
+        root.style.removeProperty(prop)
+      }
       document.body.style.removeProperty('background-color')
     }
     if (trueFeelC === null || !Number.isFinite(trueFeelC)) return clear()
 
-    const styles = getComputedStyle(root)
-    const cold = parseOklch(styles.getPropertyValue('--ground-cold'))
-    const hot = parseOklch(styles.getPropertyValue('--ground-hot'))
-    if (!cold || !hot) return clear()
+    // The ramp follows the user's theme rather than overriding it. A light
+    // ground forced onto a dark theme leaves panels and controls dark, so the
+    // ink cannot satisfy both — that is how the tab bar went unreadable.
+    const theme: ThermalTheme =
+      root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'
+    const ground = thermalStop(trueFeelC, theme)
+    const { ink, ink2 } = inkForTheme(theme)
+    const wash = thermalCss(ground)
 
-    const span = THERMAL_HOT_C - THERMAL_COLD_C
-    const t = Math.min(1, Math.max(0, (trueFeelC - THERMAL_COLD_C) / span))
-    const lerp = (a: number, b: number) => a + (b - a) * t
-
-    const wash = `oklch(${lerp(cold[0], hot[0]).toFixed(4)} ${lerp(cold[1], hot[1]).toFixed(4)} ${lerp(cold[2], hot[2]).toFixed(1)})`
-    root.style.setProperty('--thermal', t.toFixed(3))
+    root.style.setProperty('--thermal', ground.l.toFixed(3))
     root.style.setProperty('--thermal-wash', wash)
-    // Painted directly rather than via `background: var(--thermal-wash)`.
-    // Chrome resolves that declaration once and does not invalidate it when the
-    // referenced property changes on :root — measured: the token held the right
-    // warm value while the body kept painting the stylesheet's cold fallback.
+    // Ink follows the ground: the hot end is dark enough that the default
+    // secondary ink would fall under 4.5:1. thermal-contrast.test.ts walks every
+    // degree of the ramp and fails if a pairing ever drops below AA.
+    root.style.setProperty('--ink', thermalCss(ink))
+    root.style.setProperty('--ink-2', thermalCss(ink2))
     document.body.style.backgroundColor = wash
-  }, [trueFeelC])
+  }, [trueFeelC, themeAttr])
 }

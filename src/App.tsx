@@ -3,29 +3,17 @@ import { useEffect, useState } from 'react'
 import { Dashboard } from '@/features/dashboard/Dashboard'
 import { useUnit } from '@/features/dashboard/use-unit'
 import { LocationSearch } from '@/features/location/LocationSearch'
-import { storedLocationSchema } from '@/features/location/geocoding'
+import { useLocations } from '@/features/location/use-locations'
 import { About } from '@/features/settings/About'
 import { Settings } from '@/features/settings/Settings'
 
 import type { StoredLocation } from '@/features/location/geocoding'
 
-const LOCATION_KEY = 'realtemp:location'
 const THEME_KEY = 'realtemp:theme'
 const STYLE_KEY = 'realtemp:style'
 
 export type ThemeMode = 'light' | 'dark'
 export type StyleMode = 'soft' | 'classic' | 'signal'
-
-function readStoredLocation(): StoredLocation | null {
-  try {
-    const raw = localStorage.getItem(LOCATION_KEY)
-    if (!raw) return null
-    const parsed = storedLocationSchema.safeParse(JSON.parse(raw))
-    return parsed.success ? parsed.data : null
-  } catch {
-    return null
-  }
-}
 
 type Screen = 'dashboard' | 'settings' | 'about'
 
@@ -63,8 +51,10 @@ function applyAppearance(theme: ThemeMode, style: StyleMode): void {
 }
 
 export function App() {
-  const [location, setLocation] = useState<StoredLocation | null>(readStoredLocation)
+  const locations = useLocations()
+  const location = locations.active
   const [screen, setScreen] = useState<Screen>('dashboard')
+  const [addingCity, setAddingCity] = useState(false)
   const [theme, setTheme] = useState<ThemeMode>(readTheme)
   const [style, setStyle] = useState<StyleMode>(readStyle)
   const [unit, setUnit] = useUnit()
@@ -74,12 +64,8 @@ export function App() {
   }, [theme, style])
 
   const pickLocation = (next: StoredLocation) => {
-    try {
-      localStorage.setItem(LOCATION_KEY, JSON.stringify(next))
-    } catch {
-      // storage blocked — location still works for the session
-    }
-    setLocation(next)
+    locations.add(next)
+    setAddingCity(false)
     setScreen('dashboard')
   }
 
@@ -113,7 +99,7 @@ export function App() {
     setStyle(next)
   }
 
-  if (!location) return <LocationSearch onPick={pickLocation} />
+  if (!location || addingCity) return <LocationSearch onPick={pickLocation} />
 
   if (screen === 'settings') {
     return (
@@ -125,7 +111,7 @@ export function App() {
         style={style}
         onSetStyle={pickStyle}
         location={location}
-        onChangeLocation={() => setLocation(null)}
+        onChangeLocation={() => locations.clear()}
         onBack={() => setScreen('dashboard')}
       />
     )
@@ -138,9 +124,12 @@ export function App() {
   return (
     <Dashboard
       location={location}
+      locations={locations.state}
+      onSelectCity={locations.select}
+      onAddCity={() => setAddingCity(true)}
       unit={unit}
       onSetUnit={setUnit}
-      onChangeLocation={() => setLocation(null)}
+      onChangeLocation={() => setAddingCity(true)}
       onOpenSettings={() => setScreen('settings')}
       onOpenAbout={() => setScreen('about')}
       theme={theme}

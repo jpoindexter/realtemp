@@ -1,3 +1,5 @@
+import { CityRail } from '@/features/location/CityRail'
+
 import { DashboardBody } from './DashboardBody'
 import { GearIcon, InfoIcon, MoonIcon, RefreshIcon, SunIcon } from './icons'
 import { useToggles } from './use-toggles'
@@ -5,11 +7,15 @@ import { useWeather } from './use-weather'
 
 import type { TempUnit } from './format-temp'
 import type { StoredLocation } from '@/features/location/geocoding'
+import type { LocationState } from '@/features/location/locations'
 
 type ThemeMode = 'light' | 'dark'
 
 interface DashboardProps {
   location: StoredLocation
+  locations: LocationState
+  onSelectCity: (index: number) => void
+  onAddCity: () => void
   unit: TempUnit
   onSetUnit: (unit: TempUnit) => void
   onChangeLocation: () => void
@@ -21,6 +27,9 @@ interface DashboardProps {
 
 export function Dashboard({
   location,
+  locations,
+  onSelectCity,
+  onAddCity,
   unit,
   onSetUnit,
   onChangeLocation,
@@ -72,6 +81,8 @@ export function Dashboard({
           </button>
         </div>
       </div>
+
+      <CityRail state={locations} onSelect={onSelectCity} onAdd={onAddCity} />
 
       {weather.status === 'loading' && <p className="note">Reading the street…</p>}
 

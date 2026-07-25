@@ -5,12 +5,21 @@
 
 html, body { height: 100%; }
 
+/* The thermal wash is the ground, tinted by the current reading. It sits on
+   body rather than .app so the colour runs to the edges of a desktop window
+   too. Falls back to a flat --ground anywhere oklch(from ...) is unsupported,
+   and to --ground exactly when --thermal is 0 (its default), so nothing here
+   depends on JS having run. */
 body {
   margin: 0;
   background: var(--ground);
   color: var(--ink);
   font-family: var(--sans);
   line-height: 1.45;
+  transition: background-color var(--dur-3) var(--ease-out);
+}
+@supports (background: oklch(from red l c h)) {
+  body { background: var(--thermal-wash); }
 }
 
 #root { min-height: 100%; display: flex; justify-content: center; }
@@ -74,13 +83,16 @@ h1.title { font-size: var(--text-title); font-weight: 800; letter-spacing: 0; ma
 .icon-btn:disabled { opacity: 0.45; cursor: wait; }
 .icon-btn:focus-visible { outline: var(--focus-ring); outline-offset: -3px; }
 
-/* hero */
+/* hero — the product's one figure. Negative tracking because large type needs
+   the opposite treatment to the uppercase labels, and tabular figures so the
+   number does not jitter horizontally as digits change on refresh. */
 .hero .big {
   font-size: var(--text-hero);
   font-weight: 800;
-  letter-spacing: 0;
+  letter-spacing: var(--track-hero);
   line-height: 1;
   font-variant-numeric: tabular-nums;
+  transition: color var(--dur-2) var(--ease-out);
 }
 .hero .unit {
   font: 600 0.3em var(--sans);
@@ -154,6 +166,11 @@ h1.title { font-size: var(--text-title); font-weight: 800; letter-spacing: 0; ma
   letter-spacing: var(--track-tight);
   cursor: pointer;
 }
+.dashboard-tabs button {
+  transition:
+    background-color var(--dur-1) var(--ease-out),
+    color var(--dur-1) var(--ease-out);
+}
 .dashboard-tabs button:last-child { border-right: none; }
 .dashboard-tabs button[aria-selected="true"] {
   background: var(--ink);
@@ -172,7 +189,8 @@ h1.title { font-size: var(--text-title); font-weight: 800; letter-spacing: 0; ma
 
 /* weather factors — a rule-topped stat grid, deliberately the same container
    idiom as .ledger below it: one 2px rule, then rows. Three columns fit all
-   five stats in two rows (was three rows, with UV orphaned full-width). */
+   six stats in exactly two rows (was three rows, with UV orphaned full-width;
+   air quality now fills the slot that was left empty). */
 .weather-factors {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -184,8 +202,8 @@ h1.title { font-size: var(--text-title); font-weight: 800; letter-spacing: 0; ma
   padding: var(--space-2) 0;
   border-bottom: 1px dashed var(--line);
 }
-/* last row (wind, UV) closes the block — no trailing rule under it */
-.factor:nth-last-of-type(-n + 2) { border-bottom: none; }
+/* last row (wind, UV, air) closes the block — no trailing rule under it */
+.factor:nth-last-of-type(-n + 3) { border-bottom: none; }
 .factor span,
 .forecast-list .lbl,
 .forecast-row time,
@@ -223,7 +241,13 @@ h1.title { font-size: var(--text-title); font-weight: 800; letter-spacing: 0; ma
 }
 .ledger .row { display: flex; justify-content: space-between; padding: var(--space-2) 0; border-bottom: 1px dashed var(--line); }
 .ledger .row dd { margin: 0; }
-.ledger .row .val { font-weight: 700; }
+/* Deltas recolour when a toggle changes sign (a cooling delta turning warm).
+   Easing the colour makes the ledger read as recalculating rather than
+   redrawing. */
+.ledger .row .val {
+  font-weight: 700;
+  transition: color var(--dur-2) var(--ease-out);
+}
 .ledger .total { border-bottom: none; border-top: var(--rule-w) solid var(--ink); font-weight: 700; font-size: var(--text-copy); }
 .val.heat { color: var(--scorch); }
 .val.cool { color: var(--shade); }
@@ -261,6 +285,13 @@ fieldset.seg legend {
   border-right: var(--border-w) solid var(--ink);
   cursor: pointer;
   background: var(--paper);
+}
+/* The toggle flip is the product's core interaction — tap Shade, watch the sun
+   premium zero out. It used to snap. */
+.seg-options label {
+  transition:
+    background-color var(--dur-1) var(--ease-out),
+    color var(--dur-1) var(--ease-out);
 }
 .seg-options label:last-child { border-right: none; }
 .seg-options input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
@@ -649,3 +680,43 @@ fieldset.seg legend {
 @media (prefers-reduced-motion: no-preference) {
   .seg-options label { transition: background 120ms ease-out; }
 }
+
+/* saved cities — a one-tap rail, only rendered when there is more than one.
+   Scrolls horizontally rather than wrapping: a second row would cost the Now
+   tab its viewport fit, and the cap is 6 so the rail never runs long. */
+.city-rail {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  margin: calc(var(--space-1) * -1) 0;
+  padding: var(--space-1) 0;
+}
+.city-rail::-webkit-scrollbar { display: none; }
+.city-rail button {
+  flex: 0 0 auto;
+  min-height: var(--tap);
+  padding: 0 var(--space-3);
+  border: var(--border-w) solid var(--line);
+  border-radius: var(--radius-control);
+  background: var(--paper);
+  color: var(--ink-2);
+  font: 400 var(--text-seg) var(--mono);
+  text-transform: uppercase;
+  letter-spacing: var(--track-label);
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color var(--dur-1) var(--ease-out),
+    color var(--dur-1) var(--ease-out),
+    border-color var(--dur-1) var(--ease-out);
+}
+.city-rail button[aria-selected='true'] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+  font-weight: 700;
+}
+.city-rail .city-add { font-size: var(--text-note); color: var(--ink); }
+.city-rail button:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }

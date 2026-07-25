@@ -70,3 +70,9 @@ export const WIND_CHILL_MIN_KMH = 4.8
 export const COLD_BLEND_LOW_C = 10
 export const COLD_BLEND_HIGH_C = 15
 export const MS_TO_KMH = 3.6
+
+// Thermal tint range (presentation only — never enters the formula). The UI's
+// warmth is linear between these two True Feel readings and clamps outside them.
+// Chosen to span "genuinely cold" to "the Valencia plaza this app exists for".
+export const THERMAL_COLD_C = 5
+export const THERMAL_HOT_C = 42

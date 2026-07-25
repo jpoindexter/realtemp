@@ -1,5 +1,6 @@
 import { useState } from 'react'
 
+import { useAirQuality } from '@/features/air/use-air-quality'
 import { CopyLine } from '@/features/copy/CopyLine'
 import { computeTrueFeel } from '@/features/formula/compute-true-feel'
 import { solarZenithDeg } from '@/features/formula/solar-zenith'
@@ -19,6 +20,7 @@ import { SegmentedControl } from './SegmentedControl'
 import { SweatGauge } from './SweatGauge'
 import { WeatherFactors } from './WeatherFactors'
 import { displayTemp } from './format-temp'
+import { useThermal } from './use-thermal'
 
 import type { TempUnit } from './format-temp'
 import type { useToggles } from './use-toggles'
@@ -102,6 +104,8 @@ export function DashboardBody({ weather, location, toggles, updateToggles, unit,
     },
     toggles,
   )
+  useThermal(result.trueFeelC)
+  const air = useAirQuality(location)
 
   return (
     <>
@@ -157,7 +161,7 @@ export function DashboardBody({ weather, location, toggles, updateToggles, unit,
           role="tabpanel"
           aria-labelledby="dashboard-tab-now"
         >
-          <WeatherFactors weather={weather} unit={unit} />
+          <WeatherFactors weather={weather} unit={unit} air={air} />
           <BreakdownLedger result={result} unit={unit} />
           {config.apiBase && <OfficialAlertsPanel apiBase={config.apiBase} location={location} />}
         </section>

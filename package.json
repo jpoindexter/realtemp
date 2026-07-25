@@ -15,6 +15,7 @@
     "verify:roadmap-gates": "node tools/verify-roadmap-gates.mjs",
     "verify:sentry": "node tools/verify-sentry-env.mjs",
     "verify:ios-prereqs": "node tools/verify-ios-prereqs.mjs",
+    "verify:contrast": "node tools/verify-contrast.mjs",
     "verify:naming": "node tools/verify-naming.mjs",
     "verify:heatmap-sources": "node tools/verify-heatmap-sources.mjs",
     "verify:street-check": "node tools/verify-street-check.mjs"

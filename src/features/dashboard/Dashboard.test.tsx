@@ -62,6 +62,9 @@ function renderDashboard(overrides: Partial<Parameters<typeof Dashboard>[0]> = {
   return render(
     <Dashboard
       location={valencia}
+      locations={{ items: [valencia], activeIndex: 0 }}
+      onSelectCity={() => {}}
+      onAddCity={() => {}}
       unit="c"
       onSetUnit={() => {}}
       onChangeLocation={() => {}}
@@ -73,6 +76,14 @@ function renderDashboard(overrides: Partial<Parameters<typeof Dashboard>[0]> = {
     />,
   )
 }
+
+const AIR_PAYLOAD = { current: { time: '2026-07-06T16:00', european_aqi: 45, pm2_5: 4.5, pm10: 6.8 } }
+
+/** Air quality is a separate secondary adapter; these assertions are about the
+ *  weather fetches, so its calls are filtered out rather than baked into a total
+ *  that would break again on the next adapter. */
+const weatherFetchCount = (mock: { mock: { calls: unknown[][] } }): number =>
+  mock.mock.calls.filter((call) => !String(call[0]).includes('air-quality')).length
 
 describe('Dashboard', () => {
   it('paints the last good reading immediately on warm launch while refreshing', async () => {
@@ -200,6 +211,7 @@ describe('Dashboard', () => {
     let mainCallCount = 0
     const refreshed = { ...payload, current: { ...payload.current, time: '2026-07-06T16:30', temperature_2m: 36 } }
     const fetchMock = vi.fn(async (url: string) => {
+      if (url.includes('air-quality')) return { ok: true, status: 200, json: async () => AIR_PAYLOAD }
       if (url.includes('daily=')) return { ok: true, status: 200, json: async () => ({ daily: { time: [], temperature_2m_mean: [] } }) }
       mainCallCount++
       return { ok: true, status: 200, json: async () => (mainCallCount === 1 ? payload : refreshed) }
@@ -210,7 +222,7 @@ describe('Dashboard', () => {
     await waitFor(() => expect(screen.getByText(/air says 30.0°/i)).toBeDefined())
     fireEvent.click(screen.getByRole('button', { name: /refresh weather reading/i }))
 
-    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(4))
+    await waitFor(() => expect(weatherFetchCount(fetchMock)).toBe(4))
     await waitFor(() => expect(screen.getByText(/air says 36.0°/i)).toBeDefined())
   })
 
@@ -244,6 +256,7 @@ describe('Dashboard', () => {
     const hung: { resolve: ((v: unknown) => void) | null } = { resolve: null }
     let mainCallCount = 0
     const fetchMock = vi.fn(async (url: string) => {
+      if (url.includes('air-quality')) return { ok: true, status: 200, json: async () => AIR_PAYLOAD }
       if (url.includes('daily=')) return { ok: true, status: 200, json: async () => ({ daily: { time: [], temperature_2m_mean: [] } }) }
       mainCallCount++
       if (mainCallCount === 1) return { ok: true, status: 200, json: async () => payload } // initial load
@@ -256,13 +269,13 @@ describe('Dashboard', () => {
     renderDashboard()
 
     await waitFor(() => expect(screen.getByText(/live/)).toBeDefined())
-    expect(fetchMock).toHaveBeenCalledTimes(2)
+    expect(weatherFetchCount(fetchMock)).toBe(2)
 
     vi.setSystemTime(Date.now() + 11 * 60_000) // past the 10-min TTL
     document.dispatchEvent(new Event('visibilitychange'))
     // Both the refetch's main and baseline calls are recorded synchronously
     // (call count jumps 2→4) even though the main one hangs on its promise.
-    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(4))
+    await waitFor(() => expect(weatherFetchCount(fetchMock)).toBe(4))
 
     // The refetch is now in flight (hung on the unresolved promise) — the
     // previously-loaded dashboard must still be fully rendered, not blanked
@@ -282,6 +295,7 @@ describe('Dashboard', () => {
     let mainCallCount = 0
     const refreshed = { ...payload, current: { ...payload.current, time: '2026-07-06T16:30', temperature_2m: 36 } }
     const fetchMock = vi.fn(async (url: string) => {
+      if (url.includes('air-quality')) return { ok: true, status: 200, json: async () => AIR_PAYLOAD }
       if (url.includes('daily=')) return { ok: true, status: 200, json: async () => ({ daily: { time: [], temperature_2m_mean: [] } }) }
       mainCallCount++
       return { ok: true, status: 200, json: async () => (mainCallCount === 1 ? payload : refreshed) }
@@ -290,12 +304,12 @@ describe('Dashboard', () => {
     renderDashboard()
 
     await waitFor(() => expect(screen.getByText(/live/)).toBeDefined())
-    expect(fetchMock).toHaveBeenCalledTimes(2)
+    expect(weatherFetchCount(fetchMock)).toBe(2)
 
     vi.setSystemTime(Date.now() + 11 * 60_000)
     act(() => vi.advanceTimersByTime(60_000))
 
-    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(4))
+    await waitFor(() => expect(weatherFetchCount(fetchMock)).toBe(4))
     await waitFor(() => expect(screen.getByText(/air says 36.0°/i)).toBeDefined())
     vi.useRealTimers()
   })

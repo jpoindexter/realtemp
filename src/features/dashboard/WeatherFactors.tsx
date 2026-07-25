@@ -1,19 +1,23 @@
+import { aqiLabel } from '@/features/air/air-quality'
+
 import { displayTemp } from './format-temp'
 import { weatherCodeLabel } from './weather-code'
 
 import type { TempUnit } from './format-temp'
+import type { AirQuality } from '@/features/air/air-quality'
 import type { WeatherSnapshot } from '@/features/weather/open-meteo'
 
 interface WeatherFactorsProps {
   weather: WeatherSnapshot
   unit: TempUnit
+  air: AirQuality | null
 }
 
 const pct = (value: number | null): string => (value === null ? '--' : `${Math.round(value)}%`)
 const mm = (value: number | null): string => (value === null ? '--' : `${value.toFixed(1)} mm`)
 const wind = (value: number | null): string => (value === null ? '--' : `${value.toFixed(1)} m/s`)
 
-export function WeatherFactors({ weather, unit }: WeatherFactorsProps) {
+export function WeatherFactors({ weather, unit, air }: WeatherFactorsProps) {
   // No visible title: the Now tab already names this region, and a per-block
   // header restating the screen cost ~40px of a tight viewport budget. The
   // accessible name survives on the section's aria-label.
@@ -48,6 +52,15 @@ export function WeatherFactors({ weather, unit }: WeatherFactorsProps) {
       <div className="factor">
         <span>UV</span>
         <b>{weather.uvIndex === null ? '--' : weather.uvIndex.toFixed(1)}</b>
+      </div>
+      <div className="factor">
+        <span>air</span>
+        <b>
+          {aqiLabel(air?.band ?? null)}
+          {air?.europeanAqi !== null && air?.europeanAqi !== undefined && (
+            <small>EAQI {Math.round(air.europeanAqi)}</small>
+          )}
+        </b>
       </div>
     </section>
   )

@@ -1,0 +1,434 @@
+<title>CARROT Weather 6.7 — Teardown</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --ink: #1b1b1e;
+    --ink-2: #54544e;
+    --ground: #edede8;
+    --paper: #f7f7f3;
+    --line: #d8d8d0;
+    --solar: #a3520a;
+    --scorch: #c93a22;
+    --shade: #33698c;
+    --uhi: #a1543a;
+    --on-strong: #ffffff;
+
+    --sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, monospace;
+
+    --s1: 0.25rem; --s2: 0.5rem; --s3: 0.75rem; --s4: 1rem;
+    --s5: 1.5rem; --s6: 2rem; --s7: 3rem; --s8: 4.5rem;
+    --rule: 2px;
+    --wrap: 68rem;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ink: #e8e3da; --ink-2: #a89f8f; --ground: #141311; --paper: #231f19;
+      --line: #433e33; --solar: #d99a4e; --scorch: #e2634a; --shade: #7db3d1;
+      --uhi: #c98a66; --on-strong: #16151b;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ink: #e8e3da; --ink-2: #a89f8f; --ground: #141311; --paper: #231f19;
+    --line: #433e33; --solar: #d99a4e; --scorch: #e2634a; --shade: #7db3d1;
+    --uhi: #c98a66; --on-strong: #16151b;
+  }
+  :root[data-theme="light"] {
+    --ink: #1b1b1e; --ink-2: #54544e; --ground: #edede8; --paper: #f7f7f3;
+    --line: #d8d8d0; --solar: #a3520a; --scorch: #c93a22; --shade: #33698c;
+    --uhi: #a1543a; --on-strong: #ffffff;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--sans);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap {
+    max-width: var(--wrap);
+    margin: 0 auto;
+    padding: var(--s6) var(--s4) var(--s8);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s7);
+  }
+
+  .lbl {
+    font-family: var(--mono);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-2);
+  }
+
+  /* masthead */
+  .mast { display: flex; flex-direction: column; gap: var(--s3); }
+  .mast h1 {
+    margin: 0;
+    font-size: clamp(2rem, 7vw, 3.5rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.02;
+    text-wrap: balance;
+  }
+  .mast p {
+    margin: 0;
+    max-width: 62ch;
+    color: var(--ink-2);
+    font-size: 1.0625rem;
+  }
+
+  /* count strip */
+  .counts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+    column-gap: var(--s4);
+    border-top: var(--rule) solid var(--ink);
+  }
+  .count { padding: var(--s3) 0; border-bottom: 1px dashed var(--line); }
+  .count b {
+    display: block;
+    font-size: 1.75rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+  }
+
+  /* generic rule-topped block */
+  section.block { display: flex; flex-direction: column; gap: var(--s4); }
+  .block > h2 {
+    margin: 0;
+    font-size: 1.375rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    padding-top: var(--s3);
+    border-top: var(--rule) solid var(--ink);
+  }
+  .block > p { margin: 0; max-width: 66ch; color: var(--ink-2); }
+  .block > p strong { color: var(--ink); }
+
+  /* gap table */
+  .tablewrap { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; min-width: 40rem; }
+  th, td {
+    text-align: left;
+    padding: var(--s3) var(--s3) var(--s3) 0;
+    border-bottom: 1px dashed var(--line);
+    vertical-align: top;
+  }
+  th {
+    font-family: var(--mono);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-2);
+    font-weight: 400;
+    border-bottom: 1px solid var(--ink);
+  }
+  td.feat { font-weight: 700; width: 30%; }
+  td.note { color: var(--ink-2); font-size: 0.9375rem; }
+
+  .chip {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.625rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    padding: 2px var(--s2);
+    border: 1.5px solid currentColor;
+    white-space: nowrap;
+  }
+  .chip.gap { color: var(--scorch); }
+  .chip.partial { color: var(--solar); }
+  .chip.have { color: var(--shade); }
+  .chip.skip { color: var(--ink-2); }
+
+  /* inline token list */
+  .tokens { display: flex; flex-wrap: wrap; gap: var(--s2); padding: 0; margin: 0; list-style: none; }
+  .tokens li {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    padding: var(--s1) var(--s2);
+    background: var(--paper);
+    border: 1px solid var(--line);
+  }
+
+  /* callout */
+  .callout {
+    border-left: var(--rule) solid var(--scorch);
+    background: var(--paper);
+    padding: var(--s4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s2);
+  }
+  .callout.cool { border-left-color: var(--shade); }
+  .callout h3 { margin: 0; font-size: 1.0625rem; font-weight: 800; }
+  .callout p { margin: 0; max-width: 64ch; }
+
+  /* screen grid */
+  .screens {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+    gap: var(--s2);
+    padding: 0; margin: 0; list-style: none;
+  }
+  .screens li {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    padding: var(--s2);
+    border-bottom: 1px solid var(--line);
+  }
+  .screens li span { color: var(--ink-2); }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding-top: var(--s4);
+    color: var(--ink-2);
+    font-size: 0.875rem;
+  }
+  a { color: var(--shade); }
+  :focus-visible { outline: 3px solid var(--shade); outline-offset: 2px; }
+</style>
+
+<div class="wrap">
+
+  <header class="mast">
+    <span class="lbl">Competitive teardown · extracted bundle · 2026-07-25</span>
+    <h1>CARROT Weather 6.7</h1>
+    <p>Full feature and screen inventory, pulled from the shipped iOS bundle, scored against what RealTemp has today. The point is the gap column — not the size of their surface.</p>
+  </header>
+
+  <div class="counts">
+    <div class="count"><span class="lbl">Screens</span><b>35</b></div>
+    <div class="count"><span class="lbl">Cell types</span><b>121</b></div>
+    <div class="count"><span class="lbl">UI strings</span><b>3,201</b></div>
+    <div class="count"><span class="lbl">App extensions</span><b>11</b></div>
+    <div class="count"><span class="lbl">Map layers</span><b>12</b></div>
+    <div class="count"><span class="lbl">Data points</span><b>25</b></div>
+    <div class="count"><span class="lbl">Languages</span><b>17</b></div>
+    <div class="count"><span class="lbl">Min iOS</span><b>15.0</b></div>
+  </div>
+
+  <section class="block">
+    <h2>Read this before the feature list</h2>
+    <div class="callout">
+      <h3>CARROT is not a 2026 design reference</h3>
+      <p>The bundle carries <strong>160 <code>.nib</code> files, 2 storyboards, and 11 SpriteKit scenes</strong> on a <strong>minOS 15.0</strong> baseline — a UIKit/Interface-Builder app on a 2021 floor. SwiftUI appears three times in the main binary. Its modern code is quarantined in one place: the widget extension, which links SwiftUI + WidgetKit + ActivityKit and declares <code>NSSupportsLiveActivities</code>.</p>
+      <p>What carries this app is <strong>personality and breadth</strong>, not visual craft. Mine it for feature surface. Look elsewhere for a 2026 visual language.</p>
+    </div>
+    <div class="callout cool">
+      <h3>Their "Feels Like" is one opaque number</h3>
+      <p>Across 3,201 strings there is exactly one relevant key — <code>data_point_type_feels_like</code> → "Feels Like". No breakdown, no per-premium decomposition, no ledger, nowhere. The category leader ships the very thing your PRD calls opaque and generalized.</p>
+      <p><strong>Your transparent math is the moat.</strong> Everything below is surface area you could add; none of it is a reason to trade that away.</p>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>Gap analysis</h2>
+    <p>Scored against RealTemp as it stands after today's v2 pass. Ordered by fit with your thesis — <em>the temperature your body actually meets on the street, with the math visible</em> — not by how impressive the feature is.</p>
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr><th>Feature</th><th>Status</th><th>What CARROT ships</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="feat">Personal weather stations</td>
+            <td><span class="chip gap">Missing</span></td>
+            <td class="note">Netatmo + WeatherFlow sign-in, a station map, station picker, per-station detail. <strong>The single most on-thesis feature they have</strong> — your whole premise is that Stevenson-screen readings lie about the street, and a nearby PWS is literal street-level truth. Would also give you real data to tune coefficients against, which N2 was gated on.</td>
+          </tr>
+          <tr>
+            <td class="feat">Wet-bulb temperature</td>
+            <td><span class="chip gap">Missing</span></td>
+            <td class="note">Shipped as a first-class data point and card. This is <em>the</em> heat-stress metric — the one that defines survivability limits. You already have air temp and dew point, which is everything the calculation needs.</td>
+          </tr>
+          <tr>
+            <td class="feat">Custom notification rules</td>
+            <td><span class="chip partial">Partial</span></td>
+            <td class="note">A rule engine: any data point, above/below/rises/drops, threshold or scheduled, over a time window, with daytime/overnight scoping and Do Not Disturb hours. Named presets for Sunscreen and Umbrella reminders. You have one hardcoded daily heat check.</td>
+          </tr>
+          <tr>
+            <td class="feat">Solar / daylight detail</td>
+            <td><span class="chip partial">Partial</span></td>
+            <td class="note">Golden hour, blue hour, civil / nautical / astronomical dawn and dusk, first and last light, daylight averages. You compute solar zenith already — this is presentation on top of math you have, and it sits directly on your sun-premium story.</td>
+          </tr>
+          <tr>
+            <td class="feat">Forecast confidence (ensemble)</td>
+            <td><span class="chip gap">Missing</span></td>
+            <td class="note">Ensemble model spread rendered as HIGH/LOW confidence: "if the lines are tightly grouped the forecast is likely to hold; if widely spread, conditions are uncertain." Honest uncertainty is very much your brand — you already show your working.</td>
+          </tr>
+          <tr>
+            <td class="feat">Composable layouts</td>
+            <td><span class="chip gap">Missing</span></td>
+            <td class="note">4 app styles (Card / Full Screen / Multi-Column / Plain), 4 card styles, 3 configurable rows, ~25 placeable data points, saved layouts, and <strong>different layouts per weather condition</strong> (clear night, fog, rain, snow). This is their "build your own weather app" pitch and the core of the paywall.</td>
+          </tr>
+          <tr>
+            <td class="feat">Widgets + Live Activities</td>
+            <td><span class="chip gap">Missing</span></td>
+            <td class="note">Home Screen, Lock Screen, Notification Center, Smart Stacks. Live Activities auto-start on launch showing a short-term precipitation chart. Needs a native Swift extension inside your Capacitor shell — real work, and blocked behind the Xcode setup <code>verify:ios-prereqs</code> still fails on.</td>
+          </tr>
+          <tr>
+            <td class="feat">Map layers</td>
+            <td><span class="chip partial">Partial</span></td>
+            <td class="note">12 presets: precipitation, super-res radar, temperature, wind, humidity, dew point, cloud cover, visibility, air quality, rain totals, snow depth, wildfires. You ship radar + shade, and shade is something they don't have at all.</td>
+          </tr>
+          <tr>
+            <td class="feat">Almanac / history</td>
+            <td><span class="chip gap">Missing</span></td>
+            <td class="note">Historical records, all-time stats, a sunny/cloudy/rainy/snowy day grid, and personal "high scores" for hottest day and highest UV. Their own chart admits it needs 7 days of use before it populates.</td>
+          </tr>
+          <tr>
+            <td class="feat">Air quality + pollen</td>
+            <td><span class="chip gap">Missing</span></td>
+            <td class="note">AQI as data point, card, map layer and notification; pollen count as a card. Both affect whether you want to be outside — arguably adjacent to your actual question.</td>
+          </tr>
+          <tr>
+            <td class="feat">Severe weather alerting</td>
+            <td><span class="chip partial">Partial</span></td>
+            <td class="note">Dedicated extensions for hurricane tracking (all 5 categories + tropical depression/storm/cyclone), lightning-strike proximity with compass direction, and storm-cell tracking. You proxy official AEMET/MeteoAlarm CAP alerts, which covers the Spain case they'd handle generically.</td>
+          </tr>
+          <tr>
+            <td class="feat">Trip planning</td>
+            <td><span class="chip gap">Missing</span></td>
+            <td class="note">Multi-stop trips with per-stop forecasts and a days-until countdown.</td>
+          </tr>
+          <tr>
+            <td class="feat">Apple Watch</td>
+            <td><span class="chip gap">Missing</span></td>
+            <td class="note">Full companion app, a watch-face gallery, custom complication slots, configurable Infograph bezel text, and ~15 complication types.</td>
+          </tr>
+          <tr>
+            <td class="feat">Siri + App Intents</td>
+            <td><span class="chip gap">Missing</span></td>
+            <td class="note">Current-forecast intent with custom UI, an interaction intent, and <code>nlu.appintents</code> shipped per language.</td>
+          </tr>
+          <tr>
+            <td class="feat">Tides / moon phases</td>
+            <td><span class="chip skip">Skip</span></td>
+            <td class="note">Tide stations with rising/falling charts; moon phase with its own notification schedule. Coastal Valencia makes tides faintly plausible; neither touches perceived temperature.</td>
+          </tr>
+          <tr>
+            <td class="feat">SPC outlooks</td>
+            <td><span class="chip skip">Skip</span></td>
+            <td class="note">US Storm Prediction Center convective and fire-weather outlooks, days 1–8. US-only — irrelevant in Valencia.</td>
+          </tr>
+          <tr>
+            <td class="feat">Zodiac</td>
+            <td><span class="chip skip">Skip</span></td>
+            <td class="note">All 12 signs with date ranges. Yes, really.</td>
+          </tr>
+          <tr>
+            <td class="feat">Personality / voice</td>
+            <td><span class="chip skip">Skip</span></td>
+            <td class="note">Selectable assistant personality, a profanity toggle, speech synthesis, secret locations, achievements, and original songs shipped as MP3s. This is their entire brand and the reason people pay. Competing here means becoming a different product.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2>Their 25 data points</h2>
+    <p>Every one is placeable by the user into any card slot. Marked ones you already compute or display.</p>
+    <ul class="tokens">
+      <li>Actual Temperature ✓</li>
+      <li>Feels Like ✓</li>
+      <li>Hi &amp; Lo</li>
+      <li>Dew Point ✓</li>
+      <li>Humidity ✓</li>
+      <li>Wet-Bulb</li>
+      <li>Wind Speed ✓</li>
+      <li>Wind Gusts</li>
+      <li>UV Index ✓</li>
+      <li>Cloud Cover ✓</li>
+      <li>Precip Chance ✓</li>
+      <li>Precip Amount ✓</li>
+      <li>Pressure</li>
+      <li>Visibility</li>
+      <li>Air Quality</li>
+      <li>Pollen</li>
+      <li>Sunrise / Sunset</li>
+      <li>Moon Phase</li>
+      <li>Next Tide</li>
+      <li>Weather Condition ✓</li>
+      <li>Weather Station</li>
+      <li>Data Source</li>
+      <li>Kelvin</li>
+      <li>Opposite Unit</li>
+      <li>Solar</li>
+    </ul>
+  </section>
+
+  <section class="block">
+    <h2>All 35 screens</h2>
+    <p>Pulled from the nib inventory. Cell and reusable-view types are excluded — there are another 121 of those.</p>
+    <ul class="screens">
+      <li>Main <span>· dashboard</span></li>
+      <li>Settings</li>
+      <li>Alerts</li>
+      <li>Search <span>· location</span></li>
+      <li>RefineLocation</li>
+      <li>LocationDetails</li>
+      <li>SecretLocation <span>· easter egg</span></li>
+      <li>WeatherStationMap <span>· PWS</span></li>
+      <li>StationDataPicker <span>· PWS</span></li>
+      <li>NetatmoSignIn <span>· PWS</span></li>
+      <li>WeatherFlowSignin <span>· PWS</span></li>
+      <li>Widget <span>· config</span></li>
+      <li>Complication <span>· watch</span></li>
+      <li>AppleWatchMain</li>
+      <li>AppleWatchBase</li>
+      <li>SiriFace</li>
+      <li>SiriCurrentHourly</li>
+      <li>Subscription</li>
+      <li>SubscriptionLanding</li>
+      <li>SubscriptionDetails</li>
+      <li>Login</li>
+      <li>WhatsNew</li>
+      <li>WhatsNewLayout</li>
+      <li>Playback <span>· radar</span></li>
+      <li>Record</li>
+      <li>OptionPicker</li>
+      <li>DatePicker</li>
+      <li>DynamicPopup</li>
+      <li>Web</li>
+      <li>MiniWindow <span>· mac</span></li>
+      <li>MacLandingPage</li>
+      <li>MacNotifications</li>
+      <li>CarrotHeader</li>
+      <li>HourCollection</li>
+      <li>ComparisonCollection</li>
+    </ul>
+  </section>
+
+  <section class="block">
+    <h2>What sits behind their paywall</h2>
+    <p>Their own premium banner copy, verbatim — a useful read on what they believe people actually pay for.</p>
+    <ul class="tokens">
+      <li>Build your own weather app</li>
+      <li>Endless personalization</li>
+      <li>Multiple data sources</li>
+      <li>AccuWeather source</li>
+      <li>Apple Weather source</li>
+      <li>15+ map layers</li>
+      <li>Next-hour radar</li>
+      <li>Short-term rain chart</li>
+      <li>Track oncoming storms</li>
+      <li>Home Screen widgets</li>
+      <li>Lock Screen widgets</li>
+      <li>Live Activities</li>
+      <li>Apple Watch complications</li>
+    </ul>
+    <p>Note what is <strong>not</strong> on that list: accuracy. They monetize customization and distribution surface, not a better number.</p>
+  </section>
+
+  <footer>
+    <p>Extracted from <code>CARROTweather.app</code> 6.7 to <code>teardown/carrot/</code> (gitignored). Strings read from <code>en.lproj/Localizable.strings</code>; screens from the nib inventory; capabilities from <code>Info.plist</code> and <code>PlugIns/</code>. Feature names are CARROT's own copy, quoted for identification — patterns only, no assets carried over.</p>
+  </footer>
+
+</div>

@@ -96,9 +96,11 @@ Secrets go through Jason's own CLI (`wrangler secret put`, Vercel dashboard) —
 ```
 TrueFeel = AT_base + SolarPremium + EnvDelta + ActivityDelta
 
-AT_base       = Ta + 0.33·e − 0.70·ws − 4.00       (Steadman Apparent Temp)
+AT_base       = Ta + 0.33·e − 4.00 − 0.70·ws       (Steadman AT; the vapour term
+                and the −4.00 calibration constant are SEPARATE ledger rows)
 e (hPa)       = 6.105 · exp(17.27·Td / (237.7+Td))  (vapor pressure from DEW POINT)
-SolarPremium  = Sun: clamp(UVI × 0.8, 0, 8), cos-weighted by solar zenith
+SolarPremium  = Sun: clamp(UVI × 0.8, 0, 8). NOT zenith-weighted — the UV index
+                already encodes solar elevation. Zenith only gates night (>90° → 0).
                 Overcast: 25% of Sun · Shade: 0 · Night: 0
 EnvDelta      = Urban +2 (12:00–22:00 local, else +1) · Open 0 · Nature −1
 ActivityDelta = Stagnant 0 · Walking +1 · Active +3, each halved when ws > 5 m/s

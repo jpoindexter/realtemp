@@ -243,8 +243,6 @@
   --radius-control: 10px;
   --panel-shadow: var(--elev-2);
   --tabs-shadow: var(--elev-2);
-  --ground-cold: oklch(0.958 0.038 250);
-  --ground-hot: oklch(0.958 0.050 62);
   --track-label: 0.05em;
 }
 
@@ -257,9 +255,31 @@
   --radius-control: 2px;
   --panel-shadow: var(--elev-1);
   --tabs-shadow: none;
+  --track-label: 0.08em;
+}
+
+/* Thermal endpoints per theme AND style. These MUST carry both attributes.
+   A bare [data-style='soft'] block has the same specificity as
+   [data-theme='dark'] and sits later in the file, so an unqualified light-valued
+   endpoint here silently won in dark mode — the ground painted light cream while
+   --ink stayed the dark-mode light text, and the whole screen went unreadable.
+   Shipped that to production once; `npm run verify:contrast` now checks every
+   theme x style pair so it cannot happen again. */
+:root[data-theme='light'][data-style='soft'] {
+  --ground-cold: oklch(0.958 0.038 250);
+  --ground-hot: oklch(0.958 0.050 62);
+}
+:root[data-theme='dark'][data-style='soft'] {
+  --ground-cold: oklch(0.152 0.028 250);
+  --ground-hot: oklch(0.152 0.036 55);
+}
+:root[data-theme='light'][data-style='signal'] {
   --ground-cold: oklch(0.958 0.010 250);
   --ground-hot: oklch(0.958 0.014 62);
-  --track-label: 0.08em;
+}
+:root[data-theme='dark'][data-style='signal'] {
+  --ground-cold: oklch(0.152 0.008 250);
+  --ground-hot: oklch(0.152 0.011 55);
 }
 
 /* ---------------------------------------------------------------------------

@@ -144,31 +144,51 @@ for (const [themeName, theme] of [
   }
 }
 
-/* The page does not actually render --ground: it renders --thermal-wash, which
-   is --ground with chroma pushed up and hue swung from 250 (cold) to 60 (hot).
-   Testing --ground alone would verify a colour the user never sees. Chroma at
-   fixed lightness barely moves luminance, but "barely" is not a measurement. */
-const THERMAL_CHROMA_BUMP = 0.03
-const STYLE_STRENGTH = { default: 1, soft: 1.4, signal: 0.35 }
+/* The page does not render --ground: it renders --thermal-wash, interpolated
+   between --ground-cold and --ground-hot. Those endpoints are overridden per
+   theme AND per style, and an earlier version declared them on a bare
+   [data-style] block — same specificity as [data-theme='dark'], declared later,
+   so it won. Dark mode got light-mode ground with light-mode-inverted text and
+   the screen became unreadable in production.
 
-console.log('\nTHERMAL WASH (the colour actually painted)')
-for (const [themeName, theme, groundL, groundC] of [
-  ['LIGHT', light, 0.958, 0.005],
-  ['DARK', dark, 0.152, 0.008],
+   So this reads the endpoints out of the CSS per theme x style pair rather than
+   assuming them. A pair that resolves to the wrong lightness now fails here. */
+function endpointsFor(themeName, styleName) {
+  // Real cascade. :root[data-theme=x] and :root[data-style=y] have EQUAL
+  // specificity (0,2,0), so source order decides — and the style blocks sit
+  // later in the file, which is precisely how a light-valued endpoint on a bare
+  // [data-style] block beat [data-theme='dark'] and shipped an unreadable dark
+  // mode. The two-attribute selector (0,3,0) outranks both.
+  const pair = collectScope(`:root[data-theme='${themeName}'][data-style='${styleName}']`)
+  const bareStyle = collectScope(`:root[data-style='${styleName}']`)
+  const theme = collectScope(`:root[data-theme='${themeName}']`)
+  const base = collectScope(':root {')
+  const pick = (k) => pair[k] ?? bareStyle[k] ?? theme[k] ?? base[k]
+  return { cold: pick('ground-cold'), hot: pick('ground-hot') }
+}
+
+console.log('\nTHERMAL WASH (the colour actually painted, per theme x style)')
+for (const [themeName, theme] of [
+  ['light', light],
+  ['dark', dark],
 ]) {
-  for (const [styleName, strength] of Object.entries(STYLE_STRENGTH)) {
-    for (const [tempName, hue] of [
-      ['cold', 250],
-      ['hot', 60],
+  for (const styleName of ['soft', 'signal']) {
+    const { cold, hot } = endpointsFor(themeName, styleName)
+    for (const [tempName, endpoint] of [
+      ['cold', cold],
+      ['hot', hot],
     ]) {
-      const wash = oklchToLinearRgb(groundL, groundC + THERMAL_CHROMA_BUMP * strength, hue)
+      if (!Array.isArray(endpoint)) {
+        console.log(`  SKIP  --${tempName} endpoint unresolved for ${themeName}/${styleName}`)
+        continue
+      }
       for (const fg of ['ink', 'ink-2']) {
         if (!Array.isArray(theme[fg])) continue
-        const ratio = contrast(theme[fg], wash)
+        const ratio = contrast(theme[fg], endpoint)
         const ok = ratio >= AA_TEXT
         if (!ok) failed++
         console.log(
-          `  ${ok ? 'PASS' : 'FAIL'}  ${ratio.toFixed(2).padStart(5)}:1  --${fg} on wash  — ${themeName.toLowerCase()}/${styleName}/${tempName}`,
+          `  ${ok ? 'PASS' : 'FAIL'}  ${ratio.toFixed(2).padStart(5)}:1  --${fg} on wash  — ${themeName}/${styleName}/${tempName}`,
         )
       }
     }

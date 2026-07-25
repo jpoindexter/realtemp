@@ -1,5 +1,7 @@
 import { useState } from 'react'
 
+import { AlertRules } from './AlertRules'
+
 import { VAPID_PUBLIC_KEY } from '@/lib/config'
 
 import type { StoredLocation } from '@/features/location/geocoding'
@@ -54,6 +56,8 @@ export function PushPanel({ apiBase, location }: PushPanelProps) {
   )
   const [errorMessage, setErrorMessage] = useState(SERVER_ERROR)
   const [thresholdC, setThresholdC] = useState(DEFAULT_THRESHOLD_C)
+  // Kept so the rule builder can address this subscription once it exists.
+  const [endpoint, setEndpoint] = useState<string | null>(null)
 
   const enable = async () => {
     setState('busy')
@@ -84,7 +88,10 @@ export function PushPanel({ apiBase, location }: PushPanelProps) {
           thresholdC,
         }),
       })
-      if (r.ok) setState('on')
+      if (r.ok) {
+        setEndpoint(subscription.endpoint)
+        setState('on')
+      }
       else if (r.status === 404) setState('server-pending')
       else {
         setErrorMessage(SERVER_ERROR)
@@ -141,6 +148,7 @@ export function PushPanel({ apiBase, location }: PushPanelProps) {
           <p className="note" role="status">Notifications are blocked for this site — enable them in browser settings first.</p>
         )}
         {state === 'error' && <p className="error" role="alert">{errorMessage}</p>}
+        {state === 'on' && endpoint && apiBase && <AlertRules apiBase={apiBase} endpoint={endpoint} />}
         {state === 'server-pending' && (
           <p className="note" role="status">Warnings aren&rsquo;t switched on server-side yet — one deploy away (runbook &sect;2).</p>
         )}

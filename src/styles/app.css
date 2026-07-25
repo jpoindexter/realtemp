@@ -793,3 +793,33 @@ fieldset.seg legend {
   }
   .app:not(:has(.dashboard-tabs)) > * { grid-column: auto; }
 }
+
+/* alert rules (C4a) */
+.alert-rules { padding-top: var(--space-2); border-top: 1px dashed var(--line); }
+.rule-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-2); }
+.rule-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  font-size: var(--text-note);
+}
+.rule-builder { display: grid; grid-template-columns: 1fr; gap: var(--space-2); }
+@media (min-width: 26rem) { .rule-builder { grid-template-columns: 1fr 1fr; } }
+.rule-builder .field span {
+  font-family: var(--mono);
+  font-size: var(--text-label);
+  text-transform: uppercase;
+  letter-spacing: var(--track-label);
+  color: var(--ink-2);
+}
+.rule-builder select {
+  min-height: var(--tap);
+  padding: 0 var(--space-2);
+  font: 400 var(--text-input) var(--sans);
+  color: var(--ink);
+  background: var(--paper);
+  border: var(--border-w) solid var(--ink);
+  border-radius: var(--radius-control);
+}
+.rule-builder select:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }

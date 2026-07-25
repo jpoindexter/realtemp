@@ -29,6 +29,7 @@ export type DeltaId =
   | 'solar'
   | 'environment'
   | 'activity'
+  | 'baseline'
   | 'acclimatization'
 
 export interface Delta {

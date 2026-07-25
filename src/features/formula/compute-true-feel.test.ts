@@ -33,7 +33,8 @@ describe('computeTrueFeel — Valencia scorcher fixture', () => {
   const r = computeTrueFeel(scorcher, streetDay)
 
   it('computes each premium to hand-checked values', () => {
-    expect(delta(r, 'humidity')).toBeCloseTo(3.7, 5) // 0.33·23.323 − 4
+    expect(delta(r, 'humidity')).toBeCloseTo(7.7, 5) // 0.33·23.323, vapour only
+    expect(delta(r, 'baseline')).toBeCloseTo(-4, 5) // Steadman offset, its own row
     expect(delta(r, 'wind')).toBeCloseTo(-0.8, 5) // −0.7·1.2
     expect(delta(r, 'solar')).toBeCloseTo(6.0, 5) // clamp(6.4)·cos20°
     expect(delta(r, 'environment')).toBe(2) // urban, 16h peak
@@ -177,5 +178,33 @@ describe('sweatEfficiencyPct', () => {
     expect(sweatEfficiencyPct(18)).toBe(50)
     expect(sweatEfficiencyPct(26)).toBe(0)
     expect(sweatEfficiencyPct(30)).toBe(0)
+  })
+})
+
+describe('separability — no term may hide another', () => {
+  const dryHeat = {
+    airTempC: 35.6,
+    dewPointC: 5,
+    windSpeedMs: 5,
+    uvIndex: 2,
+    solarZenithDeg: 78,
+    localHour: 19,
+    baseline14C: null,
+  }
+
+  it('reports humidity as warming in dry heat — vapour never cools you', () => {
+    const r = computeTrueFeel(dryHeat, streetDay)
+    expect(delta(r, 'humidity')).toBeGreaterThan(0)
+  })
+
+  it('shows the Steadman baseline offset as its own line, not folded into humidity', () => {
+    const r = computeTrueFeel(dryHeat, streetDay)
+    expect(delta(r, 'baseline')).toBeCloseTo(-4, 5)
+  })
+
+  it('keeps the displayed total identical — this is a display fix, not a physics change', () => {
+    const r = computeTrueFeel(dryHeat, streetDay)
+    const sum = r.deltas.reduce((s, d) => s + d.deltaC, r.baseC)
+    expect(r.trueFeelC).toBeCloseTo(sum, 5)
   })
 })

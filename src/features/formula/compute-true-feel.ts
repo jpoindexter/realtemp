@@ -44,8 +44,18 @@ export function vaporPressureHpa(dewPointC: number): number {
   return VAPOR_A * Math.exp((VAPOR_B * dewPointC) / (VAPOR_C + dewPointC))
 }
 
+/**
+ * Vapour's own contribution. Moisture in the air slows evaporative cooling, so
+ * this is always warming — it must never render negative.
+ *
+ * Steadman's -4.00 calibration constant used to be subtracted here, which made
+ * the ledger show humidity COOLING you in dry air (-1.1 at a 5 degree dew
+ * point, when vapour was actually contributing +2.9). It also hid a 4 degree
+ * drag with no line of its own, against the PRD rule that every premium is
+ * computed and displayed independently. It now has its own row.
+ */
 function humidityDelta(dewPointC: number): number {
-  return STEADMAN_VAPOR_COEF * vaporPressureHpa(dewPointC) - STEADMAN_BASELINE
+  return STEADMAN_VAPOR_COEF * vaporPressureHpa(dewPointC)
 }
 
 /** Steadman's wind term — the warm-weather path, street-scaled wind. */
@@ -108,7 +118,14 @@ export function computeTrueFeel(inputs: WeatherInputs, toggles: Toggles): TrueFe
   const missing: DeltaId[] = []
 
   if (inputs.dewPointC === null) missing.push('humidity')
-  else deltas.push({ id: 'humidity', label: 'humidity friction', deltaC: round1(humidityDelta(inputs.dewPointC)) })
+  else {
+    deltas.push({ id: 'humidity', label: 'humidity friction', deltaC: round1(humidityDelta(inputs.dewPointC)) })
+    /* Steadman's calibration offset: the constant that makes the model read as
+       the air temperature under its reference conditions (moderately humid,
+       still, shaded). Emitted only alongside the vapour term — without a dew
+       point the model is not being applied, so its offset should not be either. */
+    deltas.push({ id: 'baseline', label: 'baseline offset', deltaC: -STEADMAN_BASELINE })
+  }
 
   if (streetWindMs === null || inputs.windSpeedMs === null) missing.push('wind')
   else

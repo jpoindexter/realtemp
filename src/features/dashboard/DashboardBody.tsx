@@ -13,14 +13,12 @@ import { deriveWarnings } from '@/features/warnings/derive-warnings'
 import { WarningBanner } from '@/features/warnings/WarningBanner'
 import { config } from '@/lib/config'
 
-import { BodyPanel } from './BodyPanel'
 import { BreakdownLedger } from './BreakdownLedger'
 import { ForecastList } from './ForecastList'
 import { SegmentedControl } from './SegmentedControl'
 import { SweatGauge } from './SweatGauge'
 import { WeatherFactors } from './WeatherFactors'
 import { displayTemp } from './format-temp'
-import { useBio } from './use-bio'
 
 import type { TempUnit } from './format-temp'
 import type { useToggles } from './use-toggles'
@@ -58,7 +56,16 @@ const TAB_OPTIONS = [
   { value: 'tune', label: 'Tune' },
 ] as const
 
+/* Radar and shade are both square, so stacking them costs ~860px and the tab
+   could never fit a phone. They answer different questions ("is rain coming?"
+   vs "where is shade now?"), so only one is ever wanted at a time. */
+const MAP_VIEW_OPTIONS = [
+  { value: 'radar', label: 'Radar' },
+  { value: 'shade', label: 'Shade' },
+] as const
+
 type DashboardTab = (typeof TAB_OPTIONS)[number]['value']
+type MapView = (typeof MAP_VIEW_OPTIONS)[number]['value']
 
 interface DashboardBodyProps {
   weather: WeatherSnapshot
@@ -70,8 +77,8 @@ interface DashboardBodyProps {
 }
 
 export function DashboardBody({ weather, location, toggles, updateToggles, unit, onSetUnit }: DashboardBodyProps) {
-  const [bio, updateBio] = useBio()
   const [activeTab, setActiveTab] = useState<DashboardTab>('now')
+  const [mapView, setMapView] = useState<MapView>('radar')
   const zenith = solarZenithDeg(weather.fetchedAt, location.latitude, location.longitude)
   const result = computeTrueFeel(
     {
@@ -84,7 +91,6 @@ export function DashboardBody({ weather, location, toggles, updateToggles, unit,
       baseline14C: weather.baseline14C,
     },
     toggles,
-    bio,
   )
   const hourlyTrueFeel = computeHourlyTrueFeel(
     weather.hourly,
@@ -93,7 +99,6 @@ export function DashboardBody({ weather, location, toggles, updateToggles, unit,
       latitude: location.latitude,
       longitude: location.longitude,
       baseline14C: weather.baseline14C,
-      bio,
     },
     toggles,
   )
@@ -165,14 +170,9 @@ export function DashboardBody({ weather, location, toggles, updateToggles, unit,
           role="tabpanel"
           aria-labelledby="dashboard-tab-forecast"
         >
-          <section className="body-panel" aria-labelledby="next-24h-title">
-            <h2 id="next-24h-title" className="body-panel-title">Next 24 h + sweat</h2>
-            <div className="stack">
-              <SweatGauge pct={result.sweatEfficiencyPct} />
-              <SafeWindowTimeline points={hourlyTrueFeel} unit={unit} />
-              <ForecastList hourly={weather.hourly} trueFeel={hourlyTrueFeel} unit={unit} />
-            </div>
-          </section>
+          <SweatGauge pct={result.sweatEfficiencyPct} />
+          <SafeWindowTimeline points={hourlyTrueFeel} unit={unit} />
+          <ForecastList hourly={weather.hourly} trueFeel={hourlyTrueFeel} unit={unit} />
         </section>
       )}
 
@@ -183,8 +183,14 @@ export function DashboardBody({ weather, location, toggles, updateToggles, unit,
           role="tabpanel"
           aria-labelledby="dashboard-tab-maps"
         >
-          <RadarMap location={location} />
-          <ShadeMap location={location} />
+          <SegmentedControl
+            legend="Map"
+            name="map-view"
+            options={MAP_VIEW_OPTIONS}
+            value={mapView}
+            onChange={setMapView}
+          />
+          {mapView === 'radar' ? <RadarMap location={location} /> : <ShadeMap location={location} />}
         </section>
       )}
 
@@ -222,22 +228,19 @@ export function DashboardBody({ weather, location, toggles, updateToggles, unit,
               value={toggles.activity}
               onChange={(activity) => updateToggles({ activity })}
             />
+            {/* Was a bordered panel titled "Acclimatization" wrapping a legend
+                that said "Acclimatized to this weather" — two labels for one
+                control, in a different container idiom than the three toggles
+                above it. It is the same kind of control, so it joins them. */}
+            <SegmentedControl
+              legend="Acclimatized to this weather"
+              name="acclimatization"
+              options={ACCLIM_OPTIONS}
+              value={toggles.acclimatization}
+              onChange={(acclimatization) => updateToggles({ acclimatization })}
+            />
           </div>
 
-          <section className="body-panel" aria-labelledby="acclimatization-title">
-            <h2 id="acclimatization-title" className="body-panel-title">Acclimatization</h2>
-            <div className="stack">
-              <SegmentedControl
-                legend="Acclimatized to this weather"
-                name="acclimatization"
-                options={ACCLIM_OPTIONS}
-                value={toggles.acclimatization}
-                onChange={(acclimatization) => updateToggles({ acclimatization })}
-              />
-            </div>
-          </section>
-
-          <BodyPanel bio={bio} onChange={updateBio} />
           {config.apiBase && <PushPanel apiBase={config.apiBase} location={location} />}
         </section>
       )}

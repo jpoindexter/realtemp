@@ -29,3 +29,6 @@
 
 ## °F support · Notifications (heat warnings) · CV shadow-casting routes
 **Captured:** 2026-07-06 · **Why parked:** Post-launch polish / platform features before a real user. · **Cost to revisit:** Low / Medium / Very high respectively.
+
+## Bio-calibration (height/weight/metabolism/clothing) — re-parked
+**Captured:** 2026-07-06 · built 2026-07-07 · **removed and re-parked 2026-07-25** · **Why parked:** Shipped and then pulled — it asked for height and weight without earning the ask, and the deltas were marginal for the personal-data surface they created. See the 2026-07-25 `DECISIONS.md` entry; the bounded thermal-sign model is fully specified in the 2026-07-07 entry. · **Cost to revisit:** Low — the model and coefficients are documented, only the UI and wiring need rebuilding.

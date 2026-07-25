@@ -31,7 +31,7 @@ export function deriveWarnings(inputs: WarningInputs): WeatherWarning[] {
   if (inputs.trueFeelC >= WARN_HEAT_DANGER_C) {
     warnings.push({ id: 'heat', level: 'danger', text: `Dangerous heat — ${Math.round(inputs.trueFeelC)}° True Feel. Shade, water, short exposure.` })
   } else if (inputs.trueFeelC >= WARN_HEAT_CAUTION_C) {
-    warnings.push({ id: 'heat', level: 'caution', text: `High heat strain — plan around the safe windows below.` })
+    warnings.push({ id: 'heat', level: 'caution', text: `High heat strain — check Forecast for safe windows.` })
   }
 
   if (inputs.trueFeelC <= WARN_COLD_DANGER_C) {

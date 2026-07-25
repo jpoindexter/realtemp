@@ -142,7 +142,9 @@ describe('Dashboard', () => {
       expect(screen.getByText('base air')).toBeDefined()
       expect(screen.getByText('humidity friction')).toBeDefined()
       expect(screen.getByText(/sun premium/)).toBeDefined() // regex: label gains '· night' after dark
-      expect(screen.getByRole('heading', { name: /current weather factors/i })).toBeDefined()
+      // The visible per-block title was dropped (the Now tab already names this
+      // region); the accessible name moved to the section's aria-label.
+      expect(screen.getByRole('region', { name: /current weather factors/i })).toBeDefined()
       expect(screen.getAllByText('rain').length).toBeGreaterThan(0)
       expect(screen.getByText('74%')).toBeDefined()
       expect(screen.getAllByText('0.2 mm').length).toBeGreaterThan(0)
@@ -151,7 +153,9 @@ describe('Dashboard', () => {
 
       fireEvent.click(screen.getByRole('tab', { name: 'Forecast' }))
       expect(screen.getByRole('tab', { name: 'Forecast', selected: true })).toBeDefined()
-      expect(screen.getByRole('heading', { name: 'Next 24 h + sweat' })).toBeDefined()
+      // The "Next 24 h + sweat" wrapper panel was removed; its contents now sit
+      // directly in the tab panel, so assert the gauge itself.
+      expect(screen.getByRole('meter', { name: /sweat efficiency/i })).toBeDefined()
       expect(screen.getByLabelText(/next hours forecast/i)).toBeDefined()
       expect(screen.getByText('40% rain')).toBeDefined()
       expect(screen.getByRole('meter', { name: /sweat efficiency/i })).toBeDefined()
@@ -159,14 +163,24 @@ describe('Dashboard', () => {
 
       fireEvent.click(screen.getByRole('tab', { name: 'Maps' }))
       expect(screen.getByRole('tab', { name: 'Maps', selected: true })).toBeDefined()
+      // Radar and shade now share the tab via a switcher — one at a time, so
+      // two square maps can't blow the viewport budget.
       expect(screen.getByRole('heading', { name: /radar near you/i })).toBeDefined()
+      expect(screen.queryByRole('heading', { name: /shade nearby/i })).toBeNull()
+      fireEvent.click(screen.getByRole('radio', { name: 'Shade' }))
       expect(screen.getByRole('heading', { name: /shade nearby/i })).toBeDefined()
+      expect(screen.queryByRole('heading', { name: /radar near you/i })).toBeNull()
 
       fireEvent.click(screen.getByRole('tab', { name: 'Tune' }))
       expect(screen.getByRole('tab', { name: 'Tune', selected: true })).toBeDefined()
-      expect(screen.getAllByRole('radio')).toHaveLength(18)
-      expect(screen.getByRole('heading', { name: 'Acclimatization' })).toBeDefined()
-      expect(screen.getByRole('heading', { name: /your body/i })).toBeDefined()
+      // 4 groups x 3 = 12. Was 18 before bio-calibration (metabolism + clothing)
+      // was removed on 2026-07-25.
+      expect(screen.getAllByRole('radio')).toHaveLength(12)
+      // The "Acclimatization" panel heading duplicated the control's own legend,
+      // so it went; the fieldset legend is now the single accessible name.
+      expect(screen.getByRole('group', { name: /acclimatized to this weather/i })).toBeDefined()
+      // Bio-calibration is gone entirely — no height/weight is collected.
+      expect(screen.queryByText(/your body/i)).toBeNull()
       expect(screen.queryByText(/partial data/i)).toBeNull()
     },
     20_000,

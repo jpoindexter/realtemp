@@ -32,9 +32,14 @@ export function ForecastList({ hourly, trueFeel, unit }: ForecastListProps) {
               <time dateTime={point.timeIso}>{point.timeIso.slice(11, 16)}</time>
               <b>{feel ? `${displayTemp(feel.trueFeelC, unit)}°` : '--'}</b>
               <span>{weatherCodeLabel(point.weatherCode)}</span>
+              {/* The millimetre figure only earns its place when it is non-zero
+                  — "0% rain" and "0.0 mm" said the same thing twice on every
+                  dry row. */}
               <div className="forecast-meta">
                 <span>{pct(point.precipitationProbabilityPct)} rain</span>
-                <span>{mm(point.precipitationMm)}</span>
+                {point.precipitationMm !== null && point.precipitationMm > 0 && (
+                  <span>{mm(point.precipitationMm)}</span>
+                )}
                 <span>{pct(point.cloudCoverPct)} cloud</span>
               </div>
             </article>

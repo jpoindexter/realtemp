@@ -84,7 +84,9 @@ h1.title { font-size: var(--text-title); font-weight: 800; letter-spacing: 0; ma
 }
 .hero .unit {
   font: 600 0.3em var(--sans);
-  color: var(--scorch);
+  /* --scorch means danger/heat-total. A unit switch is neither, so it takes
+     secondary ink; the hero number stays the only thing shouting. */
+  color: var(--ink-2);
   vertical-align: super;
   background: none;
   border: none;
@@ -128,17 +130,16 @@ h1.title { font-size: var(--text-title); font-weight: 800; letter-spacing: 0; ma
 .warning.caution { background: var(--paper); border-color: var(--solar); color: var(--ink); }
 .warning.caution .warning-level { color: var(--solar); }
 
-/* dashboard tabs */
+/* dashboard tabs — an inline strip, not a floating dock. Every tab's content
+   sits within ~130px of the viewport, so the old `position:sticky; bottom:`
+   never once engaged and the drop shadow advertised a dock that never happened.
+   Flat and honest instead. */
 .dashboard-tabs {
-  position: sticky;
-  bottom: max(var(--space-2), env(safe-area-inset-bottom));
-  z-index: 5;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   border: var(--border-w) solid var(--ink);
   border-radius: var(--radius-control);
   background: var(--paper);
-  box-shadow: var(--tabs-shadow);
   overflow: hidden;
 }
 .dashboard-tabs button {
@@ -166,38 +167,25 @@ h1.title { font-size: var(--text-title); font-weight: 800; letter-spacing: 0; ma
 .tab-panel {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--space-3);
 }
 
-/* weather factors */
+/* weather factors — a rule-topped stat grid, deliberately the same container
+   idiom as .ledger below it: one 2px rule, then rows. Three columns fit all
+   five stats in two rows (was three rows, with UV orphaned full-width). */
 .weather-factors {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  border: var(--border-w) solid var(--line);
-  border-radius: var(--radius-panel);
-  background: var(--paper);
-  box-shadow: var(--panel-shadow);
-  overflow: hidden;
-}
-.weather-factors-title {
-  grid-column: 1 / -1;
-  margin: 0;
-  padding: var(--space-3);
-  border-bottom: 1px solid var(--line);
-  font-family: var(--mono);
-  font-weight: 400;
-  font-size: var(--text-label);
-  text-transform: uppercase;
-  letter-spacing: var(--track-label);
-  color: var(--ink-2);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: var(--space-3);
+  border-top: var(--rule-w) solid var(--ink);
 }
 .factor {
   min-width: 0;
-  padding: var(--space-3);
-  border-right: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
+  padding: var(--space-2) 0;
+  border-bottom: 1px dashed var(--line);
 }
-.factor:nth-of-type(2n) { border-right: none; }
+/* last row (wind, UV) closes the block — no trailing rule under it */
+.factor:nth-last-of-type(-n + 2) { border-bottom: none; }
 .factor span,
 .forecast-list .lbl,
 .forecast-row time,
@@ -224,11 +212,6 @@ h1.title { font-size: var(--text-title); font-weight: 800; letter-spacing: 0; ma
 }
 .factor.condition { grid-column: 1 / -1; }
 .factor.condition b { font-size: var(--text-copy); }
-.factor:last-of-type {
-  grid-column: 1 / -1;
-  border-right: none;
-  border-bottom: none;
-}
 
 /* ledger */
 .ledger {
@@ -287,7 +270,12 @@ fieldset.seg legend {
 
 /* sweat gauge */
 .gauge { display: flex; flex-direction: column; gap: var(--space-2); }
-.gauge .lbl, .timeline .lbl {
+/* Every .lbl is the same two-span "name ......... value" row, so this is keyed
+   on the class itself rather than an enumerated list of parents. That list had
+   already gone stale twice: .forecast-list rendered "FORECASTNEXT 6 H" and
+   .official-alert rendered "yellowES247", both from the spans falling back to
+   plain inline text. */
+.lbl {
   display: flex;
   justify-content: space-between;
   gap: var(--space-3);
@@ -297,14 +285,25 @@ fieldset.seg legend {
   text-transform: uppercase;
   color: var(--ink-2);
 }
-.gauge .bar { height: 16px; border: var(--border-w) solid var(--ink); background: var(--paper); }
+/* The track carries a faint tint so an empty bar reads as "0 on a scale"
+   rather than "no data" — sweat efficiency legitimately hits 0% at dew
+   point >= 26, and a bare outline looked broken. */
+.gauge .bar {
+  height: 16px;
+  border: var(--border-w) solid var(--ink);
+  background: color-mix(in srgb, var(--ink) 16%, var(--paper));
+}
 .gauge .fill { height: 100%; background: var(--shade); }
 
 /* safe-window timeline */
 .timeline { display: flex; flex-direction: column; gap: var(--space-2); }
+/* The chart is width-driven (viewBox 360x110), which made it 123px tall and
+   pushed Forecast 8px past the viewport. Capping the height crops nothing —
+   the SVG just scales — and buys the tab its fit. */
 .timeline svg {
   width: 100%;
   height: auto;
+  max-height: 5.5rem;
   border: var(--border-w) solid var(--ink);
   border-radius: var(--radius-panel);
   background: var(--paper);
@@ -321,22 +320,34 @@ fieldset.seg legend {
 /* forecast */
 .forecast-list { display: flex; flex-direction: column; gap: var(--space-2); }
 .forecast-rows { display: flex; flex-direction: column; border-top: 1px solid var(--line); }
+/* One line per hour, not two. These are non-interactive <article> rows, so the
+   44px tap floor does not apply to them and the old min-height only bought
+   whitespace — six two-line rows cost 288px and were the single reason this tab
+   could not fit a 852pt phone. ~28px is the compact-density floor for tabular
+   data, which is exactly what this is. */
 .forecast-row {
   display: grid;
-  grid-template-columns: 3.2rem 3.5rem 1fr;
+  /* the meta column is fixed, not auto, so rain/cloud start at the same x on
+     every row instead of drifting with the length of the condition label */
+  grid-template-columns: 3.2rem 3.5rem minmax(0, 1fr) 8.5rem;
   gap: var(--space-2);
   align-items: center;
-  min-height: var(--tap);
-  padding: var(--space-2) 0;
+  padding: var(--space-1) 0;
   border-bottom: 1px solid var(--line);
 }
 .forecast-row b { font-size: var(--text-note); font-variant-numeric: tabular-nums; }
-.forecast-row > span { justify-self: end; }
+/* the condition label yields first when an hour's text is long */
+.forecast-row > span {
+  justify-self: end;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .forecast-meta {
-  grid-column: 1 / -1;
   display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
+  flex-wrap: nowrap;
+  justify-self: end;
   gap: var(--space-2);
 }
 
@@ -347,17 +358,42 @@ fieldset.seg legend {
   background: var(--paper);
   box-shadow: var(--panel-shadow);
 }
+/* Section titles take full ink; field labels stay --ink-2. Both are 11px mono
+   uppercase, so contrast is the only thing separating "what this block is"
+   from "what this number is" — without it the hierarchy read flat. */
 .body-panel-title {
   margin: 0;
   padding: var(--space-3);
   font-family: var(--mono);
-  font-weight: 400;
+  font-weight: 700;
   font-size: var(--text-label);
   text-transform: uppercase;
   letter-spacing: var(--track-label);
-  color: var(--ink-2);
+  color: var(--ink);
 }
 .body-panel > .stack { padding: 0 var(--space-3) var(--space-3); }
+
+/* disclosure panels — the summary IS the title, so it carries the same type as
+   .body-panel-title and an honest 44px target. */
+.disclosure > summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--tap);
+  padding: 0 var(--space-3);
+  cursor: pointer;
+  list-style: none;
+}
+.disclosure > summary::-webkit-details-marker { display: none; }
+.disclosure > summary::after {
+  content: "+";
+  margin-left: auto;
+  font-family: var(--mono);
+  font-weight: 400;
+  color: var(--ink-2);
+}
+.disclosure[open] > summary::after { content: "\2212"; }
+.disclosure > summary:focus-visible { outline: var(--focus-ring); outline-offset: -3px; }
 .panel-head {
   display: flex;
   align-items: flex-start;
@@ -399,7 +435,10 @@ fieldset.seg legend {
   position: relative;
   width: 100%;
   aspect-ratio: 1 / 1;
-  max-height: 25rem;
+  /* Width-driven this is ~398px tall on a 430pt phone, overshooting the tab by
+     23px. The tiles are absolutely centred, so a shorter window just crops the
+     far edges of a view that is already centred on you. */
+  max-height: 17rem;
   overflow: hidden;
   border-top: var(--border-w) solid var(--ink);
   border-bottom: var(--border-w) solid var(--ink);
@@ -529,6 +568,7 @@ fieldset.seg legend {
 .shade-map svg {
   width: 100%;
   height: auto;
+  max-height: 17rem;
   border: var(--border-w) solid var(--ink);
   border-radius: var(--radius-panel);
   background: var(--paper);

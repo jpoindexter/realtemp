@@ -69,3 +69,10 @@
 **Alternatives:** Keep a manual "felt hotter/colder" evidence loop as a gated roadmap card.
 **Why:** There is no shipped feedback capture loop, and RealTemp should not promise formula learning from user feedback until that product behavior is actually designed and implemented.
 **Reversible?** Yes — add a new PRD change and roadmap card if feedback capture becomes a real feature.
+
+## 2026-07-25 — Bio-calibration removed from the formula
+**Choice:** Delete the "Your body" panel and both formula terms it fed (`body`, `clothing`), plus `BioProfile`, `use-bio`, and the BODY_/METABOLIC_/CLOTHING_/THERMAL_SIGN_ coefficients. Returned to `PARKED.md`.
+**Alternatives:** Drop only the height/weight inputs and keep metabolism + clothing (they produce real deltas without collecting identifying data); leave it as-is behind the disclosure it already had.
+**Why:** Jason's call — the app was asking for height and weight without doing anything with the data worth the ask. Removing the question outright is the honest version: no personal-data surface at all, rather than a collected-but-marginal one. Reverses the 2026-07-07 bio-calibration decision.
+**Consequence:** True Feel changes for anyone who had set a profile — their `your body` and `clothing` ledger rows disappear. Orphaned `realtemp:bio` localStorage keys are left in place, harmless and unread.
+**Reversible?** Yes — the model is documented in the 2026-07-07 entry and restored from `PARKED.md`.

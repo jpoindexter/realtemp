@@ -51,16 +51,8 @@ export const ACCLIM_MAX_DELTA_C = 3
 export const WEATHER_SHOCK_DELTA_C = 8
 export const BASELINE_DAYS = 14
 
-// Bio-calibration (all opt-in, all bounded). thermalSign maps base temp to −1 (cold,
-// mass/clothing insulate) … +1 (heat, mass retains / clothing traps): −1 at ≤10°, +1 at ≥25°.
-export const THERMAL_SIGN_CENTER_C = 17.5
-export const THERMAL_SIGN_HALFSPAN_C = 7.5
-export const BODY_BMI_REF = 22
-export const BODY_BMI_COEF = 0.1
-export const BODY_MAX_DELTA_C = 1.5
-export const METABOLIC_DELTA_C = { low: -0.5, normal: 0, high: 0.5 } as const
-export const CLOTHING_COLD_DELTA_C = { light: -2, normal: 0, warm: 2 } as const
-export const CLOTHING_HEAT_DELTA_C = { light: -0.5, normal: 0, warm: 1.5 } as const
+// Bio-calibration (height/weight/metabolism/clothing) was removed 2026-07-25 and
+// returned to PARKED.md — no personal data is collected, so no coefficients here.
 
 // Safe Window comfort band on True Feel (°C) — v0 heuristic, tune with lived use
 export const COMFORT_MIN_TRUEFEEL_C = 5

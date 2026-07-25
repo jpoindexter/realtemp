@@ -14,9 +14,11 @@ const mm = (value: number | null): string => (value === null ? '--' : `${value.t
 const wind = (value: number | null): string => (value === null ? '--' : `${value.toFixed(1)} m/s`)
 
 export function WeatherFactors({ weather, unit }: WeatherFactorsProps) {
+  // No visible title: the Now tab already names this region, and a per-block
+  // header restating the screen cost ~40px of a tight viewport budget. The
+  // accessible name survives on the section's aria-label.
   return (
     <section className="weather-factors" aria-label="Current weather factors">
-      <h2 className="weather-factors-title">Current weather factors</h2>
       <div className="factor condition">
         <span>condition</span>
         <b>{weatherCodeLabel(weather.weatherCode)}</b>

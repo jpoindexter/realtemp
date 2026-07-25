@@ -117,9 +117,11 @@ export function PushPanel({ apiBase, location }: PushPanelProps) {
 
   if (!isPushSupported()) return null
 
+  // Collapsed by default — this is alert setup, not something you read on a
+  // walk, and expanded it cost ~200px of the Tune tab.
   return (
-    <section className="body-panel" aria-labelledby="push-panel-title">
-      <h2 id="push-panel-title" className="body-panel-title">Heat warnings · daily check at dawn</h2>
+    <details className="body-panel disclosure">
+      <summary className="body-panel-title">Heat warnings · daily check at dawn</summary>
       <div className="stack">
         <div className="field">
           <label htmlFor="push-threshold">Warn when the day&rsquo;s high reaches (°C air)</label>
@@ -155,6 +157,6 @@ export function PushPanel({ apiBase, location }: PushPanelProps) {
           </>
         )}
       </div>
-    </section>
+    </details>
   )
 }

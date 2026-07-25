@@ -2,12 +2,6 @@ import {
   ACCLIM_FACTOR,
   ACCLIM_MAX_DELTA_C,
   ACTIVITY_DELTA_C,
-  BODY_BMI_COEF,
-  BODY_BMI_REF,
-  BODY_MAX_DELTA_C,
-  CLOTHING_COLD_DELTA_C,
-  CLOTHING_HEAT_DELTA_C,
-  METABOLIC_DELTA_C,
   COLD_BLEND_HIGH_C,
   COLD_BLEND_LOW_C,
   CONVECTIVE_ACTIVITY_FACTOR,
@@ -22,8 +16,6 @@ import {
   STREET_WIND_FACTOR,
   SWEAT_TD_FULL_C,
   SWEAT_TD_ZERO_C,
-  THERMAL_SIGN_CENTER_C,
-  THERMAL_SIGN_HALFSPAN_C,
   URBAN_DELTA_OFFPEAK_C,
   URBAN_DELTA_PEAK_C,
   URBAN_PEAK_END_HOUR,
@@ -41,7 +33,7 @@ import {
   VAPOR_C,
 } from './constants'
 
-import type { BioProfile, Delta, DeltaId, Toggles, TrueFeel, WeatherInputs } from './types'
+import type { Delta, DeltaId, Toggles, TrueFeel, WeatherInputs } from './types'
 
 const clamp = (v: number, min: number, max: number): number => Math.min(max, Math.max(min, v))
 
@@ -106,37 +98,11 @@ export function sweatEfficiencyPct(dewPointC: number): number {
   return round1(clamp(((SWEAT_TD_ZERO_C - dewPointC) / span) * 100, 0, 100))
 }
 
-/** −1 in cold (mass/clothing insulate) … +1 in heat (they trap heat). */
-function thermalSign(airTempC: number): number {
-  return clamp((airTempC - THERMAL_SIGN_CENTER_C) / THERMAL_SIGN_HALFSPAN_C, -1, 1)
-}
-
-/** BMI deviation × thermal sign + metabolic rate. Zero without height+weight and normal metabolism. */
-function bodyDelta(bio: BioProfile, airTempC: number): number {
-  let bmiComponent = 0
-  if (bio.heightCm !== null && bio.weightKg !== null && bio.heightCm > 0) {
-    const bmi = bio.weightKg / (bio.heightCm / 100) ** 2
-    bmiComponent =
-      clamp((bmi - BODY_BMI_REF) * BODY_BMI_COEF, -BODY_MAX_DELTA_C, BODY_MAX_DELTA_C) *
-      thermalSign(airTempC)
-  }
-  return bmiComponent + METABOLIC_DELTA_C[bio.metabolic]
-}
-
-/** Cold and heat tables blended by thermal sign — warm layers help at 0°C, punish at 35°C. */
-function clothingDelta(bio: BioProfile, airTempC: number): number {
-  const heatWeight = (thermalSign(airTempC) + 1) / 2
-  return (
-    CLOTHING_COLD_DELTA_C[bio.clothing] * (1 - heatWeight) +
-    CLOTHING_HEAT_DELTA_C[bio.clothing] * heatWeight
-  )
-}
-
 /**
  * The whole product. Pure; missing inputs drop their premium into `missing`
  * instead of corrupting the total. Ledger invariant: trueFeelC = baseC + Σ deltas.
  */
-export function computeTrueFeel(inputs: WeatherInputs, toggles: Toggles, bio?: BioProfile): TrueFeel {
+export function computeTrueFeel(inputs: WeatherInputs, toggles: Toggles): TrueFeel {
   const streetWindMs = inputs.windSpeedMs === null ? null : inputs.windSpeedMs * STREET_WIND_FACTOR
   const deltas: Delta[] = []
   const missing: DeltaId[] = []
@@ -167,13 +133,6 @@ export function computeTrueFeel(inputs: WeatherInputs, toggles: Toggles, bio?: B
       const raw = clamp((inputs.airTempC - baseline) * acclimFactor, -ACCLIM_MAX_DELTA_C, ACCLIM_MAX_DELTA_C)
       deltas.push({ id: 'acclimatization', label: 'acclimatization', deltaC: round1(raw) })
     }
-  }
-
-  if (bio) {
-    const body = round1(bodyDelta(bio, inputs.airTempC))
-    if (body !== 0) deltas.push({ id: 'body', label: 'your body', deltaC: body })
-    const clothing = round1(clothingDelta(bio, inputs.airTempC))
-    if (clothing !== 0) deltas.push({ id: 'clothing', label: 'clothing', deltaC: clothing })
   }
 
   const baseC = round1(inputs.airTempC)

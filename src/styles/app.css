@@ -5,12 +5,21 @@
 
 html, body { height: 100%; }
 
+/* The thermal wash is the ground, tinted by the current reading. It sits on
+   body rather than .app so the colour runs to the edges of a desktop window
+   too. Falls back to a flat --ground anywhere oklch(from ...) is unsupported,
+   and to --ground exactly when --thermal is 0 (its default), so nothing here
+   depends on JS having run. */
 body {
   margin: 0;
   background: var(--ground);
   color: var(--ink);
   font-family: var(--sans);
   line-height: 1.45;
+  transition: background-color var(--dur-3) var(--ease-out);
+}
+@supports (background: oklch(from red l c h)) {
+  body { background: var(--thermal-wash); }
 }
 
 #root { min-height: 100%; display: flex; justify-content: center; }
@@ -74,17 +83,22 @@ h1.title { font-size: var(--text-title); font-weight: 800; letter-spacing: 0; ma
 .icon-btn:disabled { opacity: 0.45; cursor: wait; }
 .icon-btn:focus-visible { outline: var(--focus-ring); outline-offset: -3px; }
 
-/* hero */
+/* hero — the product's one figure. Negative tracking because large type needs
+   the opposite treatment to the uppercase labels, and tabular figures so the
+   number does not jitter horizontally as digits change on refresh. */
 .hero .big {
   font-size: var(--text-hero);
   font-weight: 800;
-  letter-spacing: 0;
+  letter-spacing: var(--track-hero);
   line-height: 1;
   font-variant-numeric: tabular-nums;
+  transition: color var(--dur-2) var(--ease-out);
 }
 .hero .unit {
   font: 600 0.3em var(--sans);
-  color: var(--scorch);
+  /* --scorch means danger/heat-total. A unit switch is neither, so it takes
+     secondary ink; the hero number stays the only thing shouting. */
+  color: var(--ink-2);
   vertical-align: super;
   background: none;
   border: none;
@@ -128,17 +142,16 @@ h1.title { font-size: var(--text-title); font-weight: 800; letter-spacing: 0; ma
 .warning.caution { background: var(--paper); border-color: var(--solar); color: var(--ink); }
 .warning.caution .warning-level { color: var(--solar); }
 
-/* dashboard tabs */
+/* dashboard tabs — an inline strip, not a floating dock. Every tab's content
+   sits within ~130px of the viewport, so the old `position:sticky; bottom:`
+   never once engaged and the drop shadow advertised a dock that never happened.
+   Flat and honest instead. */
 .dashboard-tabs {
-  position: sticky;
-  bottom: max(var(--space-2), env(safe-area-inset-bottom));
-  z-index: 5;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   border: var(--border-w) solid var(--ink);
   border-radius: var(--radius-control);
   background: var(--paper);
-  box-shadow: var(--tabs-shadow);
   overflow: hidden;
 }
 .dashboard-tabs button {
@@ -153,6 +166,11 @@ h1.title { font-size: var(--text-title); font-weight: 800; letter-spacing: 0; ma
   letter-spacing: var(--track-tight);
   cursor: pointer;
 }
+.dashboard-tabs button {
+  transition:
+    background-color var(--dur-1) var(--ease-out),
+    color var(--dur-1) var(--ease-out);
+}
 .dashboard-tabs button:last-child { border-right: none; }
 .dashboard-tabs button[aria-selected="true"] {
   background: var(--ink);
@@ -166,38 +184,26 @@ h1.title { font-size: var(--text-title); font-weight: 800; letter-spacing: 0; ma
 .tab-panel {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--space-3);
 }
 
-/* weather factors */
+/* weather factors — a rule-topped stat grid, deliberately the same container
+   idiom as .ledger below it: one 2px rule, then rows. Three columns fit all
+   six stats in exactly two rows (was three rows, with UV orphaned full-width;
+   air quality now fills the slot that was left empty). */
 .weather-factors {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  border: var(--border-w) solid var(--line);
-  border-radius: var(--radius-panel);
-  background: var(--paper);
-  box-shadow: var(--panel-shadow);
-  overflow: hidden;
-}
-.weather-factors-title {
-  grid-column: 1 / -1;
-  margin: 0;
-  padding: var(--space-3);
-  border-bottom: 1px solid var(--line);
-  font-family: var(--mono);
-  font-weight: 400;
-  font-size: var(--text-label);
-  text-transform: uppercase;
-  letter-spacing: var(--track-label);
-  color: var(--ink-2);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: var(--space-3);
+  border-top: var(--rule-w) solid var(--ink);
 }
 .factor {
   min-width: 0;
-  padding: var(--space-3);
-  border-right: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
+  padding: var(--space-2) 0;
+  border-bottom: 1px dashed var(--line);
 }
-.factor:nth-of-type(2n) { border-right: none; }
+/* last row (wind, UV, air) closes the block — no trailing rule under it */
+.factor:nth-last-of-type(-n + 3) { border-bottom: none; }
 .factor span,
 .forecast-list .lbl,
 .forecast-row time,
@@ -224,11 +230,6 @@ h1.title { font-size: var(--text-title); font-weight: 800; letter-spacing: 0; ma
 }
 .factor.condition { grid-column: 1 / -1; }
 .factor.condition b { font-size: var(--text-copy); }
-.factor:last-of-type {
-  grid-column: 1 / -1;
-  border-right: none;
-  border-bottom: none;
-}
 
 /* ledger */
 .ledger {
@@ -240,7 +241,13 @@ h1.title { font-size: var(--text-title); font-weight: 800; letter-spacing: 0; ma
 }
 .ledger .row { display: flex; justify-content: space-between; padding: var(--space-2) 0; border-bottom: 1px dashed var(--line); }
 .ledger .row dd { margin: 0; }
-.ledger .row .val { font-weight: 700; }
+/* Deltas recolour when a toggle changes sign (a cooling delta turning warm).
+   Easing the colour makes the ledger read as recalculating rather than
+   redrawing. */
+.ledger .row .val {
+  font-weight: 700;
+  transition: color var(--dur-2) var(--ease-out);
+}
 .ledger .total { border-bottom: none; border-top: var(--rule-w) solid var(--ink); font-weight: 700; font-size: var(--text-copy); }
 .val.heat { color: var(--scorch); }
 .val.cool { color: var(--shade); }
@@ -279,6 +286,13 @@ fieldset.seg legend {
   cursor: pointer;
   background: var(--paper);
 }
+/* The toggle flip is the product's core interaction — tap Shade, watch the sun
+   premium zero out. It used to snap. */
+.seg-options label {
+  transition:
+    background-color var(--dur-1) var(--ease-out),
+    color var(--dur-1) var(--ease-out);
+}
 .seg-options label:last-child { border-right: none; }
 .seg-options input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
 .seg-options input:checked + span { font-weight: 700; }
@@ -287,7 +301,12 @@ fieldset.seg legend {
 
 /* sweat gauge */
 .gauge { display: flex; flex-direction: column; gap: var(--space-2); }
-.gauge .lbl, .timeline .lbl {
+/* Every .lbl is the same two-span "name ......... value" row, so this is keyed
+   on the class itself rather than an enumerated list of parents. That list had
+   already gone stale twice: .forecast-list rendered "FORECASTNEXT 6 H" and
+   .official-alert rendered "yellowES247", both from the spans falling back to
+   plain inline text. */
+.lbl {
   display: flex;
   justify-content: space-between;
   gap: var(--space-3);
@@ -297,14 +316,25 @@ fieldset.seg legend {
   text-transform: uppercase;
   color: var(--ink-2);
 }
-.gauge .bar { height: 16px; border: var(--border-w) solid var(--ink); background: var(--paper); }
+/* The track carries a faint tint so an empty bar reads as "0 on a scale"
+   rather than "no data" — sweat efficiency legitimately hits 0% at dew
+   point >= 26, and a bare outline looked broken. */
+.gauge .bar {
+  height: 16px;
+  border: var(--border-w) solid var(--ink);
+  background: color-mix(in srgb, var(--ink) 16%, var(--paper));
+}
 .gauge .fill { height: 100%; background: var(--shade); }
 
 /* safe-window timeline */
 .timeline { display: flex; flex-direction: column; gap: var(--space-2); }
+/* The chart is width-driven (viewBox 360x110), which made it 123px tall and
+   pushed Forecast 8px past the viewport. Capping the height crops nothing —
+   the SVG just scales — and buys the tab its fit. */
 .timeline svg {
   width: 100%;
   height: auto;
+  max-height: 5.5rem;
   border: var(--border-w) solid var(--ink);
   border-radius: var(--radius-panel);
   background: var(--paper);
@@ -321,22 +351,34 @@ fieldset.seg legend {
 /* forecast */
 .forecast-list { display: flex; flex-direction: column; gap: var(--space-2); }
 .forecast-rows { display: flex; flex-direction: column; border-top: 1px solid var(--line); }
+/* One line per hour, not two. These are non-interactive <article> rows, so the
+   44px tap floor does not apply to them and the old min-height only bought
+   whitespace — six two-line rows cost 288px and were the single reason this tab
+   could not fit a 852pt phone. ~28px is the compact-density floor for tabular
+   data, which is exactly what this is. */
 .forecast-row {
   display: grid;
-  grid-template-columns: 3.2rem 3.5rem 1fr;
+  /* the meta column is fixed, not auto, so rain/cloud start at the same x on
+     every row instead of drifting with the length of the condition label */
+  grid-template-columns: 3.2rem 3.5rem minmax(0, 1fr) 8.5rem;
   gap: var(--space-2);
   align-items: center;
-  min-height: var(--tap);
-  padding: var(--space-2) 0;
+  padding: var(--space-1) 0;
   border-bottom: 1px solid var(--line);
 }
 .forecast-row b { font-size: var(--text-note); font-variant-numeric: tabular-nums; }
-.forecast-row > span { justify-self: end; }
+/* the condition label yields first when an hour's text is long */
+.forecast-row > span {
+  justify-self: end;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .forecast-meta {
-  grid-column: 1 / -1;
   display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
+  flex-wrap: nowrap;
+  justify-self: end;
   gap: var(--space-2);
 }
 
@@ -347,17 +389,42 @@ fieldset.seg legend {
   background: var(--paper);
   box-shadow: var(--panel-shadow);
 }
+/* Section titles take full ink; field labels stay --ink-2. Both are 11px mono
+   uppercase, so contrast is the only thing separating "what this block is"
+   from "what this number is" — without it the hierarchy read flat. */
 .body-panel-title {
   margin: 0;
   padding: var(--space-3);
   font-family: var(--mono);
-  font-weight: 400;
+  font-weight: 700;
   font-size: var(--text-label);
   text-transform: uppercase;
   letter-spacing: var(--track-label);
-  color: var(--ink-2);
+  color: var(--ink);
 }
 .body-panel > .stack { padding: 0 var(--space-3) var(--space-3); }
+
+/* disclosure panels — the summary IS the title, so it carries the same type as
+   .body-panel-title and an honest 44px target. */
+.disclosure > summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--tap);
+  padding: 0 var(--space-3);
+  cursor: pointer;
+  list-style: none;
+}
+.disclosure > summary::-webkit-details-marker { display: none; }
+.disclosure > summary::after {
+  content: "+";
+  margin-left: auto;
+  font-family: var(--mono);
+  font-weight: 400;
+  color: var(--ink-2);
+}
+.disclosure[open] > summary::after { content: "\2212"; }
+.disclosure > summary:focus-visible { outline: var(--focus-ring); outline-offset: -3px; }
 .panel-head {
   display: flex;
   align-items: flex-start;
@@ -399,7 +466,10 @@ fieldset.seg legend {
   position: relative;
   width: 100%;
   aspect-ratio: 1 / 1;
-  max-height: 25rem;
+  /* Width-driven this is ~398px tall on a 430pt phone, overshooting the tab by
+     23px. The tiles are absolutely centred, so a shorter window just crops the
+     far edges of a view that is already centred on you. */
+  max-height: 17rem;
   overflow: hidden;
   border-top: var(--border-w) solid var(--ink);
   border-bottom: var(--border-w) solid var(--ink);
@@ -529,6 +599,7 @@ fieldset.seg legend {
 .shade-map svg {
   width: 100%;
   height: auto;
+  max-height: 17rem;
   border: var(--border-w) solid var(--ink);
   border-radius: var(--radius-panel);
   background: var(--paper);
@@ -609,3 +680,146 @@ fieldset.seg legend {
 @media (prefers-reduced-motion: no-preference) {
   .seg-options label { transition: background 120ms ease-out; }
 }
+
+/* saved cities — a one-tap rail, only rendered when there is more than one.
+   Scrolls horizontally rather than wrapping: a second row would cost the Now
+   tab its viewport fit, and the cap is 6 so the rail never runs long. */
+.city-rail {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  margin: calc(var(--space-1) * -1) 0;
+  padding: var(--space-1) 0;
+}
+.city-rail::-webkit-scrollbar { display: none; }
+.city-rail button {
+  flex: 0 0 auto;
+  min-height: var(--tap);
+  padding: 0 var(--space-3);
+  border: var(--border-w) solid var(--line);
+  border-radius: var(--radius-control);
+  background: var(--paper);
+  color: var(--ink-2);
+  font: 400 var(--text-seg) var(--mono);
+  text-transform: uppercase;
+  letter-spacing: var(--track-label);
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color var(--dur-1) var(--ease-out),
+    color var(--dur-1) var(--ease-out),
+    border-color var(--dur-1) var(--ease-out);
+}
+.city-rail button[aria-selected='true'] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+  font-weight: 700;
+}
+.city-rail .city-add { font-size: var(--text-note); color: var(--ink); }
+.city-rail button:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }
+
+/* ---------------------------------------------------------------------------
+   Desktop. Below 60rem this stays exactly as designed: a 430px phone column,
+   which is the real use case (you, on a Valencia street). Above it the single
+   column was stranded in ~70% empty page, so the layout becomes two columns:
+   the reading stays put on the left while the tab content scrolls beside it.
+
+   Breakpoint is content-driven, not device-driven — 60rem is where 430px of
+   content plus a second readable column both fit without either getting narrow.
+   --------------------------------------------------------------------------- */
+@media (min-width: 60rem) {
+  #root { align-items: flex-start; }
+
+  .app {
+    width: min(100%, 68rem);
+    display: grid;
+    grid-template-columns: minmax(0, 22rem) minmax(0, 1fr);
+    grid-template-areas:
+      'loc     loc'
+      'rail    rail'
+      'hero    panel'
+      'warning panel'
+      'tabs    panel'
+      'slack   panel';
+    /* the trailing 1fr row absorbs the height difference between the two
+       columns; without it the tab strip stretched to ~150px tall trying to
+       fill its share of the panel's height */
+    grid-template-rows: auto auto auto auto auto 1fr;
+    align-content: start;
+    column-gap: var(--space-5);
+    row-gap: var(--space-4);
+    padding-inline: var(--space-5);
+  }
+
+  .loc-bar { grid-area: loc; }
+  .city-rail { grid-area: rail; }
+  .hero { grid-area: hero; }
+  .warnings { grid-area: warning; }
+  .dashboard-tabs { grid-area: tabs; }
+
+  /* every tab panel lands in the same right-hand column */
+  .tab-panel { grid-area: panel; align-self: start; }
+
+  /* the reading can afford to be larger when it is not sharing a column */
+  .hero .big { font-size: 6.5rem; }
+
+  .hero,
+  .warnings,
+  .dashboard-tabs { align-self: start; }
+
+  /* loading, error and the search screen stay single-column and centred —
+     there is no second column of content to place beside them */
+  .app > .note,
+  .app > .stack { grid-column: 1 / -1; }
+}
+
+/* Wider still: let the data breathe rather than stretching rows to fill. */
+@media (min-width: 84rem) {
+  .app { grid-template-columns: minmax(0, 24rem) minmax(0, 1fr); }
+}
+
+/* Settings, About and the location search are not the dashboard, so they have
+   no hero/panel areas to land in. Give them their own explicit two-column
+   placement at desktop rather than relying on implicit grid flow. */
+@media (min-width: 60rem) {
+  .app:not(:has(.dashboard-tabs)) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas: none;
+    grid-template-rows: none;
+    align-content: start;
+  }
+  .app:not(:has(.dashboard-tabs)) > * { grid-column: auto; }
+}
+
+/* alert rules (C4a) */
+.alert-rules { padding-top: var(--space-2); border-top: 1px dashed var(--line); }
+.rule-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-2); }
+.rule-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  font-size: var(--text-note);
+}
+.rule-builder { display: grid; grid-template-columns: 1fr; gap: var(--space-2); }
+@media (min-width: 26rem) { .rule-builder { grid-template-columns: 1fr 1fr; } }
+.rule-builder .field span {
+  font-family: var(--mono);
+  font-size: var(--text-label);
+  text-transform: uppercase;
+  letter-spacing: var(--track-label);
+  color: var(--ink-2);
+}
+.rule-builder select {
+  min-height: var(--tap);
+  padding: 0 var(--space-2);
+  font: 400 var(--text-input) var(--sans);
+  color: var(--ink);
+  background: var(--paper);
+  border: var(--border-w) solid var(--ink);
+  border-radius: var(--radius-control);
+}
+.rule-builder select:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }

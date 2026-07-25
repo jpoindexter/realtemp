@@ -136,6 +136,122 @@
       "launch": "v2",
       "gated": true,
       "summary": "GATED: Jason go/no-go on docs/heatmap-prd.md option 1 (free IGN LiDAR → precomputed tiles). Run npm run verify:heatmap-sources to refresh official PNOA/CNIG/datos.gob source evidence before deciding."
+    },
+    {
+      "id": "C1a",
+      "title": "Instrument the ledger",
+      "column": "now",
+      "tier": "rock",
+      "track": "ops",
+      "size": "S",
+      "launch": "v2",
+      "summary": "The whole thesis is that people value seeing the math. Nothing currently measures whether the breakdown is ever opened. Emit ledger-open, toggle-change, and day-2/day-7 return events.",
+      "done": "Two weeks of personal use produce a readable answer to: was the breakdown opened, and did a toggle change a decision?"
+    },
+    {
+      "id": "C1b",
+      "title": "14 days daily street use",
+      "column": "now",
+      "tier": "rock",
+      "track": "ops",
+      "size": "M",
+      "launch": "v2",
+      "summary": "GATED: Jason. Home Screen, Valencia summer, every day for two weeks, with C1a instrumentation running. This is the first real evidence the product would ever have.",
+      "done": "14 consecutive days of use logged. STOP RULE: zero ledger opens across 14 days falsifies the transparency thesis - stop and treat RealTemp as a personal tool, not a product.",
+      "gated": true
+    },
+    {
+      "id": "C2a",
+      "title": "Price the Open-Meteo commercial plan",
+      "column": "now",
+      "tier": "rock",
+      "track": "data",
+      "size": "S",
+      "launch": "v2",
+      "summary": "The free tier is non-commercial: the first payment taken is a licence breach. Get current commercial pricing and confirm the cost floor per user. Blocks every paid step.",
+      "done": "Current commercial pricing recorded in docs/, with a per-user cost floor and a go/no-go on the provider."
+    },
+    {
+      "id": "C2b",
+      "title": "Resolve the accuracy claim",
+      "column": "now",
+      "tier": "rock",
+      "track": "core",
+      "size": "M",
+      "launch": "v2",
+      "summary": "GATED: Jason decision. PRD Non-goals disclaims meteorological accuracy while the pitch says the temperature your body actually meets. Free that is an honest heuristic; paid it is selling a number the PRD says you cannot stand behind. Either validate the coefficients against real observation, or reposition the paid claim onto transparency and decision support - then amend the PRD to match.",
+      "done": "PRD non-goal and the intended paid claim agree in writing, appended to DECISIONS.md.",
+      "gated": true
+    },
+    {
+      "id": "C3a",
+      "title": "Five users who are not Jason",
+      "column": "next",
+      "tier": "rock",
+      "track": "ops",
+      "size": "M",
+      "launch": "v2",
+      "summary": "GATED: Jason recruits. Narrow heat-exposure niche - outdoor workers, cyclists/runners in hot climates, heat-intolerant (MS, POTS, pregnancy). Not general weather users; there you lose to free preinstalled Apple Weather.",
+      "done": "5 recruited, instrumented. CONTINUATION RULE: fewer than 3 still using at day 14 means reposition or stop.",
+      "gated": true
+    },
+    {
+      "id": "C3b",
+      "title": "Positioning: category and value map",
+      "column": "next",
+      "tier": "pebble",
+      "track": "ops",
+      "size": "S",
+      "launch": "v2",
+      "summary": "Competitive alternatives (Apple Weather free+preinstalled, CARROT, Windy, doing nothing), the capability only RealTemp has (verified: zero of CARROT 3201 strings break down Feels Like), and the category that makes it legible. Weather app is the wrong category.",
+      "done": "docs/positioning.md: alternatives, differentiated capability, capability-to-value map, best-fit segment, chosen and rejected categories."
+    },
+    {
+      "id": "C4a",
+      "title": "Custom alert rules over ledger terms",
+      "column": "later",
+      "tier": "rock",
+      "track": "ops",
+      "size": "M",
+      "launch": "v2",
+      "summary": "The candidate value metric. CARROT gates custom notifications behind their TOP tier (~$39.99/yr) - the strongest willingness-to-pay signal in their pricing. RealTemp already has the worker cron, D1 and push deployed; this generalises the single hardcoded heat check to any ledger term.",
+      "done": "A rule (term, above/below, threshold, window) can be created, stored, evaluated by the cron, and delivered."
+    },
+    {
+      "id": "C4b",
+      "title": "Packaging and price",
+      "column": "later",
+      "tier": "rock",
+      "track": "ops",
+      "size": "S",
+      "launch": "v2",
+      "summary": "GATED: Jason decision, irreversible-ish. Do NOT gate the ledger - it is the acquisition hook and the only verified differentiator. Gate recurring value: alert rules, weather-station input, history, multi-location. RealTemp sells interpretation not feed access, so COGS are far below CARROT and it can win below their $19.99 tier.",
+      "done": "Tier list, price, and value metric recorded in DECISIONS.md, with the Open-Meteo cost floor from C2a.",
+      "gated": true
+    },
+    {
+      "id": "C4c",
+      "title": "Billing and first paying customer",
+      "column": "later",
+      "tier": "pebble",
+      "track": "ops",
+      "size": "M",
+      "launch": "v2",
+      "summary": "GATED: Jason. Stripe on web, or App Store subscription via P5. App Store needs an Apple Developer account and the physical-device path verify:ios-prereqs still fails.",
+      "done": "One paying customer who is not a friend or family member.",
+      "gated": true
+    },
+    {
+      "id": "C5",
+      "title": "Conversational explanation layer",
+      "column": "later",
+      "tier": "pebble",
+      "track": "ai",
+      "size": "M",
+      "launch": "v2",
+      "summary": "GATED on C1 evidence + a costed decision. The ledger explains a number statically; conversation is the natural extension of a product whose whole thesis is explaining, and it is the most genuinely 2026 surface available. The plumbing exists: /api/copy, worker, KV cache, Haiku. The objection is commercial, not technical - per-session LLM calls reintroduce variable COGS, the exact cost structure that caps CARROT margin and that RealTemp sub-$19.99 pricing depends on avoiding. PRD constraint holds either way: AI may explain the ledger, never compute it.",
+      "done": "Either a DECISIONS.md entry with a measured per-session cost and a tier that covers it, or the card is closed as a permanent non-goal. Not started before C1b proves the static ledger is opened at all.",
+      "gated": true
     }
   ],
   "shipped": [

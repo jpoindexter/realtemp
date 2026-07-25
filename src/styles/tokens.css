@@ -1,30 +1,113 @@
 /* RealTemp design tokens — single source of truth (direction: docs/moodboard.html).
-   Rule: components consume tokens; raw values live only in this file.
+
+   DIRECTION — "Instrument": a precision field device that registers heat, not a
+   weather app. Three ideas carry it, and each is specific to this product:
+     1. Thermal tint — ground and surfaces shift warmth with the reading.
+     2. Motion on the core moment — toggling Shade animates the number down.
+     3. Perceptual color — OKLCH ramps, so steps are evenly spaced to the eye.
+
+   ARCHITECTURE — three tiers, one direction of reference:
+     primitive (raw OKLCH ramps)  <-  semantic (roles)  <-  components (app.css)
+   Components consume semantic names ONLY. Nothing outside this file touches a
+   primitive. Themes and thermal state flip semantics; primitives never move.
 
    Units: type/space in rem (respects OS/browser text-zoom — WCAG 1.4.4).
    Borders, rule widths, the touch-target minimum, and the app-width cap stay
    px — physical/structural constants, not text that needs to reflow at 200%.
 
-   Color: light is default; dark overrides via prefers-color-scheme below.
-   Contrast for every pair is computed (WCAG relative-luminance formula),
-   not eyeballed — see the darkened --solar comment for why that matters. */
+   Color: authored in OKLCH because HSL/hex lightness is not perceptual — equal
+   hex steps produce uneven-looking ramps. Contrast for every text pair is
+   COMPUTED, not eyeballed (`npm run verify:contrast`); the ratios in the
+   semantic block below are measured output, not intentions. */
+
 :root {
   color-scheme: light dark;
 
-  /* color — asphalt & heat (light) */
-  --ink: #1b1b1e;        /* text, selected states, footprints */
-  --ink-2: #54544e;      /* secondary text */
-  --ground: #edede8;     /* page */
-  --paper: #f7f7f3;      /* surfaces */
-  --line: #d8d8d0;       /* hairlines */
-  --solar: #a3520a;      /* sun premium, caution — darkened from #e8720c: the brighter value read fine by eye but measured 2.86:1 on paper, failing WCAG AA 4.5:1 for text. This shade holds 5.19:1. */
-  --scorch: #c93a22;     /* heat totals, danger */
-  --shade: #33698c;      /* cooling deltas, focus, comfort */
-  --uhi: #a1543a;        /* surroundings delta */
-  --on-strong: #ffffff;  /* text on scorch fill (warning.danger) */
+  /* ---------------------------------------------------------------------
+     TIER 1 — PRIMITIVES. Raw ramps. Context-free. Never referenced outside
+     the semantic block below. Neutrals carry a warm hue bias (h ~62-75)
+     rather than being pure grey: this product is asphalt in the sun, and a
+     neutral with no hue reads clinical.
+     --------------------------------------------------------------------- */
+
+  /* asphalt — the neutral ramp, ~90% of the UI */
+  --asphalt-50:  oklch(0.980 0.004 75);
+  --asphalt-100: oklch(0.958 0.005 75);
+  --asphalt-200: oklch(0.910 0.007 73);
+  --asphalt-300: oklch(0.850 0.009 71);
+  --asphalt-400: oklch(0.705 0.011 69);
+  --asphalt-500: oklch(0.565 0.012 67);
+  --asphalt-600: oklch(0.455 0.012 65);
+  --asphalt-700: oklch(0.372 0.011 63);
+  --asphalt-800: oklch(0.285 0.010 61);
+  --asphalt-900: oklch(0.215 0.009 59);
+  --asphalt-950: oklch(0.152 0.008 57);
+
+  /* ember — heat totals, danger */
+  --ember-400: oklch(0.680 0.150 33);
+  --ember-500: oklch(0.600 0.185 31);
+  --ember-600: oklch(0.512 0.180 30);
+  --ember-700: oklch(0.440 0.155 29);
+
+  /* solar — sun premium, caution */
+  --solar-400: oklch(0.760 0.130 70);
+  --solar-500: oklch(0.660 0.135 65);
+  --solar-600: oklch(0.545 0.125 62);
+  --solar-700: oklch(0.470 0.110 60);
+
+  /* shade — cooling deltas, focus, comfort */
+  --shade-400: oklch(0.740 0.085 232);
+  --shade-500: oklch(0.620 0.098 234);
+  --shade-600: oklch(0.508 0.098 236);
+  --shade-700: oklch(0.430 0.088 238);
+
+  /* uhi — surroundings / urban heat island delta */
+  --uhi-400: oklch(0.735 0.075 45);
+  --uhi-500: oklch(0.620 0.090 43);
+  --uhi-600: oklch(0.520 0.090 41);
+
+  /* ---------------------------------------------------------------------
+     TIER 2 — SEMANTIC. What components actually use. Names describe ROLE,
+     so they survive a palette change and flip cleanly per theme.
+     Measured contrast on --ground (light / dark), from `npm run verify:contrast`
+     — computed output, not estimates:
+       --ink    15.52 / 15.73    --ink-2  6.46 / 7.90
+       --solar   6.25 /  8.94    --scorch 5.52 / 6.40
+       --shade   5.04 /  8.67    --uhi    5.06 / 8.16
+     Every one clears WCAG 2.2 AA 4.5:1 for normal text. --line is deliberately
+     low (~1.4:1): it draws dividers and panel edges, which 1.4.11 exempts as
+     decoration. Controls take their borders from --ink.
+     --------------------------------------------------------------------- */
+  --ink: var(--asphalt-900);      /* text, selected states, footprints */
+  --ink-2: var(--asphalt-600);    /* secondary text, instrument labels */
+  --ground: var(--asphalt-100);   /* page */
+  --paper: var(--asphalt-50);     /* surfaces */
+  --line: var(--asphalt-300);     /* hairlines */
+  --solar: var(--solar-700);      /* sun premium, caution */
+  --scorch: var(--ember-600);     /* heat totals, danger */
+  --shade: var(--shade-600);      /* cooling deltas, focus, comfort */
+  --uhi: var(--uhi-600);          /* surroundings delta */
+  --on-strong: oklch(0.98 0.004 75); /* text on a scorch fill */
+
+  /* thermal tint — the direction's first idea. `--thermal` is a 0..1 scalar
+     set from the JS side off True Feel; these two tokens are the only things
+     it drives. Deliberately small (max ~4% chroma): enough that a 40-degree
+     screen feels different from a 12-degree one, far too little to move any
+     measured contrast pair. Zero when unset, so nothing depends on JS. */
+  --thermal: 0;
+  --ground-cold: oklch(0.958 0.026 250);
+  --ground-hot: oklch(0.958 0.036 62);
+  /* Interpolated in JS (use-thermal.ts), not here: Chrome does not reliably
+     invalidate a var() chain nested inside a colour function, so every CSS-side
+     version computed once at the cold end and then ignored the reading. The
+     endpoints above stay the source of truth; JS only lerps between them and
+     writes a literal into --thermal-wash. Unset until JS runs, so the fallback
+     below is what paints on first frame. */
+  --thermal-wash: var(--ground-cold);
+
 
   /* type */
-  --sans: system-ui, -apple-system, sans-serif;
+  --sans: system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, 'SF Mono', Menlo, monospace;
   --text-axis: 0.5625rem;   /* 9px — svg axis labels only */
   --text-label: 0.6875rem;  /* 11px — mono uppercase labels */
@@ -33,8 +116,9 @@
   --text-copy: 0.9375rem;   /* 15px — copy line, ledger total */
   --text-input: 1rem;       /* 16px — inputs; also the iOS zoom-on-focus floor */
   --text-title: 1.5rem;     /* 24px */
-  --text-hero: 5.25rem;      /* 84px */
-  --track-label: 0;
+  --text-hero: 5.25rem;     /* 84px */
+  --track-label: 0.04em;    /* uppercase mono needs air to stay legible */
+  --track-hero: -0.03em;    /* large figures need the opposite */
   --track-tight: 0;
 
   /* space — 4px base, expressed in rem */
@@ -51,18 +135,37 @@
   --app-width: 430px;
   --radius-panel: 0;
   --radius-control: 0;
+
+  /* elevation — layered ambient + direct, one light source (above, slight
+     front). In light mode depth is shadow; in dark it becomes surface
+     lightness, because shadows barely read on a dark ground. */
+  --elev-1: 0 1px 2px oklch(0.15 0.01 60 / 0.05);
+  --elev-2: 0 1px 2px oklch(0.15 0.01 60 / 0.05), 0 3px 8px oklch(0.15 0.01 60 / 0.07);
+  --elev-3: 0 2px 4px oklch(0.15 0.01 60 / 0.06), 0 10px 24px oklch(0.15 0.01 60 / 0.10);
   --panel-shadow: none;
-  --tabs-shadow: 0 8px 24px rgb(0 0 0 / 0.14);
+  --tabs-shadow: none;
+
+  /* motion — the second idea. Toggling Shade drops the number; that transition
+     is the product demonstrating its own thesis, so it gets real tokens.
+     All of it is disabled under prefers-reduced-motion at the end of this file. */
+  --dur-1: 120ms;  /* state flips: segment selection, focus */
+  --dur-2: 260ms;  /* value changes: hero figure, ledger rows */
+  --dur-3: 420ms;  /* entrances */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);   /* arrivals settle */
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
 
   /* focus — one ring everywhere */
   --focus-ring: 3px solid var(--shade);
 }
 
-/* Dark mode: not an invert. Dimmed text (not #fff), no pure black, and every
-   pair below re-verified against the WCAG formula — danger flips polarity
-   (light scorch fill needs DARK text, not white) because a color that reads
-   as "the dark, saturated one" in light mode is the lightest thing on screen
-   once the background goes dark.
+/* Dark mode: not an invert. Text is dimmed (never pure #fff — it vibrates and
+   haloes, worse with astigmatism), the ground is never pure black (it kills
+   elevation cues and smears on OLED), and accents lose chroma because high
+   saturation glares on a dark ground.
+
+   Danger flips polarity: --on-strong goes DARK, because a colour that reads as
+   "the dark saturated one" in light mode is the lightest thing on screen once
+   the background drops.
 
    Two ways in, same values either way:
    1. OS preference (@media below) — the default, no user action needed.
@@ -71,107 +174,122 @@
       the media-query block regardless of what the OS reports or source order. */
 @media (prefers-color-scheme: dark) {
   :root {
-    --ink: #e8e3da;
-    --ink-2: #a89f8f;
-    --ground: #141311;
-    --paper: #231f19;
-    --line: #433e33;
-    --solar: #d99a4e;
-    --scorch: #e2634a;
-    --shade: #7db3d1;
-    --uhi: #c98a66;
-    --on-strong: #16151b;
+    --ink: oklch(0.925 0.008 75);
+    --ink-2: oklch(0.720 0.014 70);
+    --ground: var(--asphalt-950);
+    --ground-cold: oklch(0.152 0.020 250);
+    --ground-hot: oklch(0.152 0.026 55);
+    --paper: oklch(0.205 0.010 62);
+    --line: oklch(0.320 0.011 62);
+    --solar: var(--solar-400);
+    --scorch: var(--ember-400);
+    --shade: var(--shade-400);
+    --uhi: var(--uhi-400);
+    --on-strong: oklch(0.16 0.008 58);
+    /* depth by lightness, not shadow */
+    --elev-1: none;
+    --elev-2: none;
+    --elev-3: 0 8px 32px oklch(0 0 0 / 0.44);
   }
 }
 :root[data-theme='dark'] {
   color-scheme: dark;
-  --ink: #e8e3da;
-  --ink-2: #a89f8f;
-  --ground: #141311;
-  --paper: #231f19;
-  --line: #433e33;
-  --solar: #d99a4e;
-  --scorch: #e2634a;
-  --shade: #7db3d1;
-  --uhi: #c98a66;
-  --on-strong: #16151b;
+  --ink: oklch(0.925 0.008 75);
+  --ink-2: oklch(0.720 0.014 70);
+  --ground: var(--asphalt-950);
+  --ground-cold: oklch(0.152 0.020 250);
+  --ground-hot: oklch(0.152 0.026 55);
+  --paper: oklch(0.205 0.010 62);
+  --line: oklch(0.320 0.011 62);
+  --solar: var(--solar-400);
+  --scorch: var(--ember-400);
+  --shade: var(--shade-400);
+  --uhi: var(--uhi-400);
+  --on-strong: oklch(0.16 0.008 58);
+  --elev-1: none;
+  --elev-2: none;
+  --elev-3: 0 8px 32px oklch(0 0 0 / 0.44);
 }
 :root[data-theme='light'] {
   color-scheme: light;
-  --ink: #1b1b1e;
-  --ink-2: #54544e;
-  --ground: #edede8;
-  --paper: #f7f7f3;
-  --line: #d8d8d0;
-  --solar: #a3520a;
-  --scorch: #c93a22;
-  --shade: #33698c;
-  --uhi: #a1543a;
-  --on-strong: #ffffff;
+  --ink: var(--asphalt-900);
+  --ink-2: var(--asphalt-600);
+  --ground: var(--asphalt-100);
+  --ground-cold: oklch(0.958 0.026 250);
+  --ground-hot: oklch(0.958 0.036 62);
+  --paper: var(--asphalt-50);
+  --line: var(--asphalt-300);
+  --solar: var(--solar-700);
+  --scorch: var(--ember-600);
+  --shade: var(--shade-600);
+  --uhi: var(--uhi-600);
+  --on-strong: oklch(0.98 0.004 75);
+  --elev-1: 0 1px 2px oklch(0.15 0.01 60 / 0.05);
+  --elev-2: 0 1px 2px oklch(0.15 0.01 60 / 0.05), 0 3px 8px oklch(0.15 0.01 60 / 0.07);
+  --elev-3: 0 2px 4px oklch(0.15 0.01 60 / 0.06), 0 10px 24px oklch(0.15 0.01 60 / 0.10);
 }
 
+/* ---------------------------------------------------------------------------
+   STYLE VARIANTS. These previously only nudged radius and shadow, which is why
+   'soft' was visually indistinguishable from the default. Each now carries a
+   real shape language and its own thermal strength.
+   --------------------------------------------------------------------------- */
+
+/* soft — rounded, lifted, warmer wash. The least instrument-like. */
 :root[data-style='soft'] {
   --border-w: 1px;
   --rule-w: 1.5px;
-  --radius-panel: 8px;
-  --radius-control: 7px;
-  --panel-shadow: 0 10px 28px rgb(31 28 20 / 0.07);
-  --tabs-shadow: 0 8px 28px rgb(31 28 20 / 0.15);
-}
-:root[data-theme='light'][data-style='soft'] {
-  --ink: #202126;
-  --ink-2: #626158;
-  --ground: #f1efe8;
-  --paper: #fbfaf5;
-  --line: #ddd8cc;
-  --solar: #9c5b18;
-  --scorch: #b93e28;
-  --shade: #2f7182;
-  --uhi: #8f5f43;
-  --on-strong: #ffffff;
-}
-:root[data-theme='dark'][data-style='soft'] {
-  --ink: #ece7dc;
-  --ink-2: #aaa294;
-  --ground: #171612;
-  --paper: #25231d;
-  --line: #474134;
-  --solar: #d39a55;
-  --scorch: #df6958;
-  --shade: #86b8c8;
-  --uhi: #c2906d;
-  --on-strong: #16151b;
+  --radius-panel: 12px;
+  --radius-control: 10px;
+  --panel-shadow: var(--elev-2);
+  --tabs-shadow: var(--elev-2);
+  --track-label: 0.05em;
 }
 
+/* signal — high-contrast instrument. Sharper, tighter, cooler; thermal tint
+   pulled almost out so the data does all the talking. */
 :root[data-style='signal'] {
   --border-w: 1px;
-  --rule-w: 1.5px;
-  --radius-panel: 4px;
-  --radius-control: 4px;
-  --panel-shadow: 0 0 0 1px color-mix(in srgb, var(--shade) 18%, transparent);
-  --tabs-shadow: 0 10px 30px rgb(17 34 31 / 0.18);
+  --rule-w: 2px;
+  --radius-panel: 2px;
+  --radius-control: 2px;
+  --panel-shadow: var(--elev-1);
+  --tabs-shadow: none;
+  --track-label: 0.08em;
+}
+
+/* Thermal endpoints per theme AND style. These MUST carry both attributes.
+   A bare [data-style='soft'] block has the same specificity as
+   [data-theme='dark'] and sits later in the file, so an unqualified light-valued
+   endpoint here silently won in dark mode — the ground painted light cream while
+   --ink stayed the dark-mode light text, and the whole screen went unreadable.
+   Shipped that to production once; `npm run verify:contrast` now checks every
+   theme x style pair so it cannot happen again. */
+:root[data-theme='light'][data-style='soft'] {
+  --ground-cold: oklch(0.958 0.038 250);
+  --ground-hot: oklch(0.958 0.050 62);
+}
+:root[data-theme='dark'][data-style='soft'] {
+  --ground-cold: oklch(0.152 0.028 250);
+  --ground-hot: oklch(0.152 0.036 55);
 }
 :root[data-theme='light'][data-style='signal'] {
-  --ink: #13221f;
-  --ink-2: #4c625a;
-  --ground: #eaf2ee;
-  --paper: #f8fbf7;
-  --line: #c6d7d0;
-  --solar: #925d0c;
-  --scorch: #b23b2c;
-  --shade: #196f89;
-  --uhi: #7f6242;
-  --on-strong: #ffffff;
+  --ground-cold: oklch(0.958 0.010 250);
+  --ground-hot: oklch(0.958 0.014 62);
 }
 :root[data-theme='dark'][data-style='signal'] {
-  --ink: #e6f1ed;
-  --ink-2: #9fb4ad;
-  --ground: #101816;
-  --paper: #1b2925;
-  --line: #345048;
-  --solar: #d9a343;
-  --scorch: #e16051;
-  --shade: #6fc0dc;
-  --uhi: #bea068;
-  --on-strong: #101816;
+  --ground-cold: oklch(0.152 0.008 250);
+  --ground-hot: oklch(0.152 0.011 55);
+}
+
+/* ---------------------------------------------------------------------------
+   Vestibular safety, not polish. Every duration collapses; nothing is left
+   half-animated. Motion-driven meaning must survive being switched off.
+   --------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-1: 0ms;
+    --dur-2: 0ms;
+    --dur-3: 0ms;
+  }
 }

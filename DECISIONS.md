@@ -69,3 +69,23 @@
 **Alternatives:** Keep a manual "felt hotter/colder" evidence loop as a gated roadmap card.
 **Why:** There is no shipped feedback capture loop, and RealTemp should not promise formula learning from user feedback until that product behavior is actually designed and implemented.
 **Reversible?** Yes — add a new PRD change and roadmap card if feedback capture becomes a real feature.
+
+## 2026-07-25 — Bio-calibration removed from the formula
+**Choice:** Delete the "Your body" panel and both formula terms it fed (`body`, `clothing`), plus `BioProfile`, `use-bio`, and the BODY_/METABOLIC_/CLOTHING_/THERMAL_SIGN_ coefficients. Returned to `PARKED.md`.
+**Alternatives:** Drop only the height/weight inputs and keep metabolism + clothing (they produce real deltas without collecting identifying data); leave it as-is behind the disclosure it already had.
+**Why:** Jason's call — the app was asking for height and weight without doing anything with the data worth the ask. Removing the question outright is the honest version: no personal-data surface at all, rather than a collected-but-marginal one. Reverses the 2026-07-07 bio-calibration decision.
+**Consequence:** True Feel changes for anyone who had set a profile — their `your body` and `clothing` ledger rows disappear. Orphaned `realtemp:bio` localStorage keys are left in place, harmless and unread.
+**Reversible?** Yes — the model is documented in the 2026-07-07 entry and restored from `PARKED.md`.
+
+## 2026-07-25 — Pricing architecture: near-zero marginal cost is a constraint, not an accident
+**Choice:** Treat RealTemp's per-user marginal cost as a design constraint. Any feature adding recurring per-session or per-request cost (LLM calls, premium data feeds, high-frequency polling) must be priced against a tier that covers it before it is built.
+**Alternatives:** Add features on merit and reconcile unit economics later — the default path, and how most subscription products acquire a margin problem.
+**Why:** The CARROT teardown plus Jason's revenue data (est. $2.4–3M ARR gross) shows their model is substantially reselling premium weather feeds — AccuWeather, Foreca, AerisWeather, WeatherKit — at a markup, with API COGS taking a significant share. RealTemp's one structural advantage is that it sells *interpretation, not feed access*: Open-Meteo plus a pure formula has a near-zero marginal cost, which is what allows a viable price below CARROT's $19.99 tier in a much smaller niche. Spending that advantage accidentally removes the reason the business works at low volume.
+**Consequence:** The conversational layer (roadmap C5) is gated on a costed decision rather than treated as ordinary feature work. Same test applies to multi-provider data and high-frequency radar.
+**Reversible?** Yes — but reversing it means competing on CARROT's cost structure without their volume.
+
+## 2026-07-25 — AI stays out of the calculation path, and out of v0 pricing
+**Choice:** Keep the `PRD.md` constraint literal — AI may explain the ledger, never compute it — and keep the conversational layer parked as roadmap card C5, gated on C1b evidence.
+**Alternatives:** Build a conversational weather assistant now (CARROT's actual moat is personality, and it is the most 2026 surface available); or delete the AI path entirely.
+**Why:** The static ledger has never been opened by a single user, including Jason. Building a conversational version of an explanation nobody has read yet is solving the second problem first. Deferred rather than deleted because the argument for it is real and the plumbing already exists.
+**Reversible?** Yes — C5 carries the unblock recipe.

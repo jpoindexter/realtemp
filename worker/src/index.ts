@@ -7,6 +7,7 @@ import {
   isCopyRequest,
 } from './lib'
 import { runHeatCheck, subscribePush, unsubscribePush } from './push-routes'
+import { addRule, deleteRule, listRules } from './rules-routes'
 
 export interface Env {
   DB: D1Database
@@ -18,7 +19,7 @@ export interface Env {
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type',
 }
 
@@ -35,6 +36,9 @@ export default {
     if (url.pathname === '/api/push/subscribe' && request.method === 'DELETE') return unsubscribePush(request, env)
     if (url.pathname === '/api/buildings' && request.method === 'GET') return buildings(url, env)
     if (url.pathname === '/api/alerts' && request.method === 'GET') return officialAlerts(url, env.CACHE)
+    if (url.pathname === '/api/push/rules' && request.method === 'GET') return listRules(url, env)
+    if (url.pathname === '/api/push/rules' && request.method === 'POST') return addRule(request, env)
+    if (url.pathname === '/api/push/rules' && request.method === 'DELETE') return deleteRule(request, env)
 
     return json({ error: 'Not found' }, 404)
   },

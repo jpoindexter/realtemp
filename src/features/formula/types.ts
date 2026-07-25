@@ -30,26 +30,6 @@ export type DeltaId =
   | 'environment'
   | 'activity'
   | 'acclimatization'
-  | 'body'
-  | 'clothing'
-
-export type Metabolic = 'low' | 'normal' | 'high'
-export type Clothing = 'light' | 'normal' | 'warm'
-
-/** All optional/self-reported, stored locally only. Defaults produce zero effect. */
-export interface BioProfile {
-  heightCm: number | null
-  weightKg: number | null
-  metabolic: Metabolic
-  clothing: Clothing
-}
-
-export const DEFAULT_BIO: BioProfile = {
-  heightCm: null,
-  weightKg: null,
-  metabolic: 'normal',
-  clothing: 'normal',
-}
 
 export interface Delta {
   id: DeltaId

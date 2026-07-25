@@ -2,7 +2,7 @@ import { computeTrueFeel } from '@/features/formula/compute-true-feel'
 import { COMFORT_MAX_TRUEFEEL_C, COMFORT_MIN_TRUEFEEL_C } from '@/features/formula/constants'
 import { solarZenithDeg } from '@/features/formula/solar-zenith'
 
-import type { BioProfile, Toggles } from '@/features/formula/types'
+import type { Toggles } from '@/features/formula/types'
 import type { HourlyPoint } from '@/features/weather/open-meteo'
 
 export interface TimelinePoint {
@@ -23,7 +23,6 @@ export interface TimelineContext {
   latitude: number
   longitude: number
   baseline14C: number | null
-  bio?: BioProfile
 }
 
 /** The dashboard formula applied to each forecast hour — same toggles, per-hour sun position. */
@@ -45,7 +44,6 @@ export function computeHourlyTrueFeel(
         baseline14C: ctx.baseline14C,
       },
       toggles,
-      ctx.bio,
     )
     return {
       timeIso: p.timeIso,

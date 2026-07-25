@@ -1,4 +1,5 @@
 import { sendEmptyPush } from './push'
+import { firingRules } from './rules-routes'
 
 import type { VapidConfig } from './push'
 import type { Env } from './index'
@@ -70,7 +71,11 @@ export async function runHeatCheck(env: Env): Promise<{ checked: number; sent: n
       maxByArea.set(area, data?.daily?.temperature_2m_max?.[0] ?? null)
     }
     const maxC = maxByArea.get(area) ?? null
-    if (maxC === null || maxC < sub.threshold_c) continue
+    const heatCrossed = maxC !== null && maxC >= sub.threshold_c
+    // Custom rules (C4a) fire alongside the original heat threshold. A
+    // subscriber with no rules keeps exactly the previous behaviour.
+    const fired = await firingRules(env, sub.endpoint, sub.latitude, sub.longitude).catch(() => [])
+    if (!heatCrossed && fired.length === 0) continue
 
     const status = await sendEmptyPush(sub.endpoint, vapid).catch(() => 0)
     if (status === 404 || status === 410) {

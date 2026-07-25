@@ -46,6 +46,17 @@ export function OfficialAlertsPanel({ apiBase, location }: OfficialAlertsPanelPr
     }
   }, [apiBase, location.latitude, location.longitude])
 
+  // The common case is "nothing to report", and a full panel saying so cost
+  // ~100px of the Now tab. It collapses to one line instead. A real alert is
+  // never collapsed — that would hide the thing the panel exists for.
+  if (state === 'ready' && alerts.length === 0) {
+    return (
+      <p className="note official-alerts-clear" role="status">
+        Official alerts &middot; AEMET — none for this area.
+      </p>
+    )
+  }
+
   return (
     <section className="body-panel" aria-labelledby="official-alerts-title">
       <h2 id="official-alerts-title" className="body-panel-title">Official alerts &middot; AEMET</h2>

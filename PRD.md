@@ -29,9 +29,15 @@ One user: Jason, walking around Valencia in summer, deciding when and where to b
 ```
 TrueFeel = AT_base + SolarPremium + EnvDelta + ActivityDelta
 
-AT_base        = Ta + 0.33·e − 0.70·ws − 4.00        (Steadman Apparent Temp)
+AT_base        = Ta + HumidityFriction + BaselineOffset + WindDelta   (Steadman AT, shown as separate rows)
+HumidityFriction = 0.33·e                             (vapour only — always warming)
+BaselineOffset = −4.00                                (Steadman's calibration constant, its own row)
 e (hPa)        = 6.105 · exp(17.27·Td / (237.7+Td))   (vapor pressure from DEW POINT)
-SolarPremium   = Sun: clamp(UVI × 0.8, 0, 8) · cos-weighted by solar zenith
+WindDelta      = −0.70·ws warm · JAG/TI wind chill cold · blended 10–15°C
+SolarPremium   = Sun: clamp(UVI × 0.8, 0, 8), NOT weighted by zenith — the UV
+                 index already encodes solar elevation, so weighting again
+                 double-counted it (2026-07-25 DECISIONS entry)
+                 Zenith > 90° (below horizon) → 0
                  Overcast: 25% of Sun value · Shade: 0 · Night: 0
 EnvDelta       = Urban +2 (12:00–22:00 local, else +1) · Open 0 · Nature −1
 ActivityDelta  = Stagnant 0 · Walking +1 · Active +3, each reduced 50% when ws > 5 m/s

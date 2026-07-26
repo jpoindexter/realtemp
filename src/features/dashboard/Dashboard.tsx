@@ -103,6 +103,7 @@ export function Dashboard({
           updateToggles={updateToggles}
           unit={unit}
           onSetUnit={onSetUnit}
+          theme={theme}
         />
       )}
     </main>

@@ -11,16 +11,18 @@ import type { ThermalTheme } from './thermal-scale'
  *
  * Presentation only; the formula is untouched.
  *
+ * The theme arrives as an argument, NOT by reading data-theme off the DOM.
+ * React runs child effects before parent effects, so the attribute App sets in
+ * its appearance effect is always one render stale here — every theme toggle
+ * left the ramp on the previous theme while --paper had already flipped, which
+ * rendered the tab bar dark-on-dark.
+ *
  * Painted directly rather than through `background: var(--token)`. Chrome
  * resolves that declaration once and does not invalidate it when the referenced
  * custom property changes on :root — measured: the token held the right value
  * while the body kept painting the stylesheet's fallback.
  */
-export function useThermal(trueFeelC: number | null): void {
-  // Re-read on theme change: the attribute is set by App's appearance effect,
-  // and the ramp has to swap with it.
-  const themeAttr =
-    typeof document === 'undefined' ? 'light' : document.documentElement.getAttribute('data-theme')
+export function useThermal(trueFeelC: number | null, theme: ThermalTheme): void {
 
   useEffect(() => {
     const root = document.documentElement
@@ -32,11 +34,6 @@ export function useThermal(trueFeelC: number | null): void {
     }
     if (trueFeelC === null || !Number.isFinite(trueFeelC)) return clear()
 
-    // The ramp follows the user's theme rather than overriding it. A light
-    // ground forced onto a dark theme leaves panels and controls dark, so the
-    // ink cannot satisfy both — that is how the tab bar went unreadable.
-    const theme: ThermalTheme =
-      root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'
     const ground = thermalStop(trueFeelC, theme)
     const { ink, ink2 } = inkForTheme(theme)
     const wash = thermalCss(ground)
@@ -56,5 +53,5 @@ export function useThermal(trueFeelC: number | null): void {
     // still followed the current one, so the buttons rendered dark-on-dark with
     // invisible labels. Off the dashboard, the theme tokens own the page.
     return clear
-  }, [trueFeelC, themeAttr])
+  }, [trueFeelC, theme])
 }

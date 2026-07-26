@@ -17,6 +17,9 @@ export const VAPOR_C = 237.7
 export const STREET_WIND_FACTOR = 0.6
 
 // Solar premium: clamp(UVI × UV_TO_PREMIUM, 0, SOLAR_PREMIUM_MAX_C), zenith-cos-weighted
+// Sun below the horizon. Zenith gates the solar premium off at night; it is not
+// a weight, because the UV index already accounts for how high the sun is.
+export const NIGHT_ZENITH_DEG = 90
 export const UV_TO_PREMIUM = 0.8
 export const SOLAR_PREMIUM_MAX_C = 8
 export const EXPOSURE_FACTOR = { sun: 1, overcast: 0.25, shade: 0 } as const

@@ -48,23 +48,30 @@
   --ember-500: oklch(0.600 0.185 31);
   --ember-600: oklch(0.512 0.180 30);
   --ember-700: oklch(0.440 0.155 29);
+  /* 800s exist for the thermal ramp: on the hot ground (L 0.768) the 600s
+     measured 2.3-2.9:1. Deltas are text, so they need 4.5:1 at the worst stop
+     of the ramp, not just against --ground. */
+  --ember-800: oklch(0.330 0.125 27);
 
   /* solar — sun premium, caution */
   --solar-400: oklch(0.760 0.130 70);
   --solar-500: oklch(0.660 0.135 65);
   --solar-600: oklch(0.545 0.125 62);
   --solar-700: oklch(0.470 0.110 60);
+  --solar-800: oklch(0.330 0.082 58);
 
   /* shade — cooling deltas, focus, comfort */
   --shade-400: oklch(0.740 0.085 232);
   --shade-500: oklch(0.620 0.098 234);
   --shade-600: oklch(0.508 0.098 236);
   --shade-700: oklch(0.430 0.088 238);
+  --shade-800: oklch(0.330 0.078 242);
 
   /* uhi — surroundings / urban heat island delta */
   --uhi-400: oklch(0.735 0.075 45);
   --uhi-500: oklch(0.620 0.090 43);
   --uhi-600: oklch(0.520 0.090 41);
+  --uhi-800: oklch(0.330 0.068 40);
 
   /* ---------------------------------------------------------------------
      TIER 2 — SEMANTIC. What components actually use. Names describe ROLE,
@@ -83,10 +90,10 @@
   --ground: var(--asphalt-100);   /* page */
   --paper: var(--asphalt-50);     /* surfaces */
   --line: var(--asphalt-300);     /* hairlines */
-  --solar: var(--solar-700);      /* sun premium, caution */
-  --scorch: var(--ember-600);     /* heat totals, danger */
-  --shade: var(--shade-600);      /* cooling deltas, focus, comfort */
-  --uhi: var(--uhi-600);          /* surroundings delta */
+  --solar: var(--solar-800);      /* sun premium, caution */
+  --scorch: var(--ember-800);     /* heat totals, danger */
+  --shade: var(--shade-800);      /* cooling deltas, focus, comfort */
+  --uhi: var(--uhi-800);          /* surroundings delta */
   --on-strong: oklch(0.98 0.004 75); /* text on a scorch fill */
 
   /* thermal tint — the direction's first idea. `--thermal` is a 0..1 scalar
@@ -219,10 +226,10 @@
   --ground-hot: oklch(0.958 0.036 62);
   --paper: var(--asphalt-50);
   --line: var(--asphalt-300);
-  --solar: var(--solar-700);
-  --scorch: var(--ember-600);
-  --shade: var(--shade-600);
-  --uhi: var(--uhi-600);
+  --solar: var(--solar-800);
+  --scorch: var(--ember-800);
+  --shade: var(--shade-800);
+  --uhi: var(--uhi-800);
   --on-strong: oklch(0.98 0.004 75);
   --elev-1: 0 1px 2px oklch(0.15 0.01 60 / 0.05);
   --elev-2: 0 1px 2px oklch(0.15 0.01 60 / 0.05), 0 3px 8px oklch(0.15 0.01 60 / 0.07);

@@ -76,9 +76,10 @@ interface DashboardBodyProps {
   updateToggles: ReturnType<typeof useToggles>[1]
   unit: TempUnit
   onSetUnit: (unit: TempUnit) => void
+  theme: 'light' | 'dark'
 }
 
-export function DashboardBody({ weather, location, toggles, updateToggles, unit, onSetUnit }: DashboardBodyProps) {
+export function DashboardBody({ weather, location, toggles, updateToggles, unit, onSetUnit, theme }: DashboardBodyProps) {
   const [activeTab, setActiveTab] = useState<DashboardTab>('now')
   const [mapView, setMapView] = useState<MapView>('radar')
   const zenith = solarZenithDeg(weather.fetchedAt, location.latitude, location.longitude)
@@ -104,7 +105,7 @@ export function DashboardBody({ weather, location, toggles, updateToggles, unit,
     },
     toggles,
   )
-  useThermal(result.trueFeelC)
+  useThermal(result.trueFeelC, theme)
   const air = useAirQuality(location)
 
   return (

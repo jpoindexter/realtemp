@@ -49,6 +49,27 @@ function contrast(a, b) {
 
 const css = readFileSync(new URL('../src/styles/tokens.css', import.meta.url), 'utf8')
 
+/* The ramp lives in TypeScript, so parse its stops rather than duplicate them —
+   a second copy here would drift the moment either side changed. */
+const rampSrc = readFileSync(new URL('../src/features/dashboard/thermal-scale.ts', import.meta.url), 'utf8')
+function rampStops(name) {
+  // Seek the `= [` — not the first `]`, which sits in the type annotation
+  // `ThermalStop }[]` and produced an empty block that scored Infinity and
+  // passed. A checker reporting PASS on no data is worse than no checker.
+  const decl = rampSrc.indexOf(`const ${name}`)
+  const start = rampSrc.indexOf('= [', decl)
+  const end = rampSrc.indexOf('\n]', start)
+  const block = rampSrc.slice(start, end)
+  const stops = [...block.matchAll(/l:\s*([\d.]+),\s*c:\s*([\d.]+),\s*h:\s*([\d.]+)/g)].map((m) =>
+    oklchToLinearRgb(Number(m[1]), Number(m[2]), Number(m[3])),
+  )
+  if (stops.length === 0) {
+    console.error(`Could not parse any stops from ${name} — the checker would silently pass.`)
+    process.exit(1)
+  }
+  return stops
+}
+
 /** Collect `--name: oklch(L C H)` declarations, scoped by selector block. */
 function collectScope(startPattern) {
   const start = css.indexOf(startPattern)
@@ -192,6 +213,28 @@ for (const [themeName, theme] of [
         )
       }
     }
+  }
+}
+
+/* The delta values in the ledger are painted in accent colours, not ink, and the
+   ground underneath them is the thermal ramp rather than --ground. Checking only
+   ink against the wash missed that entirely: --uhi landed around 2.2:1 on the hot
+   end and "surroundings +1.0" washed out on a phone in the sun. */
+console.log('\nACCENTS ON THE RAMP (delta values in the ledger)')
+for (const [themeName, theme, stopsName] of [
+  ['light', light, 'STOPS_LIGHT'],
+  ['dark', dark, 'STOPS_DARK'],
+]) {
+  const stops = rampStops(stopsName)
+  for (const fg of ['scorch', 'shade', 'uhi', 'solar']) {
+    if (!Array.isArray(theme[fg])) continue
+    let worst = Infinity
+    for (const ground of stops) worst = Math.min(worst, contrast(theme[fg], ground))
+    const ok = worst >= AA_TEXT
+    if (!ok) failed++
+    console.log(
+      `  ${ok ? 'PASS' : 'FAIL'}  ${worst.toFixed(2).padStart(5)}:1  --${fg} worst case across the ${themeName} ramp`,
+    )
   }
 }
 

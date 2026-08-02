@@ -58,8 +58,12 @@ describe('WeatherFactors', () => {
 
     fireEvent.click(trigger)
 
-    expect(screen.getByRole('dialog')).toBeDefined()
-    expect(screen.getByRole('heading', { name: label, level: 2 })).toBeDefined()
+    const dialog = screen.getByRole('dialog')
+    const heading = screen.getByRole('heading', { name: label, level: 2 })
+    expect(dialog).toBeDefined()
+    expect(heading).toBeDefined()
+    expect(document.activeElement).toBe(heading)
+    expect(document.activeElement).not.toBe(screen.getByRole('button', { name: /close explanation/i }))
     expect(screen.getByText(expectedCopy)).toBeDefined()
 
     fireEvent.click(screen.getByRole('button', { name: /close explanation/i }))

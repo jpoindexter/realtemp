@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 
 import { aqiLabel } from '@/features/air/air-quality'
 
@@ -131,16 +131,23 @@ function makeFactors(weather: WeatherSnapshot, unit: TempUnit, air: AirQuality |
 export function WeatherFactors({ weather, unit, air }: WeatherFactorsProps) {
   const [selectedId, setSelectedId] = useState<WeatherFactorId | null>(null)
   const dialogRef = useRef<HTMLDialogElement>(null)
+  const headingRef = useRef<HTMLHeadingElement>(null)
   const triggerRef = useRef<HTMLButtonElement | null>(null)
   const factors = makeFactors(weather, unit, air)
   const selected = factors.find((factor) => factor.id === selectedId) ?? null
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const dialog = dialogRef.current
     if (!selectedId || !dialog || dialog.open) return
 
     if (typeof dialog.showModal === 'function') dialog.showModal()
     else dialog.setAttribute('open', '')
+
+    // Native dialogs focus the first button by default, which made the close X
+    // look permanently selected on every pointer-open. Start on the heading
+    // instead: assistive tech still gets useful context, while the close ring
+    // appears only when a keyboard user actually tabs to it.
+    headingRef.current?.focus({ preventScroll: true })
   }, [selectedId])
 
   const finishClose = () => {
@@ -205,7 +212,7 @@ export function WeatherFactors({ weather, unit, air }: WeatherFactorsProps) {
             <div className="stat-explainer-head">
               <div>
                 <p className="stat-explainer-kicker">Current weather · explained</p>
-                <h2 id="stat-explainer-title">{selected.label}</h2>
+                <h2 ref={headingRef} id="stat-explainer-title" tabIndex={-1}>{selected.label}</h2>
               </div>
               <button type="button" className="stat-explainer-close" aria-label="Close explanation" onClick={closeDialog}>
                 ×

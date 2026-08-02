@@ -262,13 +262,13 @@ h1.title { font-size: var(--text-title); font-weight: 800; letter-spacing: 0; ma
 .factor.condition b { font-size: var(--text-copy); }
 
 /* Current-stat explainer — native dialog supplies the focus trap, Escape
-   behaviour, and top-layer semantics. On phones it reads as a bottom sheet;
-   desktop keeps the same compact instrument panel centred in context. */
+   behaviour, and top-layer semantics. It stays centred at every viewport so
+   the same action has the same spatial result on phone and desktop. */
 .stat-explainer {
   width: min(calc(100% - (2 * var(--space-4))), 31rem);
   max-width: none;
   max-height: min(88dvh, 42rem);
-  margin: auto auto max(var(--space-4), env(safe-area-inset-bottom));
+  margin: auto;
   padding: 0;
   border: var(--border-w) solid var(--ink);
   border-radius: var(--radius-panel);
@@ -304,6 +304,10 @@ h1.title { font-size: var(--text-title); font-weight: 800; letter-spacing: 0; ma
   line-height: 1.1;
   text-transform: capitalize;
 }
+/* Programmatic initial focus lands on the heading for screen-reader context.
+   It is not in the Tab order, so it does not need an interactive focus ring;
+   tabbing onward still gives the close button its normal :focus-visible ring. */
+.stat-explainer h2:focus { outline: none; }
 .stat-explainer-close {
   flex: 0 0 auto;
   width: var(--tap);
@@ -338,15 +342,11 @@ h1.title { font-size: var(--text-title); font-weight: 800; letter-spacing: 0; ma
   background: var(--ground);
 }
 
-@media (min-width: 40rem) {
-  .stat-explainer { margin: auto; }
-}
-
 @media (prefers-reduced-motion: no-preference) {
   .stat-explainer[open] { animation: stat-sheet-in var(--dur-2) var(--ease-out); }
   @keyframes stat-sheet-in {
-    from { opacity: 0; transform: translateY(var(--space-3)); }
-    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: scale(0.98); }
+    to { opacity: 1; transform: scale(1); }
   }
 }
 
